@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
+using Descript.ViewModels;
 using Descript.Views;
 
 namespace Descript;
@@ -21,7 +22,16 @@ public class App : Application
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            desktop.MainWindow = new MainWindow();
+            MainWindowViewModel dataContext = new();
+            desktop.MainWindow = new MainWindow
+            {
+                DataContext = dataContext
+            };
+            
+            desktop.Exit += (_, _) =>
+            {
+                dataContext.SaveData();
+            };
         }
 
         base.OnFrameworkInitializationCompleted();

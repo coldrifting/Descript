@@ -6,7 +6,7 @@
         xmlns:c="using:Descript.Views.Controls"
         xmlns:m="using:Descript.Models"
         xmlns:u="using:Descript.Utils"
-        xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+        xmlns:dh="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
         mc:Ignorable="d" d:DesignWidth="1080" d:DesignHeight="720"
         x:Class="Descript.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -20,6 +20,7 @@
 
     <Window.Resources>
         <ResourceDictionary>
+            <u:RuneLabelVisibleConverter x:Key="RuneLabelVisibleConverter"/>
             <u:ConfidenceLevelToBrushConverter x:Key="ConfidenceToBrushConverter"/>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Dark">
@@ -31,7 +32,7 @@
     </Window.Resources>
 
     <Window.Styles>
-        <dialogHostAvalonia:DialogHostStyles />
+        <dh:DialogHostStyles />
         <Style Selector="Button.gridListItem">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
@@ -46,8 +47,8 @@
         </Style>
     </Window.Styles>
 
-    <dialogHostAvalonia:DialogHost CloseOnClickAway="True" IsOpen="{Binding IsDialogOpen, Mode=TwoWay}">
-        <dialogHostAvalonia:DialogHost.DialogContent>
+    <dh:DialogHost CloseOnClickAway="True" IsOpen="{Binding IsDialogOpen, Mode=TwoWay}">
+        <dh:DialogHost.DialogContent>
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center" Margin="5">Input Translation Guess</TextBlock>
                 <Grid RowDefinitions="50,50" ColumnDefinitions="100,200" Margin="5">
@@ -68,39 +69,41 @@
                         Margin="2"
                         HorizontalAlignment="Right"/>
             </StackPanel>
-        </dialogHostAvalonia:DialogHost.DialogContent>
+        </dh:DialogHost.DialogContent>
 
         <Grid ColumnDefinitions="306,*">
             <Grid Grid.Column="0" RowDefinitions="256,32,32,*">
                 <c:SegmentSelect Grid.Row="0" 
                                         AccentColor="{DynamicResource AccentColor}"
-                                        Selection="{Binding SelectionFilter, Mode=TwoWay}" />
+                                        Selection="{Binding RunesList.CurrentSelection, Mode=TwoWay}" />
 
                 <Grid Grid.Row="1" ColumnDefinitions="*,*,*">
                     <Button Grid.Column="0"
                             HorizontalAlignment="Center"
-                            Content="Clear Selection"
-                            IsEnabled="{Binding CanClearSelection}"
-                            Command="{Binding ClearSelectionCommand}" />
+                            Content="Clear"
+                            IsEnabled="{Binding RunesList.CanClearFilters}"
+                            Command="{Binding ClearRuneListFiltersCommand}" />
                     <Button Grid.Column="1"
                             HorizontalAlignment="Center"
-                            Content="Add Rune"
-                            IsEnabled="{Binding CanAddRune}"
-                            Command="{Binding AddRuneCommand}" />
+                            Content="Add"
+                            IsEnabled="{Binding RunesList.CanAddRune}"
+                            Command="{Binding AddRuneCommand}" 
+                            CommandParameter="{Binding RunesList.CurrentSelection}"/>
                     <Button Grid.Column="2"
                             HorizontalAlignment="Center"
-                            Command="{Binding ToggleSortModeCommand}"
-                            Content="{Binding RuneSortModeString}"/>
+                            Command="{Binding ToggleRuneListSortModeCommand}"
+                            Content="{Binding RunesList.SortModeString}"/>
                 </Grid>
                 
-                <TextBox Grid.Row="2" Watermark="Search by Translation" Text="{Binding RuneFilterText}"/>
+                <TextBox Grid.Row="2" Watermark="Search by Translation" Text="{Binding RunesList.FilterText}"/>
 
                 <ScrollViewer Grid.Row="3" x:Name="ScrollView" VerticalScrollBarVisibility="Visible"
                               AllowAutoHide="False">
-                    <ItemsControl ItemsSource="{Binding FilteredRunes}">
+                    <ItemsControl ItemsSource="{Binding RunesList.Runes}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="m:Rune">
-                                <Button Command="{Binding CopyCommand}"
+                                <Button Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).CopyTextToClipboardCommand , FallbackValue=''}"
+                                        CommandParameter="{Binding Glyph}"
                                         Width="64" 
                                         Height="78" 
                                         Margin="3" 
@@ -124,7 +127,7 @@
                                                HorizontalAlignment="Center"
                                                Content="{Binding Translation}"
                                                CornerRadius="3"
-                                               IsVisible="{Binding ShowLabel}"
+                                               IsVisible="{Binding Translation, Converter={StaticResource RuneLabelVisibleConverter}}"
                                                Foreground="Black"
                                                Background="{Binding Confidence, Converter={StaticResource ConfidenceToBrushConverter}}"
                                                FontSize="13" />
@@ -133,12 +136,13 @@
                                         <ContextMenu>
                                             <MenuItem Header="Edit" 
                                                       Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).OpenRuneEditDialogCommand , FallbackValue=''}" 
-                                                      CommandParameter="{Binding }" />
+                                                      CommandParameter="{Binding Id}" />
                                             <MenuItem Header="Copy" 
-                                                      Command="{Binding CopyCommand}" />
+                                                      Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).CopyTextToClipboardCommand , FallbackValue=''}" 
+                                                      CommandParameter="{Binding Glyph}" />
                                             <MenuItem Header="Delete" 
                                                       Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).DeleteRuneCommand , FallbackValue=''}" 
-                                                      CommandParameter="{Binding }" />
+                                                      CommandParameter="{Binding Id}" />
                                         </ContextMenu>
                                     </Button.ContextMenu>
                                 </Button>
@@ -155,10 +159,10 @@
 
             <Border Grid.Column="1">
                 <StackPanel>
-                    <TextBlock Text="{Binding SelectionFilter}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding RunesList.CurrentSelection}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </StackPanel>
             </Border>
         </Grid>
-    </dialogHostAvalonia:DialogHost>
+    </dh:DialogHost>
 
 </Window>

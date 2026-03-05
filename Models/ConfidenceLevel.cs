@@ -7,8 +7,8 @@ namespace Descript.Models;
 
 public enum ConfidenceLevel
 {
-    Low,
+    High,
     Medium,
-    High
+    Low
 }
 
