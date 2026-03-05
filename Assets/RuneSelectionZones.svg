@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+        width="256"
+        height="256"
+        viewBox="0 0 256 256"
+        version="1.1"
+        id="svg1"
+        xml:space="preserve"
+        xmlns="http://www.w3.org/2000/svg">
+    <path
+            id="c11"
+            d="M 65,217 H 48 v 39 h 52 v -11 z"
+            style="display:inline;fill:#76cb9a;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+    />
+    <path
+            id="c10"
+            d="m 152,200 -24,45 h 48 l 25,-45 z"
+            style="display:inline;fill:#7c76cb;fill-opacity:1;stroke:none;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+    />
+    <path
+            id="c9"
+            d="m 103.66634,200 24.33333,45 H 100 L 65,217 54.999675,200 Z"
+            style="display:inline;fill:#7c76cb;fill-opacity:1;stroke:none;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+    />
+    <path
+            id="c8"
+            d="m 201,200 -25,-45 h -48 z m -49,0 -24,-45 73,45 z"
+            style="display:inline;fill:#a976cb;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+    />
+    <path
+            id="c7"
+            d="m 55,200 25,-45 h 48 z m 49,0 24,-45 -73,45 z"
+            style="display:inline;fill:#a976cb;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+    />
+    <path
+            id="c6"
+            d="m 152,54 -24,45 h 48 l 25,-45 z"
+            style="display:inline;fill:#7c76cb;fill-opacity:1;stroke:none;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+    />
+    <path
+            id="c5"
+            d="m 104,54 24,45 H 80 L 55,54 Z"
+            style="display:inline;fill:#7c76cb;fill-opacity:1;stroke:none;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+    />
+    <path
+            id="c4"
+            d="M 201,54 176,9.0000002 h -48 z m -49,0 -24,-45 73,45 z"
+            style="display:inline;fill:#a976cb;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+    />
+    <path
+            id="c3"
+            d="M 55,54 80,9.0000002 h 48 z m 49,0 24,-45 -73,45 z"
+            style="display:inline;fill:#a976cb;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+    />
+    <path
+            id="c2"
+            d="M 128,155 103.66602,200 128,245 152.33398,200 Z"
+            style="display:inline;fill:#cba376;fill-opacity:1;stroke:none;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+    />
+    <path
+            id="c1"
+            d="M 128,9 103.66602,54 128,99 152.33398,54 Z"
+            style="display:inline;fill:#cba376;fill-opacity:1;stroke:none;stroke-width:8;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+    />
+    <path
+            id="c0"
+            d="M 55,54 30,99 v 56 l 25,45 25,-45 V 99 Z"
+            style="display:inline;fill:#76cb9a;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+    />
+</svg>

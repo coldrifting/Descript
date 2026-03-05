@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+    width="256"
+    height="256"
+    viewBox="0 0 256 256"
+    version="1.1"
+    id="svg1"
+    xml:space="preserve"
+    xmlns="http://www.w3.org/2000/svg">
+    <path id="Base" d="M 201,128 H 55" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-linecap:square;stroke-dasharray:none;stroke-opacity:1" />
+    <path id="0" d="M 55,54 V 200" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-dasharray:none;stroke-opacity:1" />
+    <path id="1" d="M 128,99 V 9" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" />
+    <path id="1or2" d="M 128,128 V 99" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" />
+    <path id="2" d="M 128,245 V 155" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" />
+    <path id="3" d="M 55,54 128,9" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" />
+    <path id="4" d="M 201,54 128,9" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" />
+    <path id="5" d="m 55,54 73,45" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" />
+    <path id="6" d="M 201,54 128,99" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" />
+    <path id="7" d="m 55,200 73,-45" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" />
+    <path id="8" d="M 201,200 128,155" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" />
+    <path id="9" d="m 55,200 73,45" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" />
+    <path id="10" d="m 201,200 -73,45" style="display:inline;fill:#7c76cb;stroke:#ffffff;stroke-width:10;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" />
+    <circle id="11" cx="70.118111" cy="237.19507" r="11.118115" style="display:inline;fill:none;stroke:#ffffff;stroke-width:7.99999;stroke-dasharray:none;stroke-opacity:1" />
+</svg>
