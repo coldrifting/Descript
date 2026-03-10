@@ -37,8 +37,8 @@ with open("RuneTemplate.svg","r") as templateFile:
         arr: list[int] = getIntArray(i)
         newLines = processLines(template, arr)
         newLines = newLines.replace('id="rune"', f'id="{i}"')
-        num: int = 0xF2000 + i
-        with open(f'Icons/{num:05X}.svg',"w") as outputFile:
+        num: int = 0xE000 + i
+        with open(f'Icons/{num:04X}.svg',"w") as outputFile:
             outputFile.write(newLines)
             outputFile.close()
 

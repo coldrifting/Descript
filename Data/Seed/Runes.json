@@ -1,17 +1,17 @@
 [
   {
     "Id": 15,
-    "Translation": "LA",
+    "Translation": "la",
     "Confidence": "Low"
   },
   {
     "Id": 24,
-    "Translation": "A",
+    "Translation": "a",
     "Confidence": "High"
   },
   {
     "Id": 100,
-    "Translation": "T",
+    "Translation": "t",
     "Confidence": "High"
   },
   {
@@ -21,37 +21,42 @@
   },
   {
     "Id": 414,
-    "Translation": "THE",
+    "Translation": "the",
     "Confidence": "High"
   },
   {
     "Id": 637,
-    "Translation": "TO",
+    "Translation": "to",
     "Confidence": "High"
   },
   {
     "Id": 923,
-    "Translation": "DO",
+    "Translation": "do",
     "Confidence": "Medium"
   },
   {
     "Id": 1049,
-    "Translation": "OR",
+    "Translation": "or",
     "Confidence": "Medium"
   },
   {
     "Id": 1743,
-    "Translation": "SEE",
+    "Translation": "see",
     "Confidence": "High"
   },
   {
     "Id": 2362,
-    "Translation": "OF",
+    "Translation": "of",
     "Confidence": "Medium"
   },
   {
     "Id": 3878,
-    "Translation": "IS",
+    "Translation": "is",
     "Confidence": "Medium"
+  },
+  {
+    "Id": 282,
+    "Translation": "buh",
+    "Confidence": "High"
   }
 ]

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+using System.Runtime.CompilerServices;
 using CommunityToolkit.Mvvm.Input;
 using Descript.Data;
 using Descript.Models;
@@ -12,16 +11,21 @@ namespace Descript.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    public RunesListViewModel RunesList { get; } = new();
+    public RunesListViewModel RunesList { get; }
+    public TranslationListViewModel TranslationList { get; }
     
     public MainWindowViewModel()
     {
+        RunesList = new RunesListViewModel(this);
+        TranslationList = new TranslationListViewModel(this);
         LoadData();
     }
 
     private void LoadData()
     {
         RunesList.Add(DataManagement.Load<Rune>());
+        TranslationList.AddWord(DataManagement.Load<RuneChain>());
+        TranslationList.Add(DataManagement.Load<Translation>());
     }
 
     public void SaveData()
@@ -33,23 +37,19 @@ public partial class MainWindowViewModel : ViewModelBase
     private bool _shouldDialogBeSubmitted;
     private int _runeEditId = -1;
     
-    public List<ConfidenceLevel> ConfidenceLevels { get; } = [ ..Enum.GetValues<ConfidenceLevel>() ];
+    public List<ConfidenceLevel> ConfidenceLevels { get; } = [
+        ConfidenceLevel.High,
+        ConfidenceLevel.Medium,
+        ConfidenceLevel.Low
+    ];
     
-    [ObservableProperty]
-    public partial bool IsDialogOpen { get; set; }
+    public bool IsDialogOpen { get; set => SetField(ref field, value); }
+    public bool IsDialogFocused { get; set => SetField(ref field, value); }
+    public string RuneEditNewTranslation { get; set => SetField(ref field, value.ToLower()); } = string.Empty;
+    public ConfidenceLevel RuneEditNewConfidenceLevel { get; set => SetField(ref field, value); }
+    public bool RuneEditNewTranslationOkay { get; set => SetField(ref field, value); }
+    public CaseConversion TranslationCase => CaseConversion.Lowercase;
 
-    [ObservableProperty]
-    public partial bool IsDialogFocused { get; set; }
-    
-    [ObservableProperty]
-    public partial string RuneEditNewTranslation { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial bool RuneEditNewTranslationOkay { get; private set; }
-
-    [ObservableProperty]
-    public partial ConfidenceLevel RuneEditNewConfidenceLevel { get; set; }
-    
     [RelayCommand]
     private void OpenRuneEditDialog(int runeId)
     {
@@ -116,6 +116,11 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         ClipboardHelper.GetClipboard()?.SetTextAsync(text);
     }
+
+    private bool IsRuneEditOkay()
+    {
+        return RuneEditNewTranslation.Trim() != string.Empty || RuneEditNewConfidenceLevel == ConfidenceLevel.Low;
+    }
     
     // Keep everything synced
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -127,18 +132,23 @@ public partial class MainWindowViewModel : ViewModelBase
             case nameof(IsDialogOpen) when !IsDialogOpen:
                 CloseDialog();
                 break;
-
+            
             case nameof(IsDialogOpen) when IsDialogOpen:
             case nameof(RuneEditNewTranslation) or nameof(RuneEditNewConfidenceLevel):
-                if (!RuneEditNewTranslation.Equals(RuneEditNewTranslation.ToUpper(), StringComparison.CurrentCulture))
-                {
-                    RuneEditNewTranslation = RuneEditNewTranslation.ToUpper();
-                }
-
-                RuneEditNewTranslationOkay = RuneEditNewTranslation.Trim() != string.Empty ||
-                                             RuneEditNewConfidenceLevel == ConfidenceLevel.Low;
+                RuneEditNewTranslationOkay = IsRuneEditOkay();
                 break;
         }
+    }
+    
+
+    private void SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value))
+        {
+            return;
+        }
+        field = value;
+        OnPropertyChanged(propertyName);
     }
 }
 

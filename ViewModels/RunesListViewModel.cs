@@ -8,8 +8,10 @@ using Descript.Models;
 
 namespace Descript.ViewModels;
 
-public sealed class RunesListViewModel : INotifyPropertyChanged
+public sealed class RunesListViewModel(MainWindowViewModel mainWindowViewModel) : INotifyPropertyChanged
 {
+    private MainWindowViewModel MainWindowViewModel { get; set; } = mainWindowViewModel;
+    
     private readonly Dictionary<int, Rune> _allRunes = new();
 
     public int CurrentSelection { get; set => SetField(ref field, value); } = 0;
@@ -180,7 +182,7 @@ public sealed class RunesListViewModel : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         if (propertyName is nameof(FilterText))
         {
-            FilterText = FilterText.ToUpper();
+            FilterText = FilterText.ToLower();
         }
         
         if (propertyName is nameof(SortMode) or nameof(FilterText) or nameof(CurrentSelection))
@@ -201,6 +203,7 @@ public sealed class RunesListViewModel : INotifyPropertyChanged
         if (propertyName is nameof(Runes))
         {
             OnPropertyChanged(nameof(CanAddRune));
+            MainWindowViewModel.TranslationList.UpdateTranslations();
         }
     }
 

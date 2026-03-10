@@ -13,6 +13,7 @@ public class ConfidenceLevelToBrushConverter : IValueConverter
         ConfidenceLevel level = (ConfidenceLevel)(value ?? ConfidenceLevel.Low);
         return level switch
         {
+            ConfidenceLevel.Confirmed => Brushes.White,
             ConfidenceLevel.High => Brushes.MediumSeaGreen,
             ConfidenceLevel.Medium => Brushes.DarkGoldenrod,
             _ => Brushes.IndianRed

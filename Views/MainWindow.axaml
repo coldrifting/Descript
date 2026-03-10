@@ -45,35 +45,89 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="{DynamicResource ActionColor}" />
         </Style>
+        
+        <Style Selector="Button.runeword">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.runeword:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.runeword:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        
+        <Style Selector="TextBlock.confirmed">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="TextBlock.high">
+            <Setter Property="Foreground" Value="MediumSeaGreen" />
+        </Style>
+        <Style Selector="TextBlock.medium">
+            <Setter Property="Foreground" Value="DarkGoldenrod" />
+        </Style>
+        
+        <Style Selector="TextBlock.low">
+            <Setter Property="Foreground" Value="IndianRed" />
+        </Style>
+        
+        <Style Selector="Button.word:pointerover > Grid > TextBlock">
+            <Setter Property="Foreground" Value="CornflowerBlue" />
+        </Style>
+        <Style Selector="Button.word:pressed > Grid > TextBlock">
+            <Setter Property="Foreground" Value="DodgerBlue" />
+        </Style>
+        
+        <Style Selector="Button.word:pointerover > Grid > TextBlock.confirmed">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.word:pressed > Grid > TextBlock.confirmed">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        
+        <Style Selector="Button.rune:pointerover > Grid > TextBlock">
+            <Setter Property="Foreground" Value="CornflowerBlue" />
+        </Style>
+        <Style Selector="Button.rune:pressed > Grid > TextBlock">
+            <Setter Property="Foreground" Value="DodgerBlue" />
+        </Style>
+        
+        <Style Selector="Button.AddSentenceButton">
+            <Setter Property="Background" Value="DarkCyan" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        
+        <Style Selector="Button.AddSentenceButton:pointerover">
+            <Setter Property="Background" Value="Cyan" />
+        </Style>
+        
+        <Style Selector="Button.AddSentenceButton:pressed">
+            <Setter Property="Background" Value="LightCyan" />
+        </Style>
+        
+        <Style Selector=".Translations > ContentPresenter:nth-child(2n)">
+            <Setter Property="Background" Value="DarkSlateGray"/>
+        </Style>
+        
+        <Style Selector=".Translations > ContentPresenter:nth-child(2n + 1)">
+            <Setter Property="Background" Value="DarkSlateBlue"/>
+        </Style>
     </Window.Styles>
 
     <dh:DialogHost CloseOnClickAway="True" IsOpen="{Binding IsDialogOpen, Mode=TwoWay}">
         <dh:DialogHost.DialogContent>
-            <StackPanel>
-                <TextBlock HorizontalAlignment="Center" Margin="5">Input Translation Guess</TextBlock>
-                <Grid RowDefinitions="50,50" ColumnDefinitions="100,200" Margin="5">
-                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Translation</TextBlock>
-                <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" IsFocused="{Binding IsDialogFocused, Mode=TwoWay}" Text="{Binding RuneEditNewTranslation}" />
-                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Confidence</TextBlock>
-                <ComboBox Grid.Row="1" Grid.Column="1" Width="200" VerticalAlignment="Center" ItemsSource="{Binding ConfidenceLevels}" SelectedValue="{Binding RuneEditNewConfidenceLevel}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-                </Grid>
-                <Button IsEnabled="{Binding RuneEditNewTranslationOkay}"
-                        Command="{Binding SubmitDialogCommand}"
-                        Content="Submit"
-                        Margin="2"
-                        HorizontalAlignment="Right"/>
-            </StackPanel>
+            <c:RenamePopupControl
+                Title="Input Translation Guess"
+                Translation="{Binding RuneEditNewTranslation, Mode=TwoWay}"
+                TranslationCase="{Binding TranslationCase}"
+                Confidence="{Binding RuneEditNewConfidenceLevel, Mode=TwoWay}"
+                ConfidenceLevels="{Binding ConfidenceLevels}"
+                IsValid="{Binding RuneEditNewTranslationOkay, Mode=TwoWay}"
+                SubmitCommand="{Binding SubmitDialogCommand}" />
         </dh:DialogHost.DialogContent>
 
         <Grid ColumnDefinitions="306,*">
             <Grid Grid.Column="0" RowDefinitions="256,32,32,*">
-                <c:SegmentSelect Grid.Row="0" 
+                <c:SegmentSelectControl Grid.Row="0" 
                                         AccentColor="{DynamicResource AccentColor}"
                                         Selection="{Binding RunesList.CurrentSelection, Mode=TwoWay}" />
 
@@ -97,8 +151,7 @@
                 
                 <TextBox Grid.Row="2" Watermark="Search by Translation" Text="{Binding RunesList.FilterText}"/>
 
-                <ScrollViewer Grid.Row="3" x:Name="ScrollView" VerticalScrollBarVisibility="Visible"
-                              AllowAutoHide="False">
+                <ScrollViewer Grid.Row="3" x:Name="ScrollView" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
                     <ItemsControl ItemsSource="{Binding RunesList.Runes}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="m:Rune">
@@ -135,13 +188,13 @@
                                     <Button.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Edit" 
-                                                      Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).OpenRuneEditDialogCommand , FallbackValue=''}" 
+                                                      Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).OpenRuneEditDialogCommand, FallbackValue=''}" 
                                                       CommandParameter="{Binding Id}" />
                                             <MenuItem Header="Copy" 
-                                                      Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).CopyTextToClipboardCommand , FallbackValue=''}" 
+                                                      Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).CopyTextToClipboardCommand, FallbackValue=''}" 
                                                       CommandParameter="{Binding Glyph}" />
                                             <MenuItem Header="Delete" 
-                                                      Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).DeleteRuneCommand , FallbackValue=''}" 
+                                                      Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).DeleteRuneCommand, FallbackValue=''}" 
                                                       CommandParameter="{Binding Id}" />
                                         </ContextMenu>
                                     </Button.ContextMenu>
@@ -158,9 +211,122 @@
             </Grid>
 
             <Border Grid.Column="1">
-                <StackPanel>
-                    <TextBlock Text="{Binding RunesList.CurrentSelection}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                </StackPanel>
+                <dh:DialogHost CloseOnClickAway="True" IsOpen="{Binding TranslationList.IsSentenceDialogOpen, Mode=TwoWay}">
+                    <dh:DialogHost.DialogContent>
+                        <c:AddSentenceControl Width="500" Height="500"
+                                              Sentence="{Binding TranslationList.SentenceEntry, Mode=TwoWay}" 
+                                              IsValid="{Binding TranslationList.IsSentenceValid}"
+                                              SubmitCommand="{Binding TranslationList.SubmitSentenceCommand}" />
+                    </dh:DialogHost.DialogContent>
+                        <dh:DialogHost CloseOnClickAway="True" IsOpen="{Binding TranslationList.IsDialogOpen, Mode=TwoWay}">
+                        <dh:DialogHost.DialogContent>
+                            <c:RenamePopupControl
+                                Title="{Binding TranslationList.DialogTitle}"
+                                Translation="{Binding TranslationList.DialogEntry1, Mode=TwoWay}"
+                                TranslationCase="{Binding TranslationList.TranslationCase}"
+                                Confidence="{Binding TranslationList.DialogEntry2, Mode=TwoWay}"
+                                ConfidenceLevels="{Binding ConfidenceLevels}"
+                                IsValid="{Binding TranslationList.IsDialogOkay, Mode=TwoWay}"
+                                SubmitCommand="{Binding TranslationList.CloseDialogCommand}" />
+                        </dh:DialogHost.DialogContent>
+                        <Grid RowDefinitions="40,*">
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Background="DimGray">
+                                <Button  Margin="8 4" Content="Add Sentence" Classes="AddSentenceButton" Command="{Binding TranslationList.OpenAddSentenceDialogCommand}"/>
+                            </StackPanel>
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
+                                <ItemsControl ItemsSource="{Binding TranslationList.Blocks}" Classes="Translations">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="m:TranslationBlocks">
+                                            <ItemsControl ItemsSource="{Binding Blocks}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate DataType="m:TranslationBlock">
+                                                        <Grid RowDefinitions="*,12">
+                                                            <ItemsControl Grid.Row="0" IsVisible="{Binding HasNoTranslation}" ItemsSource="{Binding Symbols}">
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <Button Padding="0" Margin="0" Classes="rune runeword" Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).TranslationList.OpenRuneDialogCommand}" CommandParameter="{Binding Id}">
+                                                                            <Grid RowDefinitions="20,42" >
+                                                                                <TextBlock Grid.Row="0" 
+                                                                                    Text="{Binding Translation}" 
+                                                                                    FontSize="12" 
+                                                                                    TextAlignment="Center" 
+                                                                                           VerticalAlignment="Center" 
+                                                                                           Classes.high="{Binding IsHigh}"
+                                                                                           Classes.medium="{Binding IsMedium}"
+                                                                                           Classes.low="{Binding IsLow}" />
+                                                                                <TextBlock Grid.Row="1" Text="{Binding Raw}" FontSize="28" TextAlignment="Center" VerticalAlignment="Center"
+                                                                                           Classes.high="{Binding IsHigh}"
+                                                                                           Classes.medium="{Binding IsMedium}"
+                                                                                           Classes.low="{Binding IsLow}" />
+                                                                            </Grid>
+                                                                        </Button>
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                                <ItemsControl.ItemsPanel>
+                                                                    <ItemsPanelTemplate>
+                                                                        <StackPanel Margin="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                                    </ItemsPanelTemplate>
+                                                                </ItemsControl.ItemsPanel>
+                                                            </ItemsControl>
+                                                            <Button Grid.Row="1" 
+                                                                    IsVisible="{Binding HasNoTranslation}" 
+                                                                    Background="CornflowerBlue" 
+                                                                    Margin="0 0 0 4" 
+                                                                    HorizontalAlignment="Stretch" 
+                                                                    VerticalAlignment="Stretch" 
+                                                                    Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).TranslationList.OpenWordDialogCommand}" 
+                                                                    CommandParameter="{Binding Id}"/>
+                                                            <Button Grid.Row="0" 
+                                                                    Padding="0" 
+                                                                    Margin="0" 
+                                                                    Classes="word runeword" 
+                                                                    Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).TranslationList.OpenWordDialogCommand}" 
+                                                                    CommandParameter="{Binding Id}">
+                                                                <Grid RowDefinitions="20,42" IsVisible="{Binding HasTranslation}">
+                                                                    <TextBlock Grid.Row="0" Text="{Binding Translation}" FontSize="14" TextAlignment="Center" VerticalAlignment="Center"
+                                                                                           Classes.confirmed="{Binding IsConfirmed}" 
+                                                                                           Classes.high="{Binding IsHigh}"
+                                                                                           Classes.medium="{Binding IsMedium}"
+                                                                                           Classes.low="{Binding IsLow}" />
+                                                                    <TextBlock Grid.Row="1" Text="{Binding Raw}" FontSize="28" TextAlignment="Center" VerticalAlignment="Center"
+                                                                                           Classes.confirmed="{Binding IsConfirmed}" 
+                                                                                           Classes.high="{Binding IsHigh}"
+                                                                                           Classes.medium="{Binding IsMedium}"
+                                                                                           Classes.low="{Binding IsLow}" />
+                                                                </Grid>
+                                                            </Button>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Margin="0" Orientation="Horizontal" Spacing="6" Background="Transparent">
+                                                            <StackPanel.ContextMenu>
+                                                                <ContextMenu>
+                                                                    <MenuItem Header="Edit"
+                                                                              Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).TranslationList.OpenEditSentenceDialogCommand, FallbackValue=''}" 
+                                                                              CommandParameter="{Binding Id}" />
+                                                                    <MenuItem Header="Delete" 
+                                                                              Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).TranslationList.DeleteSentenceCommand, FallbackValue=''}" 
+                                                                              CommandParameter="{Binding Id}" />
+                                                                </ContextMenu>
+                                                            </StackPanel.ContextMenu>
+                                                        </StackPanel>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                            </ItemsControl>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Vertical"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </dh:DialogHost>
+                </dh:DialogHost>
             </Border>
         </Grid>
     </dh:DialogHost>

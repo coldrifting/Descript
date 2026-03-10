@@ -1,0 +1,38 @@
+[
+  {
+    "Id": 0,
+    "Translation": "But",
+    "Confidence": "High",
+    "RuneIds": [282, 100]
+  },
+  {
+    "Id": 1,
+    "Translation": "A",
+    "Confidence": "High",
+    "RuneIds": [24]
+  },
+  {
+    "Id": 2,
+    "Translation": "To/Two",
+    "Confidence": "Medium",
+    "RuneIds": [637]
+  },
+  {
+    "Id": 3,
+    "Translation": "The",
+    "Confidence": "High",
+    "RuneIds": [414]
+  },
+  {
+    "Id": 4,
+    "Translation": "Is",
+    "Confidence": "High",
+    "RuneIds": [3878]
+  },
+  {
+    "Id": 5,
+    "Translation": "",
+    "Confidence": "Low",
+    "RuneIds": [15, 214, 24]
+  }
+]

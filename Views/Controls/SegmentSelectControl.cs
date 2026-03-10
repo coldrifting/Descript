@@ -7,18 +7,18 @@ using Descript.Utils;
 
 namespace Descript.Views.Controls;
 
-public class SegmentSelect : Control
+public class SegmentSelectControl : Control
 {
-    static SegmentSelect()
+    static SegmentSelectControl()
     {
-        AffectsRender<SegmentSelect>(
+        AffectsRender<SegmentSelectControl>(
             SelectionProperty,
             OutlineColorProperty, 
             AccentColorProperty);
     }
     
     public static readonly StyledProperty<int> SelectionProperty =
-        AvaloniaProperty.Register<SegmentSelect, int>(nameof(Selection), defaultValue: 0);
+        AvaloniaProperty.Register<SegmentSelectControl, int>(nameof(Selection), defaultValue: 0);
 
     public int Selection
     {
@@ -27,7 +27,7 @@ public class SegmentSelect : Control
     }
     
     public static readonly StyledProperty<ISolidColorBrush> OutlineColorProperty =
-        AvaloniaProperty.Register<SegmentSelect, ISolidColorBrush>(nameof(OutlineColor), defaultValue: Brushes.DimGray);
+        AvaloniaProperty.Register<SegmentSelectControl, ISolidColorBrush>(nameof(OutlineColor), defaultValue: Brushes.DimGray);
 
     public ISolidColorBrush OutlineColor
     {
@@ -36,7 +36,7 @@ public class SegmentSelect : Control
     }
     
     public static readonly StyledProperty<ISolidColorBrush> AccentColorProperty =
-        AvaloniaProperty.Register<SegmentSelect, ISolidColorBrush>(nameof(AccentColor), defaultValue: Brushes.RoyalBlue);
+        AvaloniaProperty.Register<SegmentSelectControl, ISolidColorBrush>(nameof(AccentColor), defaultValue: Brushes.RoyalBlue);
 
     public ISolidColorBrush AccentColor
     {
@@ -56,7 +56,7 @@ public class SegmentSelect : Control
     private readonly PathGeometry _outline;
     private readonly PathGeometry _base;
     
-    public SegmentSelect()
+    public SegmentSelectControl()
     {
         Width = 200;
         Height = 256;

@@ -6,14 +6,14 @@ namespace Descript.Models;
 public class Rune(int id, string translation = "", ConfidenceLevel confidence = ConfidenceLevel.Low)
 {
     [JsonIgnore]
-    private const int CodePointStart = 0xF2000;
+    public const int CodePointStart = 0xE000;
 
     public int Id { get; } = id;
-    public string Translation { get; set; } = translation.ToUpper();
+    public string Translation { get; set; } = translation.ToLower();
     public ConfidenceLevel Confidence { get; set; } = confidence;
 
     [JsonIgnore]
-    public string Glyph { get; } = new System.Text.Rune(CodePointStart + id).ToString();
+    public string Glyph { get; } = ((char)(CodePointStart + id)).ToString();
 
     public override int GetHashCode()
     {

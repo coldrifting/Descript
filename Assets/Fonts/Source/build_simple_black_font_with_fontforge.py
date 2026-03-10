@@ -29,8 +29,8 @@ import fontforge
 import os
 
 INPUTFOLDER = 'Icons'
-OUTPUTFILENAME = 'TunicRunes.ttf'
-PLACEHOLDERGEOMETRYSVG = 'Icons/F2000.svg'
+OUTPUTFILENAME = '../TunicRunes.ttf'
+PLACEHOLDERGEOMETRYSVG = 'Icons/E000.svg'
 
 font = fontforge.font()
 font.familyname = "Tunic Runes"
