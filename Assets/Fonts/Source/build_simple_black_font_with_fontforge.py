@@ -53,7 +53,7 @@ MONOSPACEWIDTH = 720
 # If MAXWIDTH is unset, but MONOSPACEWIDTH is set, then some glyphs may have contours outside of their bounding box.
 MAXWIDTH = MONOSPACEWIDTH
 # If the following parameter is set to a positive integer, a blank 'space' character is included in the font.
-SPACEWIDTH = MONOSPACEWIDTH
+SPACEWIDTH = 240
 
 
 
