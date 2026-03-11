@@ -4,10 +4,10 @@ using System.Text.Json.Serialization;
 namespace Descript.Models;
 
 [method: JsonConstructor]
-public class Translation(int id, List<int> runeChainIds, List<string> plainWords, string category = "", string subCategory = "", string context = "")
+public class Translation(int id, List<int> wordIds, List<string> plainWords, string category = "", string subCategory = "", string context = "")
 {
     public int Id { get; } = id;
-    public List<int> RuneChainIds { get; } = runeChainIds;
+    public List<int> WordIds { get; } = wordIds;
     public List<string> PlainWords { get; } = plainWords;
     public string Category { get; set; } = category;
     public string SubCategory { get; set; } = subCategory;
@@ -18,12 +18,6 @@ public class TranslationBlocks(int id)
 {
     public int Id { get; set; } = id;
     public List<TranslationBlock> Blocks { get; set; } = [];
-}
-
-public class RuneOrWord(bool isRune, int id)
-{
-    public bool IsRune { get; set; } = isRune;
-    public int Id { get; set; } = id;
 }
 
 // Word

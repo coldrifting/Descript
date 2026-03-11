@@ -4,15 +4,23 @@ using System.Threading;
 namespace Descript.Utils;
 
 public static class StringExtensions {
-    public static string ToTitleCase(this string str)
+    extension(string str)
     {
-        TextInfo textInfo = Thread.CurrentThread.CurrentCulture.TextInfo;
-        
-        return str.Length switch
+        public string ToTitleCase()
         {
-            0 => str,
-            1 => str.ToUpper(),
-            _ => textInfo.ToTitleCase(str)
-        };
+            TextInfo textInfo = Thread.CurrentThread.CurrentCulture.TextInfo;
+        
+            return str.Length switch
+            {
+                0 => str,
+                1 => str.ToUpper(),
+                _ => textInfo.ToTitleCase(str)
+            };
+        }
+
+        public bool ContainsTrimmed(string b)
+        {
+            return str.Trim().Contains(b.Trim(), System.StringComparison.CurrentCultureIgnoreCase);
+        }
     }
 }

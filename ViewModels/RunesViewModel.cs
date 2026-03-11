@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Descript.Models;
+using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels;
 
-public sealed class RunesListViewModel(MainWindowViewModel mainWindowViewModel) : INotifyPropertyChanged
+public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : ViewModelBase
 {
-    private MainWindowViewModel MainWindowViewModel { get; set; } = mainWindowViewModel;
+    private MainWindowViewModel Vm { get; set; } = mainWindowViewModel;
     
     private readonly Dictionary<int, Rune> _allRunes = new();
 
@@ -173,47 +173,34 @@ public sealed class RunesListViewModel(MainWindowViewModel mainWindowViewModel) 
         return (filter & num) == filter;
     }
     
-    
-    // INotifyPropertyChanged
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        if (propertyName is nameof(FilterText))
+        base.OnPropertyChanged(e);
+        
+        if (e.PropertyName is nameof(FilterText))
         {
             FilterText = FilterText.ToLower();
         }
         
-        if (propertyName is nameof(SortMode) or nameof(FilterText) or nameof(CurrentSelection))
+        if (e.PropertyName is nameof(SortMode) or nameof(FilterText) or nameof(CurrentSelection))
         {
             OnPropertyChanged(nameof(Runes));
         }
 
-        if (propertyName is nameof(SortMode))
+        if (e.PropertyName is nameof(SortMode))
         {
             OnPropertyChanged(nameof(SortModeString));
         }
 
-        if (propertyName is nameof(FilterText) or nameof(CurrentSelection))
+        if (e.PropertyName is nameof(FilterText) or nameof(CurrentSelection))
         {
             OnPropertyChanged(nameof(CanClearFilters));
         }
 
-        if (propertyName is nameof(Runes))
+        if (e.PropertyName is nameof(Runes))
         {
             OnPropertyChanged(nameof(CanAddRune));
-            MainWindowViewModel.TranslationList.UpdateTranslations();
+            Vm.Translations.UpdateTranslations();
         }
-    }
-
-    private void SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value))
-        {
-            return;
-        }
-        field = value;
-        OnPropertyChanged(propertyName);
     }
 }

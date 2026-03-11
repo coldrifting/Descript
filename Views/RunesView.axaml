@@ -1,0 +1,108 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:Descript.Views.Controls"
+             xmlns:vm="using:Descript.ViewModels"
+             xmlns:models="clr-namespace:Descript.Models"
+             xmlns:utils="clr-namespace:Descript.Utils"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Descript.Views.RunesView"
+             x:DataType="vm:MainWindowViewModel">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <utils:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
+            <utils:ConfidenceLevelToBrushConverter x:Key="ConfidenceToBrushConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid RowDefinitions="256,32,16,*" RowSpacing="8">
+        
+        <controls:SegmentSelectControl Grid.Row="0" 
+                                       AccentColor="{DynamicResource SystemAccentColor}"
+                                       Selection="{Binding Runes.CurrentSelection, Mode=TwoWay}" />
+                
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button HorizontalAlignment="Center"
+                    Content="Add"
+                    Focusable="False"
+                    IsEnabled="{Binding Runes.CanAddRune}"
+                    Command="{Binding AddRuneCommand}" 
+                    CommandParameter="{Binding Runes.CurrentSelection}"/>
+            <Button HorizontalAlignment="Center"
+                    Focusable="False"
+                    Command="{Binding ToggleRuneListSortModeCommand}"
+                    Content="{Binding Runes.SortModeString}"/>
+        </StackPanel>
+                    
+        <TextBox Grid.Row="2" Watermark="Filter Runes by Translation" 
+                 Text="{Binding Runes.FilterText}">
+            <TextBox.InnerRightContent>
+                <Button Grid.Column="0"
+                        HorizontalAlignment="Center"
+                        Theme="{StaticResource DeleteButtonTheme}"
+                        Content="X"
+                        Focusable="False"
+                        IsEnabled="{Binding Runes.CanClearFilters}"
+                        Command="{Binding ClearRuneListFiltersCommand}" />
+            </TextBox.InnerRightContent>
+        </TextBox>
+        
+        <ScrollViewer Grid.Row="3" x:Name="ScrollView" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
+            <ItemsControl ItemsSource="{Binding Runes.Runes}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="models:Rune">
+                        <Button Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).PrimaryCommand, FallbackValue=''}"
+                                CommandParameter="{Binding Glyph}"
+                                Focusable="False"
+                                Width="54" 
+                                Height="78" 
+                                Theme="{StaticResource GridItem}">
+                            <Grid RowDefinitions="*,16,5">
+                                <Label Grid.Row="0"
+                                       Margin="0"
+                                       Padding="0"
+                                       Content="{Binding Glyph}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Top"
+                                       Foreground="{Binding Confidence, Converter={StaticResource ConfidenceToBrushConverter}}"
+                                       FontSize="40" />
+                                <Label Grid.Row="1"
+                                       Margin="0"
+                                       Padding="3 0"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"
+                                       Content="{Binding Translation}"
+                                       CornerRadius="3"
+                                       IsVisible="{Binding Translation, Converter={StaticResource StringNotEmptyConverter}}"
+                                       Foreground="Black"
+                                       Background="{Binding Confidence, Converter={StaticResource ConfidenceToBrushConverter}}"
+                                       FontSize="13" />
+                            </Grid>
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Edit" 
+                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenRuneEditDialogCommand, FallbackValue=''}" 
+                                              CommandParameter="{Binding Id}" />
+                                    <MenuItem Header="Copy" 
+                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CopyTextToClipboardCommand, FallbackValue=''}" 
+                                              CommandParameter="{Binding Glyph}" />
+                                    <MenuItem Header="Delete" 
+                                              Foreground="OrangeRed"
+                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).DeleteRuneCommand, FallbackValue=''}" 
+                                              CommandParameter="{Binding Id}" />
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Margin="2" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

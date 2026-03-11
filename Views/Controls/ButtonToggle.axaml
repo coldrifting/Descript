@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Descript.Views.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Descript.Views.Controls.ButtonToggle"
+             x:DataType="controls:ButtonToggle">
+
+    <UserControl.Template>
+        <ControlTemplate>
+            <Grid ColumnDefinitions="*,*"
+                  Margin="10 0 0 0"
+                  ColumnSpacing="0">
+                <Button Grid.Column="0"
+                        CornerRadius="4 0 0 4"
+                        Margin="0"
+                        Content="{Binding Item1Label, RelativeSource={RelativeSource TemplatedParent}}"
+                        Command="{Binding ToggleCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                        CommandParameter="{x:True}"
+                        Classes.accent="{Binding Value, RelativeSource={RelativeSource TemplatedParent}}"  />
+                <Button Grid.Column="1"
+                        CornerRadius="0 4 4 0"
+                        Margin="0"
+                        Content="{Binding Item2Label, RelativeSource={RelativeSource TemplatedParent}}"
+                        Command="{Binding ToggleCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                        CommandParameter="{x:False}"
+                        Classes.accent ="{Binding !Value, RelativeSource={RelativeSource TemplatedParent}}" />
+            </Grid>
+        </ControlTemplate>
+    </UserControl.Template>
+</UserControl>

@@ -1,16 +1,15 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Descript.App"
-             xmlns:utils="clr-namespace:Descript.Utils"
              RequestedThemeVariant="Dark">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
-    <Application.DataTemplates>
-        <utils:ViewLocator/>
-    </Application.DataTemplates>
   
     <Application.Styles>
-        <FluentTheme />
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Light" Accent="RoyalBlue" />
+                <ColorPaletteResources x:Key="Dark" Accent="Teal" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
         <Style Selector="TextBlock">
             <Setter Property="FontFamily" Value="Tunic Runes" />
         </Style>
@@ -26,6 +25,45 @@
         <FontFamily x:Key="TunicRunesFont">
             avares://Descript/Assets/Fonts#Tunic Runes
         </FontFamily>
+        
+        <ControlTheme x:Key="DeleteButtonTheme" TargetType="Button">
+            <Setter Property="Background" Value="Red"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="6 4"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="CornerRadius" Value="2"/>
+            <Style Selector="^:disabled">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="Transparent"/>
+            </Style>
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="IndianRed"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Style>
+            <Style Selector="^:pressed">
+                <Setter Property="Background" Value="DarkRed"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="RenderTransform" Value="scale(0.98)" /> 
+            </Style>
+        </ControlTheme>
+        
+        <ControlTheme x:Key="GridItem" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Padding" Value="3"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}"/>
+            </Style>
+            <Style Selector="^:pressed">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}"/>
+                <Setter Property="RenderTransform" Value="scale(0.98)" /> 
+            </Style>
+        </ControlTheme>
         
     </Application.Resources>
 </Application>

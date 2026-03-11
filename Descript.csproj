@@ -49,4 +49,24 @@
         <PackageReference Include="Xaml.Behaviors.Interactions.Custom" Version="11.3.9.5" />
         <PackageReference Include="Xaml.Behaviors.Interactivity" Version="11.3.9.5" />
     </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Views\Dialogs\AddSentenceDialog.axaml" />
+      <AdditionalFiles Include="Views\Dialogs\EditTranslationDialog.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\TranslationsView.axaml.cs">
+        <DependentUpon>SentenceView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\WordsView.axaml.cs">
+        <DependentUpon>WordView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\RunesView.axaml.cs">
+        <DependentUpon>RuneView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
 </Project>

@@ -1,41 +1,42 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using CommunityToolkit.Mvvm.Input;
 using Descript.Data;
 using Descript.Models;
 using Descript.Utils;
-using Descript.ViewModels.Core;
+using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    public RunesListViewModel RunesList { get; }
-    public TranslationListViewModel TranslationList { get; }
+    public RunesViewModel Runes { get; }
+    public WordsViewModel Words { get; }
+    public TranslationsViewModel Translations { get; }
     
     public MainWindowViewModel()
     {
-        RunesList = new RunesListViewModel(this);
-        TranslationList = new TranslationListViewModel(this);
+        Runes = new RunesViewModel(this);
+        Words = new WordsViewModel(this);
+        Translations = new TranslationsViewModel(this);
         LoadData();
     }
 
     private void LoadData()
     {
-        RunesList.Add(DataManagement.Load<Rune>());
-        TranslationList.AddWord(DataManagement.Load<RuneChain>());
-        TranslationList.Add(DataManagement.Load<Translation>());
+        Runes.Add(DataManagement.Load<Rune>());
+        Words.Add(DataManagement.Load<Word>());
+        Translations.Add(DataManagement.Load<Translation>());
     }
 
     public void SaveData()
     {
-        DataManagement.Save(RunesList.GetOrdered());
+        DataManagement.Save(Runes.GetOrdered());
     }
     
     // Edit Rune Modal Dialog
     private bool _shouldDialogBeSubmitted;
-    private int _runeEditId = -1;
+    private int _dialogId = -1;
     
     public List<ConfidenceLevel> ConfidenceLevels { get; } = [
         ConfidenceLevel.High,
@@ -45,25 +46,54 @@ public partial class MainWindowViewModel : ViewModelBase
     
     public bool IsDialogOpen { get; set => SetField(ref field, value); }
     public bool IsDialogFocused { get; set => SetField(ref field, value); }
-    public string RuneEditNewTranslation { get; set => SetField(ref field, value.ToLower()); } = string.Empty;
-    public ConfidenceLevel RuneEditNewConfidenceLevel { get; set => SetField(ref field, value); }
-    public bool RuneEditNewTranslationOkay { get; set => SetField(ref field, value); }
-    public CaseConversion TranslationCase => CaseConversion.Lowercase;
+    
+    public DialogType DialogType { get; set; } = DialogType.None;
+    public string DialogTitle { get; set => SetField(ref field, value); } = string.Empty;
+    
+    public string DialogEntryTranslation { get; set => SetField(ref field, value.ToLower()); } = string.Empty;
+    public ConfidenceLevel DialogEntryConfidence { get; set => SetField(ref field, value); }
+    public bool IsDialogEntryValid { get; set => SetField(ref field, value); }
+    
+    public CaseConversion TranslationCase { get; set => SetField(ref field, value); }
 
     [RelayCommand]
     private void OpenRuneEditDialog(int runeId)
     {
-        RunesList.TryGet(runeId, out Rune? rune);
+        Runes.TryGet(runeId, out Rune? rune);
         if (rune == null)
         {
             return;
         }
-        
-        _runeEditId = runeId;
+
+        DialogTitle = "Input Rune Translation Guess";
+        DialogType = DialogType.RuneEdit;
+        TranslationCase = CaseConversion.Lowercase;
+        _dialogId = runeId;
         _shouldDialogBeSubmitted = false;
         
-        RuneEditNewTranslation = rune.Translation;
-        RuneEditNewConfidenceLevel = rune.Confidence;
+        DialogEntryTranslation = rune.Translation;
+        DialogEntryConfidence = rune.Confidence;
+        IsDialogOpen = true;
+        IsDialogFocused = true;
+    }
+    
+    [RelayCommand]
+    private void OpenWordEditDialog(int wordId)
+    {
+        Words.TryGet(wordId, out Word? rune);
+        if (rune == null)
+        {
+            return;
+        }
+
+        DialogTitle = "Input Word Translation Guess";
+        DialogType = DialogType.WordEdit;
+        TranslationCase = CaseConversion.Titlecase;
+        _dialogId = wordId;
+        _shouldDialogBeSubmitted = false;
+        
+        DialogEntryTranslation = rune.Translation;
+        DialogEntryConfidence = rune.Confidence;
         IsDialogOpen = true;
         IsDialogFocused = true;
     }
@@ -80,8 +110,21 @@ public partial class MainWindowViewModel : ViewModelBase
         if (_shouldDialogBeSubmitted)
         {
             _shouldDialogBeSubmitted = false;
-            RunesList.Edit(_runeEditId,  RuneEditNewTranslation, RuneEditNewConfidenceLevel);
+            switch (DialogType)
+            {
+                case DialogType.RuneEdit:
+                    Runes.Edit(_dialogId, DialogEntryTranslation, DialogEntryConfidence);
+                    break;
+                case DialogType.WordEdit:
+                    Words.Edit(_dialogId, DialogEntryTranslation, DialogEntryConfidence);
+                    break;
+                case DialogType.None:
+                default:
+                    break;
+            }
         }
+        
+        DialogType = DialogType.None;
         IsDialogOpen = false;
     }
     
@@ -90,36 +133,57 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void ClearRuneListFilters()
     {
-        RunesList.ClearFilters();
+        Runes.ClearFilters();
     }
 
     [RelayCommand]
     private void ToggleRuneListSortMode()
     {
-        RunesList.ToggleSortMode();
+        Runes.ToggleSortMode();
     }
 
     [RelayCommand]
     private void AddRune(int runeId)
     {
-        RunesList.Add(runeId);
+        Runes.Add(runeId);
     }
     
     [RelayCommand]
     private void DeleteRune(int runeId)
     {
-        RunesList.Delete(runeId);
+        Runes.Delete(runeId);
     }
 
     [RelayCommand]
-    private static void CopyTextToClipboard(string text)
+    private void CopyTextToClipboard(string text)
     {
         ClipboardHelper.GetClipboard()?.SetTextAsync(text);
     }
 
-    private bool IsRuneEditOkay()
+    [RelayCommand]
+    private void Primary(string text)
     {
-        return RuneEditNewTranslation.Trim() != string.Empty || RuneEditNewConfidenceLevel == ConfidenceLevel.Low;
+        if (Translations.IsSentenceDialogOpen)
+        {
+            Translations.InsertIntoSentenceInput(text);
+        }
+        else
+        {
+            OpenRuneEditDialog(text[0] - Rune.CodePointStart);
+        }
+    }
+
+    private bool IsDialogValid()
+    {
+        return DialogEntryTranslation.Trim() != string.Empty || DialogEntryConfidence == ConfidenceLevel.Low;
+    }
+
+    public bool IsRuneListShown { get; set => SetField(ref field, value); } = true;
+    
+    [RelayCommand]
+    private void ShowRunesList(bool shouldShowRunesList)
+    {
+        IsRuneListShown = shouldShowRunesList;
     }
     
     // Keep everything synced
@@ -134,21 +198,10 @@ public partial class MainWindowViewModel : ViewModelBase
                 break;
             
             case nameof(IsDialogOpen) when IsDialogOpen:
-            case nameof(RuneEditNewTranslation) or nameof(RuneEditNewConfidenceLevel):
-                RuneEditNewTranslationOkay = IsRuneEditOkay();
+            case nameof(DialogEntryTranslation) or nameof(DialogEntryConfidence):
+                IsDialogEntryValid = IsDialogValid();
                 break;
         }
-    }
-    
-
-    private void SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value))
-        {
-            return;
-        }
-        field = value;
-        OnPropertyChanged(propertyName);
     }
 }
 

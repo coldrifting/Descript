@@ -19,7 +19,6 @@ public class SegmentSelectControl : Control
     
     public static readonly StyledProperty<int> SelectionProperty =
         AvaloniaProperty.Register<SegmentSelectControl, int>(nameof(Selection), defaultValue: 0);
-
     public int Selection
     {
         get => GetValue(SelectionProperty);
@@ -28,17 +27,15 @@ public class SegmentSelectControl : Control
     
     public static readonly StyledProperty<ISolidColorBrush> OutlineColorProperty =
         AvaloniaProperty.Register<SegmentSelectControl, ISolidColorBrush>(nameof(OutlineColor), defaultValue: Brushes.DimGray);
-
     public ISolidColorBrush OutlineColor
     {
         get => GetValue(OutlineColorProperty);
         set => SetValue(OutlineColorProperty, value);
     }
     
-    public static readonly StyledProperty<ISolidColorBrush> AccentColorProperty =
-        AvaloniaProperty.Register<SegmentSelectControl, ISolidColorBrush>(nameof(AccentColor), defaultValue: Brushes.RoyalBlue);
-
-    public ISolidColorBrush AccentColor
+    public static readonly StyledProperty<IBrush> AccentColorProperty =
+        AvaloniaProperty.Register<SegmentSelectControl, IBrush>(nameof(AccentColor), defaultValue: Brushes.RoyalBlue);
+    public IBrush AccentColor
     {
         get => GetValue(AccentColorProperty);
         set => SetValue(AccentColorProperty, value);
@@ -183,7 +180,7 @@ public class SegmentSelectControl : Control
         {
             context.DrawGeometry(Brushes.Transparent, null, clickZone);
         }
-        
+
         // Outline
         Pen outlinePenLine = new(OutlineColor.WithOpacity(0.5), LineThickness, lineCap: PenLineCap.Round);
         context.DrawGeometry(null, outlinePenLine, _outline);
@@ -216,17 +213,28 @@ public class SegmentSelectControl : Control
                 continue;
             }
             
+            SolidColorBrush brush = GetHighlightBrush(AccentColor);
             double thickness = i != (_segments.Length - 1) ? 12.0 : 8.0;
-
-            HsvColor hsv = AccentColor.Color.ToHsv();
-            HsvColor newHsv = new(hsv.A, hsv.H, hsv.S + 0.2, hsv.V - 0.05);
-            SolidColorBrush brush = new(newHsv.ToRgb());
+            
             Pen pen = new(brush, thickness, lineCap: PenLineCap.Round);
             
             context.DrawGeometry(null, pen, _segments[i]);
         }
             
         base.Render(context);
+    }
+
+    private static SolidColorBrush GetHighlightBrush(IBrush brush)
+    {
+        if (brush is not ISolidColorBrush solidColorBrush)
+        {
+            return new SolidColorBrush(new Color(255, 255, 0, 0));
+        }
+
+        HsvColor hsv = solidColorBrush.Color.ToHsv();
+        HsvColor newHsv = new(hsv.A, hsv.H, hsv.S + 0.5, hsv.V + 0.25);
+            
+        return new SolidColorBrush(newHsv.ToRgb());
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)

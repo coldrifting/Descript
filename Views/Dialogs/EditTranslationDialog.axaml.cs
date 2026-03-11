@@ -4,19 +4,18 @@ using Avalonia;
 using Avalonia.Controls;
 using Descript.Models;
 using Descript.Utils;
-using Descript.ViewModels;
 
-namespace Descript.Views.Controls;
+namespace Descript.Views.Dialogs;
 
-public partial class RenamePopupControl : UserControl
+public partial class EditTranslationDialog : UserControl
 {
-    public RenamePopupControl()
+    public EditTranslationDialog()
     {
         InitializeComponent();
     }
     
     public static readonly StyledProperty<string> TitleProperty =
-        AvaloniaProperty.Register<RenamePopupControl, string>(nameof(Title), defaultValue: "Title");
+        AvaloniaProperty.Register<EditTranslationDialog, string>(nameof(Title), defaultValue: "Title");
     public string Title
     {
         get => GetValue(TitleProperty);
@@ -24,7 +23,7 @@ public partial class RenamePopupControl : UserControl
     }
     
     public static readonly StyledProperty<CaseConversion> TranslationCaseProperty =
-        AvaloniaProperty.Register<RenamePopupControl, CaseConversion>(nameof(TranslationCase), defaultValue: CaseConversion.None);
+        AvaloniaProperty.Register<EditTranslationDialog, CaseConversion>(nameof(TranslationCase), defaultValue: CaseConversion.None);
     public CaseConversion TranslationCase
     {
         get => GetValue(TranslationCaseProperty);
@@ -32,7 +31,7 @@ public partial class RenamePopupControl : UserControl
     }
     
     public static readonly StyledProperty<string> TranslationProperty =
-        AvaloniaProperty.Register<RenamePopupControl, string>(nameof(Translation), defaultValue: "Translation");
+        AvaloniaProperty.Register<EditTranslationDialog, string>(nameof(Translation), defaultValue: "Translation");
     public string Translation
     {
         get => GetValue(TranslationProperty);
@@ -40,7 +39,7 @@ public partial class RenamePopupControl : UserControl
     }
     
     public static readonly StyledProperty<List<ConfidenceLevel>> ConfidenceLevelsProperty =
-        AvaloniaProperty.Register<RenamePopupControl, List<ConfidenceLevel>>(nameof(ConfidenceLevels), defaultValue:
+        AvaloniaProperty.Register<EditTranslationDialog, List<ConfidenceLevel>>(nameof(ConfidenceLevels), defaultValue:
         [
             ConfidenceLevel.Low,
             ConfidenceLevel.Medium,
@@ -53,7 +52,7 @@ public partial class RenamePopupControl : UserControl
     }
     
     public static readonly StyledProperty<ConfidenceLevel> ConfidenceProperty =
-        AvaloniaProperty.Register<RenamePopupControl, ConfidenceLevel>(nameof(Confidence), defaultValue: ConfidenceLevel.Low);
+        AvaloniaProperty.Register<EditTranslationDialog, ConfidenceLevel>(nameof(Confidence), defaultValue: ConfidenceLevel.Low);
     public ConfidenceLevel Confidence
     {
         get => GetValue(ConfidenceProperty);
@@ -61,7 +60,7 @@ public partial class RenamePopupControl : UserControl
     }
     
     public static readonly StyledProperty<bool> IsValidProperty =
-        AvaloniaProperty.Register<RenamePopupControl, bool>(nameof(IsValid));
+        AvaloniaProperty.Register<EditTranslationDialog, bool>(nameof(IsValid));
     public bool IsValid
     {
         get => GetValue(IsValidProperty);
@@ -69,7 +68,7 @@ public partial class RenamePopupControl : UserControl
     }
     
     public static readonly StyledProperty<ICommand> SubmitCommandProperty =
-        AvaloniaProperty.Register<RenamePopupControl, ICommand>(nameof(SubmitCommand));
+        AvaloniaProperty.Register<EditTranslationDialog, ICommand>(nameof(SubmitCommand));
     public ICommand SubmitCommand
     {
         get => GetValue(SubmitCommandProperty);
