@@ -3,66 +3,50 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Descript.Data;
+using Descript.Interfaces;
 using Descript.Models;
 using Descript.Utils;
 using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels;
 
-public class WordsViewModel(MainWindowViewModel mainWindowViewModel) : ViewModelBase
+public class WordsViewModel(MainWindowViewModel mainWindowViewModel) : ViewModelBase, ILoadSave
 {
     private MainWindowViewModel Vm { get; } = mainWindowViewModel;
 
-    private readonly Dictionary<int, Word> _allWords = new();
+    private readonly Dictionary<string, RuneChain> _allWords = new();
 
-    public List<WordFlat> Words => _allWords.Values.Select(w => new WordFlat(w.Id)
-        {
-            Confidence = w.Confidence,
-            Translation = w.Translation,
-            Glyphs = GetAsString(w.Id)
-        })
-        .Where(w => w.Translation.ContainsTrimmed(FilterText))
-        .OrderBy(w => w.Translation == "" ? "Ω" : w.Translation)
-        .ThenBy(w => w.Confidence)
+    public List<RuneChain> Words => _allWords.Values
+        .Where(word => word.Translation.ContainsTrimmed(FilterText))
+        .OrderBy(word => word.Translation == "" ? "Ω" : word.Translation)
+        .ThenBy(word => word.Confidence)
         .ToList();
 
+    private IEnumerable<RuneChain> WordsOrdered => _allWords.Values.OrderBy(word => word.Glyphs);
+
     public string FilterText { get; set => SetField(ref field, value); } = string.Empty;
-
-    public string GetAsString(int wordId)
+    
+    public void Load()
     {
-        return _allWords.TryGetValue(wordId, out Word? word) 
-            ? ToString(word.RuneIds)
-            : string.Empty;
+        Add(DataManagement.Load<RuneChain>());
     }
 
-    public bool TryGet(int wordId, [MaybeNullWhen(false)] out Word word)
+    public void Save()
     {
-        return _allWords.TryGetValue(wordId, out word);
+        DataManagement.Save(WordsOrdered);
     }
 
-    public bool TryGet(string wordAsString, [MaybeNullWhen(false)] out Word word)
+    public bool TryGet(string word, [MaybeNullWhen(false)] out RuneChain runeChain)
     {
-        foreach (Word candidateWord in _allWords.Values
-                     .Where(candidateWord => string.Equals(wordAsString, GetAsString(candidateWord.Id), StringComparison.Ordinal)))
-        {
-            word = candidateWord;
-            return true;
-        }
-
-        word = null;
-        return false;
+        runeChain = _allWords.Values.FirstOrDefault(runeChain => runeChain.Equals(word));
+        return runeChain is not null;
     }
     
-    public Word this[int wordId]
-    {
-        get => _allWords[wordId];
-        set => _allWords[wordId] = value;
-    }
-    
-    public void Add(IEnumerable<Word> words)
+    public void Add(IEnumerable<RuneChain> words)
     {
         bool updated = false;
-        foreach (Word word in words)
+        foreach (RuneChain word in words)
         {
             if (Add(word, false))
             {
@@ -76,14 +60,9 @@ public class WordsViewModel(MainWindowViewModel mainWindowViewModel) : ViewModel
         }
     }
     
-    public bool Add(Word word, bool update = true)
+    public bool Add(RuneChain runeChain, bool update = true)
     {
-        if (word.Id == -1)
-        {
-            word.Id = GetNextWordIndex();
-        }
-        
-        if (_allWords.TryAdd(word.Id, word))
+        if (_allWords.TryAdd(runeChain.Glyphs, runeChain))
         {
             if (update)
             {
@@ -93,62 +72,55 @@ public class WordsViewModel(MainWindowViewModel mainWindowViewModel) : ViewModel
             return true;
         }
 
-        Console.WriteLine($"Word with id {word.Id} already exists");
+        Console.WriteLine($"Word {runeChain.Glyphs} already exists");
         return false;
     }
 
     public bool Add(string rawWord)
     {
-        if (TryGet(rawWord, out Word? _))
+        if (TryGet(rawWord, out RuneChain? _))
         {
             return false;
         }
         
-        return Add(new Word(GetNextWordIndex())
-        {
-            RuneIds = ToRuneIds(rawWord).ToList()
-        });
+        return Add(RuneChain.FromString(rawWord));
     }
 
-    public void Edit(int wordId, string newTranslation, ConfidenceLevel newConfidence)
+    public void Edit(string wordRaw, string newTranslation, ConfidenceLevel newConfidence)
     {
-        if (_allWords.TryGetValue(wordId, out Word? word))
+        if (_allWords.TryGetValue(wordRaw, out RuneChain? word))
         {
             string oldTranslation = word.Translation;
             ConfidenceLevel oldConfidence = word.Confidence;
-            
-            word.Translation = newTranslation;
-            word.Confidence = newConfidence;
 
             if (oldTranslation != newTranslation || oldConfidence != newConfidence)
             {
+                _allWords[word.Glyphs] = word with { Translation = newTranslation, Confidence = newConfidence };
+
                 OnPropertyChanged(nameof(Words));
             }
         }
         else
         {
-            Console.WriteLine($"Word with id {wordId} does not exist");
+            Console.WriteLine($"Word {word?.Glyphs ?? "(null)"} does not exist");
+        }
+    }
+
+    public void Remove(string rawWord)
+    {
+        if (TryGet(rawWord, out RuneChain? chain))
+        {
+            if (chain.Translation.Trim() == "")
+            {
+                _allWords.Remove(rawWord);
+                OnPropertyChanged(nameof(Words));
+            }
         }
     }
 
     public static bool IsValidWord(string str)
     {
         return str.ToCharArray().All(c => Rune.CodePointStart <= c && c <= Rune.CodePointStart + 4096);
-    }
-    
-    private static int[] ToRuneIds(string str)
-    {
-        return str.ToCharArray().Select(c => c - Rune.CodePointStart).ToArray();
-    }
-    
-    private static string ToString(IEnumerable<int> runeIds)
-    {
-        return runeIds.Aggregate("", (s, i) => s + (char)(Rune.CodePointStart + i));
-    }
-
-    private int GetNextWordIndex()
-    {
-        return _allWords.Keys.OrderBy(k => k).LastOrDefault(-1) + 1;
     }
     
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -162,7 +134,7 @@ public class WordsViewModel(MainWindowViewModel mainWindowViewModel) : ViewModel
                 break;
             
             case nameof(Words):
-                Vm.Translations.UpdateTranslations();
+                //Vm.Translations.UpdateTranslations();
                 break;
         }
     }

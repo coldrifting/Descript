@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using System.Text.Unicode;
 using Descript.Models;
 
 namespace Descript.Data;
@@ -26,14 +29,15 @@ public static class DataManagement
 
     private static string FolderPath { get; set; }
 
-    private static JsonSerializerOptions SerializerOptions { get; } = new()
+    private static JsonSerializerOptions SerializerOptions => new()
     {
-        WriteIndented = true,
+        WriteIndented = false,
         PropertyNameCaseInsensitive = true,
         Converters =
         {
             new JsonStringEnumConverter<ConfidenceLevel>()
-        }
+        },
+        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
     };
 
     public static T[] Load<T>()
@@ -69,10 +73,14 @@ public static class DataManagement
         string fileName = typeof(T).Name.Pluralize() + ".json";
         string filePath = Path.Combine(FolderPath, $"{fileName}");
         
-        string json = JsonSerializer.Serialize(items, SerializerOptions);
+        string json = JsonSerializer.Serialize(items, SerializerOptions)
+            .Replace("[{", "[\n\t{")
+            .Replace("}]", "}\n]")
+            .Replace("},{", "},\n\t{");
         try
         {
-            File.WriteAllText(filePath, json);
+            Console.WriteLine($"Saving: {fileName}");
+            File.WriteAllText(filePath, Regex.Unescape(json));
         }
         catch (Exception ex)
         {

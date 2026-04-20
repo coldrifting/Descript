@@ -24,13 +24,16 @@
                     SelectionEnd="{Binding SelectionEnd, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                     VerticalAlignment="Center"
                     Margin="0 10"/>
-                <Button
-                    Classes="accent"
-                    Content="Submit"
-                    IsEnabled="{Binding IsValid, RelativeSource={RelativeSource TemplatedParent}}"
-                    Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                    HorizontalAlignment="Right"
-                    Margin="2" />
+                <Grid ColumnDefinitions="*,*">
+                    <Button Grid.Column="0" Content="Cancel" IsCancel="True" Command="{TemplateBinding CancelDialogCommand}" />
+                    <Button Grid.Column="1"
+                            Classes="accent"
+                            Content="Submit"
+                            IsEnabled="{Binding IsValid, RelativeSource={RelativeSource TemplatedParent}}"
+                            Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                            HorizontalAlignment="Right"
+                            Margin="2" />
+                </Grid>
             </StackPanel>
         </ControlTemplate>
     </UserControl.Template>

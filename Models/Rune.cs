@@ -1,32 +1,48 @@
 using System.Text.Json.Serialization;
+using System.Text.Unicode;
 
 namespace Descript.Models;
 
-[method: JsonConstructor]
-public class Rune(int id, string translation = "", ConfidenceLevel confidence = ConfidenceLevel.Low)
+public record Rune
 {
-    [JsonIgnore]
-    public const int CodePointStart = 0xE000;
-
-    public int Id { get; } = id;
-    public string Translation { get; set; } = translation.ToLower();
-    public ConfidenceLevel Confidence { get; set; } = confidence;
-
-    [JsonIgnore]
-    public string Glyph { get; } = ((char)(CodePointStart + id)).ToString();
+    public required char Glyph { get; init; }
+    
+    public string Translation { get; init => field = value.ToLower(); } = string.Empty;
+    public ConfidenceLevel Confidence { get; init; } = ConfidenceLevel.Low;
 
     public override int GetHashCode()
     {
-        return Id.GetHashCode();
+        return Glyph.GetHashCode();
     }
 
-    public override bool Equals(object? obj)
+    public virtual bool Equals(Rune? other)
     {
-        return obj is Rune rune && rune.Id == Id;
+        return other?.Glyph == Glyph;
+    }
+
+    public bool Equals(char? other)
+    {
+        return other?.Equals(Glyph) ?? false;
     }
 
     public override string ToString()
     {
-        return $"Rune {Id}: ({Glyph}) - {Translation} : {Confidence}";
+        return $"Rune: ({Glyph}) - {Translation} : {Confidence}";
     }
+
+    [JsonIgnore]
+    public const int CodePointStart = 0xE000;
+
+    [JsonIgnore]
+    public int Id => Glyph - CodePointStart;
+
+    public static Rune FromId(int id)
+    {
+        return new Rune
+        {
+            Glyph = (char)(CodePointStart + id)
+        };
+    }
+
+    public static UnicodeRange UnicodeRange => new(CodePointStart, 4096);
 }

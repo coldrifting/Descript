@@ -6,10 +6,15 @@
              xmlns:models="clr-namespace:Descript.Models"
              xmlns:vm="clr-namespace:Descript.ViewModels"
              xmlns:dialogs="clr-namespace:Descript.Views.Dialogs"
+             xmlns:converters="clr-namespace:Avalonia.Controls.Converters;assembly=Avalonia.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Descript.Views.TranslationsView"
              x:DataType="vm:MainWindowViewModel">
 
+    <UserControl.Resources>
+        <converters:EnumToBoolConverter x:Key="EnumToBoolConverter" />
+    </UserControl.Resources>
+    
     <UserControl.Styles>
         <Style Selector="Button">
             <Setter Property="Background" Value="Transparent" />
@@ -71,7 +76,8 @@
                                         SelectionStart="{Binding Translations.SelectionStart, Mode=TwoWay}"
                                         SelectionEnd="{Binding Translations.SelectionEnd, Mode=TwoWay}"
                                         IsValid="{Binding Translations.IsSentenceValid}"
-                                        SubmitCommand="{Binding Translations.SubmitSentenceCommand}" />
+                                        SubmitCommand="{Binding Translations.SubmitSentenceCommand}"
+                                        CancelDialogCommand="{Binding Translations.CancelDialogCommand}"/>
         </dh:DialogHost.DialogContent>
 
         <Grid RowDefinitions="40,*">
@@ -82,80 +88,20 @@
                         Command="{Binding Translations.OpenAddSentenceDialogCommand}" />
             </StackPanel>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
-                <ItemsControl ItemsSource="{Binding Translations.Blocks}" Classes="Translations">
+                <ItemsControl ItemsSource="{Binding Translations.Translations}" Classes="Translations">
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="models:TranslationBlocks">
-                            <ItemsControl ItemsSource="{Binding Blocks}">
+                        <DataTemplate DataType="models:RuneSentenceExtended">
+                            <ItemsControl ItemsSource="{Binding RuneChains}">
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="models:TranslationBlock">
-                                        <Grid RowDefinitions="*,12">
-                                            <ItemsControl Grid.Row="0" IsVisible="{Binding HasNoTranslation}"
-                                                          ItemsSource="{Binding Symbols}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Button Padding="0"
-                                                                Margin="0"
-                                                                Classes="rune token"
-                                                                Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenRuneEditDialogCommand, FallbackValue=''}"
-                                                                CommandParameter="{Binding Id}">
-                                                            <Grid RowDefinitions="20,42">
-                                                                <TextBlock Grid.Row="0"
-                                                                           Text="{Binding Translation}"
-                                                                           FontSize="12"
-                                                                           TextAlignment="Center"
-                                                                           VerticalAlignment="Center"
-                                                                           Classes.high="{Binding IsHigh}"
-                                                                           Classes.medium="{Binding IsMedium}"
-                                                                           Classes.low="{Binding IsLow}" />
-                                                                <TextBlock Grid.Row="1" Text="{Binding Raw}"
-                                                                           FontSize="28" TextAlignment="Center"
-                                                                           VerticalAlignment="Center"
-                                                                           Classes.high="{Binding IsHigh}"
-                                                                           Classes.medium="{Binding IsMedium}"
-                                                                           Classes.low="{Binding IsLow}" />
-                                                            </Grid>
-                                                        </Button>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <StackPanel Margin="0" Orientation="Horizontal"
-                                                                    VerticalAlignment="Center"
-                                                                    HorizontalAlignment="Center" />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                            </ItemsControl>
-                                            <Button Grid.Row="1"
-                                                    IsVisible="{Binding HasNoTranslation}"
-                                                    Background="CornflowerBlue"
-                                                    Margin="0 0 0 4"
-                                                    HorizontalAlignment="Stretch"
-                                                    VerticalAlignment="Stretch"
-                                                    Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenWordEditDialogCommand, FallbackValue=''}"
-                                                    CommandParameter="{Binding Id}" />
-                                            <Button Grid.Row="0"
-                                                    Padding="0"
-                                                    Margin="0"
-                                                    Classes="word token"
-                                                    Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenWordEditDialogCommand, FallbackValue=''}"
-                                                    CommandParameter="{Binding Id}">
-                                                <Grid RowDefinitions="20,42" IsVisible="{Binding HasTranslation}">
-                                                    <TextBlock Grid.Row="0" Text="{Binding Translation}"
-                                                               FontSize="14" TextAlignment="Center"
-                                                               VerticalAlignment="Center"
-                                                               Classes.confirmed="{Binding IsConfirmed}"
-                                                               Classes.high="{Binding IsHigh}"
-                                                               Classes.medium="{Binding IsMedium}"
-                                                               Classes.low="{Binding IsLow}" />
-                                                    <TextBlock Grid.Row="1" Text="{Binding Raw}" FontSize="28"
-                                                               TextAlignment="Center" VerticalAlignment="Center"
-                                                               Classes.confirmed="{Binding IsConfirmed}"
-                                                               Classes.high="{Binding IsHigh}"
-                                                               Classes.medium="{Binding IsMedium}"
-                                                               Classes.low="{Binding IsLow}" />
-                                                </Grid>
-                                            </Button>
-                                        </Grid>
+                                    <DataTemplate DataType="models:RuneChain">
+                                        <Button>
+                                            <!-- TODO -->
+                                            <TextBlock Text="{Binding Glyphs}" 
+                                                       Classes.confirmed="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Confirmed}}" 
+                                                       Classes.low="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Low}}" 
+                                                       Classes.medium="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Medium}}" 
+                                                       Classes.high="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.High}}" />
+                                        </Button>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                                 <ItemsControl.ItemsPanel>
@@ -166,11 +112,11 @@
                                                 <ContextMenu>
                                                     <MenuItem Header="Edit"
                                                               Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Translations.OpenEditSentenceDialogCommand, FallbackValue=''}"
-                                                              CommandParameter="{Binding Id}" />
+                                                              CommandParameter="{Binding Sentence}" />
                                                     <MenuItem Header="Delete"
                                                               Foreground="OrangeRed"
                                                               Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).Translations.DeleteSentenceCommand, FallbackValue=''}"
-                                                              CommandParameter="{Binding Id}" />
+                                                              CommandParameter="{Binding Sentence}" />
                                                 </ContextMenu>
                                             </StackPanel.ContextMenu>
                                         </StackPanel>

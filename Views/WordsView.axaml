@@ -18,7 +18,7 @@
     
     <Grid RowDefinitions="20,*" RowSpacing="8">
         <TextBox Grid.Row="0" 
-                 Watermark="Filter Words by Translation" 
+                 PlaceholderText="Filter Words by Translation" 
                  Text="{Binding Words.FilterText}"
                  Margin="0 8">
             <TextBox.InnerRightContent>
@@ -35,11 +35,11 @@
         <ScrollViewer Grid.Row="1" x:Name="ScrollView" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
             <ItemsControl ItemsSource="{Binding Words.Words}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="models:WordFlat">
+                    <DataTemplate DataType="models:RuneChain">
                         <Button HorizontalAlignment="Stretch" 
                                 Theme="{StaticResource GridItem}"
                                 Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenWordEditDialogCommand, FallbackValue=''}"
-                                CommandParameter="{Binding Id}" >
+                                CommandParameter="{Binding Glyphs}" >
                             <StackPanel Orientation="Horizontal">
                                 <Label Content="{Binding Glyphs}"
                                        FontSize="16"

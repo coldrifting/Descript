@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
+using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.Input;
-using Descript.Data;
 using Descript.Models;
 using Descript.Utils;
 using Descript.ViewModels.Base;
@@ -24,19 +26,22 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void LoadData()
     {
-        Runes.Add(DataManagement.Load<Rune>());
-        Words.Add(DataManagement.Load<Word>());
-        Translations.Add(DataManagement.Load<Translation>());
+        Runes.Load();
+        Words.Load();
+        Translations.Load();
     }
 
     public void SaveData()
     {
-        DataManagement.Save(Runes.GetOrdered());
+        Runes.Save();
+        Words.Save();
+        Translations.Save();
     }
     
     // Edit Rune Modal Dialog
     private bool _shouldDialogBeSubmitted;
-    private int _dialogId = -1;
+    private char _dialogRuneEdit = (char)0;
+    private string _dialogWordEdit = "";
     
     public List<ConfidenceLevel> ConfidenceLevels { get; } = [
         ConfidenceLevel.High,
@@ -57,9 +62,9 @@ public partial class MainWindowViewModel : ViewModelBase
     public CaseConversion TranslationCase { get; set => SetField(ref field, value); }
 
     [RelayCommand]
-    private void OpenRuneEditDialog(int runeId)
+    private void OpenRuneEditDialog(char glyph)
     {
-        Runes.TryGet(runeId, out Rune? rune);
+        Runes.TryGet(glyph, out Rune? rune);
         if (rune == null)
         {
             return;
@@ -68,7 +73,7 @@ public partial class MainWindowViewModel : ViewModelBase
         DialogTitle = "Input Rune Translation Guess";
         DialogType = DialogType.RuneEdit;
         TranslationCase = CaseConversion.Lowercase;
-        _dialogId = runeId;
+        _dialogRuneEdit = glyph;
         _shouldDialogBeSubmitted = false;
         
         DialogEntryTranslation = rune.Translation;
@@ -78,9 +83,9 @@ public partial class MainWindowViewModel : ViewModelBase
     }
     
     [RelayCommand]
-    private void OpenWordEditDialog(int wordId)
+    private void OpenWordEditDialog(string wordRaw)
     {
-        Words.TryGet(wordId, out Word? rune);
+        Words.TryGet(wordRaw, out RuneChain? rune);
         if (rune == null)
         {
             return;
@@ -89,7 +94,7 @@ public partial class MainWindowViewModel : ViewModelBase
         DialogTitle = "Input Word Translation Guess";
         DialogType = DialogType.WordEdit;
         TranslationCase = CaseConversion.Titlecase;
-        _dialogId = wordId;
+        _dialogWordEdit = wordRaw;
         _shouldDialogBeSubmitted = false;
         
         DialogEntryTranslation = rune.Translation;
@@ -104,7 +109,14 @@ public partial class MainWindowViewModel : ViewModelBase
         _shouldDialogBeSubmitted = true;
         IsDialogOpen = false;
     }
-    
+
+    [RelayCommand]
+    private void CancelDialog()
+    {
+        DialogType = DialogType.None;
+        IsDialogOpen = false;
+    }
+
     private void CloseDialog()
     {
         if (_shouldDialogBeSubmitted)
@@ -113,10 +125,10 @@ public partial class MainWindowViewModel : ViewModelBase
             switch (DialogType)
             {
                 case DialogType.RuneEdit:
-                    Runes.Edit(_dialogId, DialogEntryTranslation, DialogEntryConfidence);
+                    Runes.Edit(_dialogRuneEdit, DialogEntryTranslation, DialogEntryConfidence);
                     break;
                 case DialogType.WordEdit:
-                    Words.Edit(_dialogId, DialogEntryTranslation, DialogEntryConfidence);
+                    Words.Edit(_dialogWordEdit, DialogEntryTranslation, DialogEntryConfidence);
                     break;
                 case DialogType.None:
                 default:
@@ -143,33 +155,37 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void AddRune(int runeId)
+    private void AddRune(char glyph)
     {
-        Runes.Add(runeId);
+        Runes.Add(glyph);
     }
     
     [RelayCommand]
-    private void DeleteRune(int runeId)
+    private void DeleteRune(char glyph)
     {
-        Runes.Delete(runeId);
+        Runes.Delete(glyph);
     }
 
     [RelayCommand]
-    private void CopyTextToClipboard(string text)
+    private void CopyTextToClipboard(char glyph)
     {
-        ClipboardHelper.GetClipboard()?.SetTextAsync(text);
+        IClipboard? clipboard = ClipboardHelper.GetClipboard();
+        if (clipboard is not null)
+        {
+             clipboard.SetTextAsync(glyph.ToString());
+        }
     }
 
     [RelayCommand]
-    private void Primary(string text)
+    private void Primary(char glyph)
     {
         if (Translations.IsSentenceDialogOpen)
         {
-            Translations.InsertIntoSentenceInput(text);
+            Translations.InsertIntoSentenceInput(glyph.ToString());
         }
         else
         {
-            OpenRuneEditDialog(text[0] - Rune.CodePointStart);
+            OpenRuneEditDialog(glyph);
         }
     }
 

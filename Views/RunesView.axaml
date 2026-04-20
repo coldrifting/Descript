@@ -36,7 +36,7 @@
                     Content="{Binding Runes.SortModeString}"/>
         </StackPanel>
                     
-        <TextBox Grid.Row="2" Watermark="Filter Runes by Translation" 
+        <TextBox Grid.Row="2" PlaceholderText="Filter Runes by Translation" 
                  Text="{Binding Runes.FilterText}">
             <TextBox.InnerRightContent>
                 <Button Grid.Column="0"

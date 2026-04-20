@@ -1,46 +1,83 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using CommunityToolkit.Mvvm.Input;
+using Descript.Data;
+using Descript.Interfaces;
 using Descript.Models;
 using Descript.ViewModels.Base;
-using Rune = Descript.Models.Rune;
 
 namespace Descript.ViewModels;
 
-public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewModel) : ViewModelBase
+public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewModel) : ViewModelBase, ILoadSave
 {
     private MainWindowViewModel Vm { get; } = mainWindowViewModel;
 
-    private readonly Dictionary<int, Translation> _allTranslations = new();
+    private readonly Dictionary<string, RuneSentence> _allTranslations = new();
 
-    private List<Translation> Translations => _allTranslations.Values.ToList();
-    public List<TranslationBlocks> Blocks { get; private set => SetField(ref field, value); } = [];
+    public IEnumerable<RuneSentenceExtended> Translations => _allTranslations.Values.Select(sentence => 
+        new RuneSentenceExtended
+        {
+            Sentence = sentence.Sentence,
+            Category = sentence.Category,
+            SubCategory = sentence.SubCategory,
+            Context = sentence.Context,
+            RuneChains = GetRuneChains(sentence.Sentence)
+        });
+    private IEnumerable<RuneSentence> TranslationsOrdered => _allTranslations.Values.OrderBy(s => s.Sentence);
     
     // Add Sentence Dialog
-    private int _sentenceId = -1;
+    private string _sentenceId = "";
     public bool IsSentenceDialogOpen { get; set => SetField(ref field, value); }
     public string SentenceEntry { get; set => SetField(ref field, value); } = "";
     public bool IsSentenceValid { get; set => SetField(ref field, value); }
     public int SelectionStart { get; set => SetField(ref field, value); }
     public int SelectionEnd { get; set => SetField(ref field, value); }
 
+    public void Load()
+    {
+        Add(DataManagement.Load<RuneSentence>());
+    }
+
+    private ImmutableList<RuneChain> GetRuneChains(string sentence)
+    {
+        return sentence
+            .Split(' ')
+            .Select(s => Vm.Words.Words.FirstOrDefault(w => s.Equals(w.Glyphs), new RuneChain
+            {
+                Glyphs = s, 
+                Confidence = ConfidenceLevel.Confirmed
+            }))
+            .ToImmutableList();
+    }
+
+    public void Save()
+    {
+        DataManagement.Save(TranslationsOrdered);
+    }
+
     [RelayCommand]
     private void OpenAddSentenceDialog()
     {
-        _sentenceId = -1;
+        _sentenceId = "";
         SentenceEntry = "";
         IsSentenceDialogOpen = true;
     }
     
     [RelayCommand]
-    private void OpenEditSentenceDialog(int id)
+    private void OpenEditSentenceDialog(string sentence)
     {
-        _sentenceId = id;
-        SentenceEntry = GetSentence(id);
+        _sentenceId = sentence;
+        SentenceEntry = sentence;
         IsSentenceDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void CancelDialog()
+    {
+        IsSentenceDialogOpen = false;
     }
 
     public void InsertIntoSentenceInput(string input)
@@ -62,94 +99,48 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
         }
     }
 
-    private string GetSentence(int id)
-    {
-        StringBuilder sb = new();
-        if (_allTranslations.TryGetValue(id, out Translation? translation))
-        {
-            foreach (int wordId in translation.WordIds)
-            {
-                if (wordId < 0)
-                {
-                    sb.Append(translation.PlainWords[wordId * -1 - 1]);
-                }
-                else
-                {
-                    // Build rune chain
-                    if (Vm.Words.TryGet(wordId, out Word? word))
-                    {
-                        foreach (int valueRuneId in word.RuneIds)
-                        {
-                            sb.Append((char)(valueRuneId + Rune.CodePointStart));
-                        }
-                    }
-                }
-
-                sb.Append(' ');
-            }
-        }
-
-        if (sb.Length > 0)
-        {
-            sb.Length--;
-        }
-        
-        return sb.ToString();
-    }
-
     [RelayCommand]
     private void SubmitSentence()
     {
         IsSentenceDialogOpen = false;
         
-        Translation t = ConvertFromSentence(SentenceEntry.Trim());
+        RuneSentence t = ConvertFromSentence(SentenceEntry.Trim());
 
-        if (_sentenceId == -1)
+        _allTranslations.Add(t.Sentence, t);
+        
+        // Remove old sentence if editing
+        if (_sentenceId != t.Sentence)
         {
-            _allTranslations.Add(t.Id, t);
-        }
-        else
-        {
-            _allTranslations[_sentenceId] = t;
+            _allTranslations.Remove(_sentenceId);
+            foreach (string se in _sentenceId.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                if (!t.Sentence.Contains(se))
+                {
+                    Vm.Words.Remove(se);
+                }
+            }
         }
         
         OnPropertyChanged(nameof(Translations));
     }
     
-    private Translation ConvertFromSentence(string sentence)
+    private RuneSentence ConvertFromSentence(string sentence)
     {
-        List<int> indices = [];
-        List<string> plainWordStrings = [];
-        
-        int plainWordIndex = 0;
         foreach (string str in sentence.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             if (WordsViewModel.IsValidWord(str))
             {
                 Vm.Words.Add(str);
-                
-                if (Vm.Words.TryGet(str, out Word? word))
-                {
-                    indices.Add(word.Id);
-                }
-            }
-            else
-            {
-                plainWordIndex--;
-                plainWordStrings.Add(str);
-                indices.Add(plainWordIndex);
             }
 
         }
 
-        return _sentenceId != -1 
-            ? new Translation(_sentenceId, indices, plainWordStrings) 
-            : new Translation(GetNextTranslationIndex(), indices, plainWordStrings);
+        return RuneSentence.FromString(sentence);
     }
     
-    public bool Add(Translation translation, bool update = true)
+    public bool Add(RuneSentence runeSentence, bool update = true)
     {
-        if (_allTranslations.TryAdd(translation.Id, translation))
+        if (_allTranslations.TryAdd(runeSentence.Sentence, runeSentence))
         {
             if (update)
             {
@@ -159,14 +150,14 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
             return true;
         }
 
-        Console.WriteLine($"Translation with id {translation.Id} already exists");
+        Console.WriteLine("Translation already exists");
         return false;
     }
 
-    public void Add(IEnumerable<Translation> translations)
+    public void Add(IEnumerable<RuneSentence> translations)
     {
         bool updated = false;
-        foreach (Translation translation in translations)
+        foreach (RuneSentence translation in translations)
         {
             if (Add(translation, false))
             {
@@ -181,82 +172,28 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
     }
 
     [RelayCommand]
-    private void DeleteSentence(int translationId)
+    private void DeleteSentence(string sentence)
     {
-        _allTranslations.Remove(translationId);
-        OnPropertyChanged(nameof(Translations));
-    }
-    
-    public void UpdateTranslations()
-    {
-        List<TranslationBlocks> allBlocks = [];
-        foreach (Translation translation in Translations)
+        // Remove words with no added info
+        foreach (string se in sentence.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            TranslationBlocks blocks = new(translation.Id);
-            foreach (int translationWordId in translation.WordIds)
-            {
-                // Raw english words
-                if (translationWordId < 0)
-                {
-                    string plainText = translation.PlainWords[(translationWordId * -1) - 1];
-                    blocks.Blocks.Add(new TranslationBlock(-1, ConfidenceLevel.Confirmed, plainText, plainText, [
-                        new TranslationBlockItem(-1, ConfidenceLevel.Low, plainText, plainText)
-                    ]));
-                }
-                else
-                {
-                    string rawText = "";
-                    List<TranslationBlockItem> symbols = [];
-                    
-                    foreach (int runeId in Vm.Words[translationWordId].RuneIds)
-                    {
-                        rawText += ((char)(runeId + Rune.CodePointStart)).ToString();
-
-                        symbols.Add(Vm.Runes.TryGet(runeId, out Rune? rune)
-                            ? new TranslationBlockItem(rune.Id, rune.Confidence, rune.Glyph, rune.Translation == "" ? "?" : rune.Translation)
-                            : new TranslationBlockItem(-1, ConfidenceLevel.Low, "", ""));
-                    }
-                    
-                    var translatedText = Vm.Words[translationWordId].Translation;
-                    if (translatedText == "")
-                    {
-                        translatedText = new string('?', Vm.Words[translationWordId].RuneIds.Count);
-                    }
-                    
-                    blocks.Blocks.Add(new TranslationBlock(translationWordId, Vm.Words[translationWordId].Confidence ,rawText, translatedText, symbols));
-                }
-            }
-            allBlocks.Add(blocks);
+            Vm.Words.Remove(se);
         }
-        Blocks = allBlocks;
+        
+        _allTranslations.Remove(sentence);
+        OnPropertyChanged(nameof(Translations));
     }
 
     private bool IsSentenceOkay()
     {
-        foreach (Translation translation in Translations)
-        {
-            if (GetSentence(translation.Id) == SentenceEntry.Trim())
-            {
-                return false;
-            }
-        }
-        
-        return SentenceEntry.Trim().Length != 0;
-    }
-
-    private int GetNextTranslationIndex()
-    {
-        return _allTranslations.Keys.OrderBy(k => k).LastOrDefault(-1) + 1;
+        return !Translations
+            .Select(runeSentence =>  runeSentence.Sentence)
+            .Contains(SentenceEntry.Trim()) && SentenceEntry.Trim().Length != 0;
     }
     
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
-        
-        if (e.PropertyName == nameof(Translations))
-        {
-            UpdateTranslations();
-        }
 
         if (e.PropertyName is nameof(SentenceEntry))
         {

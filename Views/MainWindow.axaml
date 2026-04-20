@@ -30,7 +30,8 @@
                 Confidence="{Binding DialogEntryConfidence, Mode=TwoWay}"
                 ConfidenceLevels="{Binding ConfidenceLevels}"
                 IsValid="{Binding IsDialogEntryValid, Mode=TwoWay}"
-                SubmitCommand="{Binding SubmitDialogCommand}" />
+                SubmitCommand="{Binding SubmitDialogCommand}"
+                CancelDialogCommand="{Binding CancelDialogCommand}"/>
         </dh:DialogHost.DialogContent>
 
         <Grid ColumnDefinitions="256,*">

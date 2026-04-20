@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Descript.Data;
+using Descript.Interfaces;
 using Descript.Models;
 using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels;
 
-public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : ViewModelBase
+public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : ViewModelBase, ILoadSave
 {
     private MainWindowViewModel Vm { get; set; } = mainWindowViewModel;
     
-    private readonly Dictionary<int, Rune> _allRunes = new();
+    private readonly Dictionary<char, Rune> _allRunes = new();
 
-    public int CurrentSelection { get; set => SetField(ref field, value); } = 0;
+    public char CurrentSelection { get; set => SetField(ref field, value); } = (char)0;
     public string FilterText    { get; set => SetField(ref field, value); } = string.Empty;
     
     public RuneSortMode SortMode { get; set => SetField(ref field, value); } = RuneSortMode.ByConfidence;
@@ -28,25 +30,37 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
         {
             RuneSortMode.ByConfidence => _allRunes.Values.OrderBy(OrderByConfidence)
                 .ThenBy(OrderByTranslation)
-                .ThenBy(OrderById),
+                .ThenBy(OrderByGlyph),
             RuneSortMode.ByTranslation => _allRunes.Values.OrderBy(OrderByTranslation)
                 .ThenBy(OrderByConfidence)
-                .ThenBy(OrderById),
-            _ => _allRunes.Values.OrderBy(OrderById)
+                .ThenBy(OrderByGlyph),
+            _ => _allRunes.Values.OrderBy(OrderByGlyph)
                 .ThenBy(OrderByConfidence)
                 .ThenBy(OrderByTranslation)
         })
         .Where(IsMatch)
         .ToList();
+    
+    private IEnumerable<Rune> RunesOrdered => _allRunes.Values.OrderBy(r => r.Glyph);
+
+    public void Load()
+    {
+        Add(DataManagement.Load<Rune>());
+    }
+
+    public void Save()
+    {
+        DataManagement.Save(RunesOrdered);
+    }
 
     public bool Add(int id, bool update = true)
     {
-        return Add(new Rune(id), update);
+        return Add(Rune.FromId(id), update);
     }
     
     public bool Add(Rune rune, bool update = true)
     {
-        if (_allRunes.TryAdd(rune.Id, rune))
+        if (_allRunes.TryAdd(rune.Glyph, rune))
         {
             if (update)
             {
@@ -56,7 +70,7 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
             return true;
         }
 
-        Console.WriteLine($"Rune of id {rune.Id} already exists");
+        Console.WriteLine($"Rune {rune.Glyph} already exists");
         return false;
     }
 
@@ -77,58 +91,51 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
         }
     }
 
-    public void Edit(int runeId, string newTranslation, ConfidenceLevel newConfidence)
+    public void Edit(char glyph, string newTranslation, ConfidenceLevel newConfidence)
     {
-        if (_allRunes.TryGetValue(runeId, out Rune? rune))
+        if (_allRunes.TryGetValue(glyph, out Rune? rune))
         {
             string oldTranslation = rune.Translation;
             ConfidenceLevel oldConfidence = rune.Confidence;
-            
-            rune.Translation = newTranslation;
-            rune.Confidence = newConfidence;
 
             if (oldTranslation != newTranslation || oldConfidence != newConfidence)
             {
+                _allRunes[glyph] = rune with { Translation = newTranslation, Confidence = newConfidence };
+                
                 OnPropertyChanged(nameof(Runes));
             }
         }
         else
         {
-            Console.WriteLine($"Rune of id {runeId} does not exist");
+            Console.WriteLine($"Rune {glyph} does not exist");
         }
     }
 
-    public void Delete(int runeId)
+    public void Delete(char glyph)
     {
-        if (_allRunes.Remove(runeId, out Rune? _))
+        if (_allRunes.Remove(glyph, out Rune? _))
         {
             OnPropertyChanged(nameof(Runes));
         }
         else
         {
-            Console.WriteLine($"Rune of id {runeId} does not exist");
+            Console.WriteLine($"Rune {glyph} does not exist");
         }
     }
 
-    public bool TryGet(int runeId, [MaybeNullWhen(false)] out Rune rune)
+    public bool TryGet(char glyph, [MaybeNullWhen(false)] out Rune rune)
     {
-        if (_allRunes.TryGetValue(runeId, out rune))
+        if (_allRunes.TryGetValue(glyph, out rune))
         {
             return true;
         }
-        Console.WriteLine($"Rune of id {runeId} does not exist");
+        Console.WriteLine($"Rune {glyph} does not exist");
         return false;
-    }
-
-    // For saving to file in a consistent order
-    public Rune[] GetOrdered()
-    {
-        return _allRunes.Values.OrderBy(r => r.Id).ToArray();
     }
 
     public void ClearFilters()
     {
-        CurrentSelection = 0;
+        CurrentSelection = (char)0;
         FilterText = string.Empty;
         
         OnPropertyChanged(nameof(FilterText));
@@ -157,9 +164,9 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
         return rune.Translation == "" ? "ZZZZZZZ" : rune.Translation;
     }
 
-    private static int OrderById(Rune rune)
+    private static int OrderByGlyph(Rune rune)
     {
-        return rune.Id;
+        return rune.Glyph;
     }
 
     private bool IsMatch(Rune r)
@@ -200,7 +207,7 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
         if (e.PropertyName is nameof(Runes))
         {
             OnPropertyChanged(nameof(CanAddRune));
-            Vm.Translations.UpdateTranslations();
+            //Vm.Translations.UpdateTranslations();
         }
     }
 }
