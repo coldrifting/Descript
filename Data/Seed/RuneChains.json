@@ -1,0 +1,32 @@
+[
+  {
+    "Glyphs": "\uE11A\uE064",
+    "Translation": "But",
+    "Confidence": "High"
+  },
+  {
+    "Glyphs": "\uE018",
+    "Translation": "A",
+    "Confidence": "High"
+  },
+  {
+    "Glyphs": "\uE19E",
+    "Translation": "To/Two",
+    "Confidence": "Medium"
+  },
+  {
+    "Glyphs": "\uE19E",
+    "Translation": "The",
+    "Confidence": "High"
+  },
+  {
+    "Glyphs": "\uEF26",
+    "Translation": "Is",
+    "Confidence": "High"
+  },
+  {
+    "Glyphs": "\uE00F\uE0D6\uE018",
+    "Translation": "",
+    "Confidence": "Low"
+  }
+]

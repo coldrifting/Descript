@@ -1,61 +1,61 @@
 [
   {
-    "Id": 15,
+    "Glyph": "\uE00F",
     "Translation": "la",
     "Confidence": "Low"
   },
   {
-    "Id": 24,
+    "Glyph": "\uE018",
     "Translation": "a",
     "Confidence": "High"
   },
   {
-    "Id": 100,
+    "Glyph": "\uE064",
     "Translation": "t",
     "Confidence": "High"
   },
   {
-    "Id": 214,
+    "Glyph": "\uE0D6",
     "Translation": "",
     "Confidence": "Low"
   },
   {
-    "Id": 414,
+    "Glyph": "\uE19E",
     "Translation": "the",
     "Confidence": "High"
   },
   {
-    "Id": 637,
+    "Glyph": "\uE27D",
     "Translation": "to",
     "Confidence": "High"
   },
   {
-    "Id": 923,
+    "Glyph": "\uE39B",
     "Translation": "do",
     "Confidence": "Medium"
   },
   {
-    "Id": 1049,
+    "Glyph": "\uE419",
     "Translation": "or",
     "Confidence": "Medium"
   },
   {
-    "Id": 1743,
+    "Glyph": "\uE6CF",
     "Translation": "see",
     "Confidence": "High"
   },
   {
-    "Id": 2362,
+    "Glyph": "\uE93A",
     "Translation": "of",
     "Confidence": "Medium"
   },
   {
-    "Id": 3878,
+    "Glyph": "\uEF26",
     "Translation": "is",
     "Confidence": "Medium"
   },
   {
-    "Id": 282,
+    "Glyph": "\uE11A",
     "Translation": "buh",
     "Confidence": "High"
   }
