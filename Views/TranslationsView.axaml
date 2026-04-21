@@ -10,7 +10,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Descript.Views.TranslationsView"
              x:DataType="vm:ViewModelMainWindow">
-    
+
     <UserControl.Styles>
         <Style Selector="Button.cancel:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="DarkRed" />
@@ -18,10 +18,10 @@
         <Style Selector="Button.cancel:pressed /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="Red" />
         </Style>
-        
+
         <Style Selector=".Translations Button">
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Padding" Value="4" />
             <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="Transparent" />
             </Style>
@@ -70,12 +70,12 @@
     <dh:DialogHost CloseOnClickAway="True" IsOpen="{Binding ViewModelRuneSentence.IsSentenceDialogOpen, Mode=TwoWay}">
         <dh:DialogHost.DialogContent>
             <dialogs:AddSentenceDialog Width="600"
-                                        Sentence="{Binding ViewModelRuneSentence.SentenceEntry, Mode=TwoWay}"
-                                        SelectionStart="{Binding ViewModelRuneSentence.SelectionStart, Mode=TwoWay}"
-                                        SelectionEnd="{Binding ViewModelRuneSentence.SelectionEnd, Mode=TwoWay}"
-                                        IsValid="{Binding ViewModelRuneSentence.IsSentenceValid}"
-                                        SubmitCommand="{Binding ViewModelRuneSentence.SubmitSentenceCommand}"
-                                        CancelDialogCommand="{Binding ViewModelRuneSentence.CancelDialogCommand}"/>
+                                       Sentence="{Binding ViewModelRuneSentence.SentenceEntry, Mode=TwoWay}"
+                                       SelectionStart="{Binding ViewModelRuneSentence.SelectionStart, Mode=TwoWay}"
+                                       SelectionEnd="{Binding ViewModelRuneSentence.SelectionEnd, Mode=TwoWay}"
+                                       IsValid="{Binding ViewModelRuneSentence.IsSentenceValid}"
+                                       SubmitCommand="{Binding ViewModelRuneSentence.SubmitSentenceCommand}"
+                                       CancelDialogCommand="{Binding ViewModelRuneSentence.CancelDialogCommand}" />
         </dh:DialogHost.DialogContent>
 
         <Grid RowDefinitions="40,*">
@@ -86,17 +86,17 @@
                 <TextBox Text="{Binding ViewModelRuneSentence.FilterText, Mode=TwoWay}"
                          PlaceholderText="Search Sentences"
                          VerticalContentAlignment="Center"
-                         Margin="8 4" 
-                         Padding="10 0" 
-                         Width="400"  >
+                         Margin="8 4"
+                         Padding="10 0"
+                         Width="400">
                     <TextBox.InnerRightContent>
-                        <Button Content="✕" 
+                        <Button Content="✕"
                                 Classes="cancel"
                                 Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ClearFilterTextCommand, FallbackValue=''}"
                                 IsVisible="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ShowFilterCancel, FallbackValue='False'}"
-                                Background="Transparent" 
-                                BorderThickness="0" 
-                                Padding="4" 
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Padding="4"
                                 Margin="4 0" />
                     </TextBox.InnerRightContent>
                 </TextBox>
@@ -105,56 +105,12 @@
                 <ItemsControl ItemsSource="{Binding ViewModelRuneSentence.TranslationsFiltered}" Classes="Translations">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="models:RuneSentenceExtended">
-                            <ItemsControl ItemsSource="{Binding RuneChains}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="models:RuneChainExtended">
-                                        <Button Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenWordEditDialogCommand, FallbackValue=''}"
-                                                CommandParameter="{Binding Glyphs}"
-                                                IsEnabled="{Binding Confidence}">
-                                            <StackPanel>
-                                                <controls:TranslationRuneChain DataContext="{Binding}" 
-                                                                               IsVisible="{Binding !ShowRunes}"/>
-                                                <ItemsControl ItemsSource="{Binding Runes}" 
-                                                              IsVisible="{Binding ShowRunes}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate DataType="models:Rune">
-                                                            <controls:TranslationRune DataContext="{Binding}" />
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                    <ItemsControl.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <StackPanel Orientation="Horizontal"/>
-                                                        </ItemsPanelTemplate>
-                                                    </ItemsControl.ItemsPanel>
-                                                </ItemsControl>
-                                            </StackPanel>
-                                        </Button>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Margin="2 0 2 0" Orientation="Horizontal" Spacing="0"
-                                                    Background="Transparent">
-                                            <StackPanel.ContextMenu>
-                                                <ContextMenu>
-                                                    <MenuItem Header="Edit"
-                                                              Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.OpenEditSentenceDialogCommand, FallbackValue=''}"
-                                                              CommandParameter="{Binding Sentence}" />
-                                                    <MenuItem Header="Delete"
-                                                              Foreground="OrangeRed"
-                                                              Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.DeleteSentenceCommand, FallbackValue=''}"
-                                                              CommandParameter="{Binding Sentence}" />
-                                                </ContextMenu>
-                                            </StackPanel.ContextMenu>
-                                        </StackPanel>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
+                            <controls:TranslationLine/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" />
+                            <StackPanel Orientation="Vertical"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
