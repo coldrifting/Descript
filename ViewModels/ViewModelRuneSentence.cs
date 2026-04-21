@@ -11,14 +11,19 @@ using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels;
 
-public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewModel) : ViewModelBase, ILoadSave
+public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWindow) : ViewModelBase, ILoadSave
 {
-    private MainWindowViewModel Vm { get; } = mainWindowViewModel;
+    private ViewModelMainWindow Vm { get; } = viewModelMainWindow;
 
-    private readonly Dictionary<string, RuneSentence> _allTranslations = new();
+    private readonly Dictionary<string, RuneSentence> _translations = new();
 
-    public IEnumerable<RuneSentenceExtended> Translations => _allTranslations.Values.Select(sentence => 
-        new RuneSentenceExtended
+    public string FilterText { get; set => SetField(ref field, value); } = string.Empty;
+    public bool ShowFilterCancel => FilterText.Length > 0;
+    
+    private IEnumerable<RuneSentence> Translations => _translations.Values.OrderBy(s => s.Sentence);
+    public IEnumerable<RuneSentenceExtended> TranslationsFiltered => _translations.Values
+        .Where(rs => IsSentenceMatch(rs, FilterText))
+        .Select(sentence => new RuneSentenceExtended
         {
             Sentence = sentence.Sentence,
             Category = sentence.Category,
@@ -26,7 +31,6 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
             Context = sentence.Context,
             RuneChains = GetRuneChains(sentence.Sentence)
         });
-    private IEnumerable<RuneSentence> TranslationsOrdered => _allTranslations.Values.OrderBy(s => s.Sentence);
     
     // Add Sentence Dialog
     private string _sentenceId = "";
@@ -45,7 +49,7 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
     {
         return sentence
             .Split(' ')
-            .Select(s => Vm.Words.Words.FirstOrDefault(runeChain => s.Equals(runeChain.Glyphs), new RuneChain { Glyphs = s, Confidence = ConfidenceLevel.Confirmed }))
+            .Select(s => Vm.ViewModelRuneChain.Words.FirstOrDefault(runeChain => s.Equals(runeChain.Glyphs), new RuneChain { Glyphs = s, Confidence = ConfidenceLevel.Confirmed }))
             .Select(r => new RuneChainExtended
             {
                 Glyphs = r.Glyphs,
@@ -53,7 +57,7 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
                 Translation = r.Translation,
                 Runes = r.Glyphs
                     .ToCharArray()
-                    .Select(c => Vm.Runes.Runes.FirstOrDefault(rx => c.Equals(rx.Glyph), new Rune { Glyph = c, Confidence = ConfidenceLevel.Confirmed } ))
+                    .Select(c => Vm.ViewModelRune.Runes.FirstOrDefault(rx => c.Equals(rx.Glyph), new Rune { Glyph = c, Confidence = ConfidenceLevel.Confirmed } ))
                     .ToImmutableList()
             })
             .ToImmutableList();
@@ -61,7 +65,7 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
 
     public void Save()
     {
-        DataManagement.Save(TranslationsOrdered);
+        DataManagement.Save(Translations);
     }
 
     [RelayCommand]
@@ -84,6 +88,13 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
     private void CancelDialog()
     {
         IsSentenceDialogOpen = false;
+    }
+
+    [RelayCommand]
+    private void ClearFilterText()
+    {
+        FilterText = string.Empty;
+        OnPropertyChanged(nameof(TranslationsFiltered));
     }
 
     public void InsertIntoSentenceInput(string input)
@@ -112,45 +123,59 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
         
         RuneSentence t = ConvertFromSentence(SentenceEntry.Trim());
 
-        _allTranslations.Add(t.Sentence, t);
+        _translations.Add(t.Sentence, t);
         
         // Remove old sentence if editing
         if (_sentenceId != t.Sentence)
         {
-            _allTranslations.Remove(_sentenceId);
+            _translations.Remove(_sentenceId);
             foreach (string se in _sentenceId.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             {
                 if (!t.Sentence.Contains(se))
                 {
-                    Vm.Words.Remove(se);
+                    Vm.ViewModelRuneChain.Remove(se);
                 }
             }
         }
         
-        OnPropertyChanged(nameof(Translations));
+        OnPropertyChanged(nameof(TranslationsFiltered));
     }
     
     private RuneSentence ConvertFromSentence(string sentence)
     {
         foreach (string str in sentence.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            if (WordsViewModel.IsValidWord(str))
+            if (ViewModelRuneChain.IsValidWord(str))
             {
-                Vm.Words.Add(str);
+                Vm.ViewModelRuneChain.Add(str);
             }
 
         }
 
         return RuneSentence.FromString(sentence);
     }
+
+    private bool IsSentenceMatch(RuneSentence runeSentence, string sentence)
+    {
+        string currentTranslations = runeSentence.Sentence
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(s => Vm.ViewModelRuneChain[s]?.Translation ?? "")
+            .Aggregate((a, b) => a + b);
+        
+        return sentence.ToLower()
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .All(filterEntry => 
+                runeSentence.Sentence.ToLower().Contains(filterEntry, StringComparison.CurrentCultureIgnoreCase) || 
+                currentTranslations.ToLower().Contains(filterEntry, StringComparison.CurrentCultureIgnoreCase));
+    }
     
     public bool Add(RuneSentence runeSentence, bool update = true)
     {
-        if (_allTranslations.TryAdd(runeSentence.Sentence, runeSentence))
+        if (_translations.TryAdd(runeSentence.Sentence, runeSentence))
         {
             if (update)
             {
-                OnPropertyChanged(nameof(Translations));
+                OnPropertyChanged(nameof(TranslationsFiltered));
             }
 
             return true;
@@ -173,7 +198,7 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
 
         if (updated)
         {
-            OnPropertyChanged(nameof(Translations));
+            OnPropertyChanged(nameof(TranslationsFiltered));
         }
     }
 
@@ -183,17 +208,17 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
         // Remove words with no added info
         foreach (string se in sentence.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            Vm.Words.Remove(se);
+            Vm.ViewModelRuneChain.Remove(se);
         }
         
-        _allTranslations.Remove(sentence);
-        OnPropertyChanged(nameof(Translations));
+        _translations.Remove(sentence);
+        OnPropertyChanged(nameof(TranslationsFiltered));
     }
 
     private bool IsSentenceOkay()
     {
         return !Translations
-            .Select(runeSentence =>  runeSentence.Sentence)
+            .Select(runeSentence => runeSentence.Sentence)
             .Contains(SentenceEntry.Trim()) && SentenceEntry.Trim().Length != 0;
     }
     
@@ -201,6 +226,12 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
     {
         base.OnPropertyChanged(e);
 
+        if (e.PropertyName is nameof(FilterText))
+        {
+            OnPropertyChanged(nameof(ShowFilterCancel));
+            OnPropertyChanged(nameof(TranslationsFiltered));
+        }
+        
         if (e.PropertyName is nameof(SentenceEntry))
         {
             IsSentenceValid = IsSentenceOkay();
@@ -209,6 +240,6 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
 
     public void Refresh()
     {
-        OnPropertyChanged(nameof(Translations));
+        OnPropertyChanged(nameof(TranslationsFiltered));
     }
 }

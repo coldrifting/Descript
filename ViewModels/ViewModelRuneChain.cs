@@ -11,9 +11,9 @@ using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels;
 
-public class WordsViewModel(MainWindowViewModel mainWindowViewModel) : ViewModelBase, ILoadSave
+public class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow) : ViewModelBase, ILoadSave
 {
-    private MainWindowViewModel Vm { get; } = mainWindowViewModel;
+    private ViewModelMainWindow Vm { get; } = viewModelMainWindow;
 
     private readonly Dictionary<string, RuneChain> _allWords = new();
 
@@ -36,6 +36,8 @@ public class WordsViewModel(MainWindowViewModel mainWindowViewModel) : ViewModel
     {
         DataManagement.Save(WordsOrdered);
     }
+    
+    public RuneChain? this[string index] => _allWords.GetValueOrDefault(index);
 
     public bool TryGet(string word, [MaybeNullWhen(false)] out RuneChain runeChain)
     {
@@ -134,7 +136,7 @@ public class WordsViewModel(MainWindowViewModel mainWindowViewModel) : ViewModel
                 break;
             
             case nameof(Words):
-                Vm.Translations.Refresh();
+                Vm.ViewModelRuneSentence.Refresh();
                 break;
         }
     }

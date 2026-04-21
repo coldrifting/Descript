@@ -8,32 +8,32 @@ using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels;
 
-public partial class MainWindowViewModel : ViewModelBase
+public partial class ViewModelMainWindow : ViewModelBase
 {
-    public RunesViewModel Runes { get; }
-    public WordsViewModel Words { get; }
-    public TranslationsViewModel Translations { get; }
+    public ViewModelRune ViewModelRune { get; }
+    public ViewModelRuneChain ViewModelRuneChain { get; }
+    public ViewModelRuneSentence ViewModelRuneSentence { get; }
     
-    public MainWindowViewModel()
+    public ViewModelMainWindow()
     {
-        Runes = new RunesViewModel(this);
-        Words = new WordsViewModel(this);
-        Translations = new TranslationsViewModel(this);
+        ViewModelRune = new ViewModelRune(this);
+        ViewModelRuneChain = new ViewModelRuneChain(this);
+        ViewModelRuneSentence = new ViewModelRuneSentence(this);
         LoadData();
     }
 
     private void LoadData()
     {
-        Runes.Load();
-        Words.Load();
-        Translations.Load();
+        ViewModelRune.Load();
+        ViewModelRuneChain.Load();
+        ViewModelRuneSentence.Load();
     }
 
     public void SaveData()
     {
-        Runes.Save();
-        Words.Save();
-        Translations.Save();
+        ViewModelRune.Save();
+        ViewModelRuneChain.Save();
+        ViewModelRuneSentence.Save();
     }
     
     // Edit Rune Modal Dialog
@@ -62,7 +62,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void OpenRuneEditDialog(char glyph)
     {
-        Runes.TryGet(glyph, out Rune? rune);
+        ViewModelRune.TryGet(glyph, out Rune? rune);
         if (rune == null)
         {
             return;
@@ -83,7 +83,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void OpenWordEditDialog(string wordRaw)
     {
-        Words.TryGet(wordRaw, out RuneChain? rune);
+        ViewModelRuneChain.TryGet(wordRaw, out RuneChain? rune);
         if (rune == null)
         {
             return;
@@ -123,10 +123,10 @@ public partial class MainWindowViewModel : ViewModelBase
             switch (DialogType)
             {
                 case DialogType.RuneEdit:
-                    Runes.Edit(_dialogRuneEdit, DialogEntryTranslation, DialogEntryConfidence);
+                    ViewModelRune.Edit(_dialogRuneEdit, DialogEntryTranslation, DialogEntryConfidence);
                     break;
                 case DialogType.WordEdit:
-                    Words.Edit(_dialogWordEdit, DialogEntryTranslation, DialogEntryConfidence);
+                    ViewModelRuneChain.Edit(_dialogWordEdit, DialogEntryTranslation, DialogEntryConfidence);
                     break;
                 case DialogType.None:
                 default:
@@ -143,25 +143,25 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void ClearRuneListFilters()
     {
-        Runes.ClearFilters();
+        ViewModelRune.ClearFilters();
     }
 
     [RelayCommand]
     private void ToggleRuneListSortMode()
     {
-        Runes.ToggleSortMode();
+        ViewModelRune.ToggleSortMode();
     }
 
     [RelayCommand]
     private void AddRune(char glyph)
     {
-        Runes.Add(glyph);
+        ViewModelRune.Add(glyph);
     }
     
     [RelayCommand]
     private void DeleteRune(char glyph)
     {
-        Runes.Delete(glyph);
+        ViewModelRune.Delete(glyph);
     }
 
     [RelayCommand]
@@ -177,9 +177,9 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void Primary(char glyph)
     {
-        if (Translations.IsSentenceDialogOpen)
+        if (ViewModelRuneSentence.IsSentenceDialogOpen)
         {
-            Translations.InsertIntoSentenceInput(glyph.ToString());
+            ViewModelRuneSentence.InsertIntoSentenceInput(glyph.ToString());
         }
         else
         {

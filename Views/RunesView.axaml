@@ -8,7 +8,7 @@
              xmlns:utils="clr-namespace:Descript.Utils"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Descript.Views.RunesView"
-             x:DataType="vm:MainWindowViewModel">
+             x:DataType="vm:ViewModelMainWindow">
     
     <UserControl.Resources>
         <ResourceDictionary>
@@ -21,39 +21,39 @@
         
         <controls:SegmentSelectControl Grid.Row="0" 
                                        AccentColor="{DynamicResource SystemAccentColor}"
-                                       Selection="{Binding Runes.CurrentSelection, Mode=TwoWay}" />
+                                       Selection="{Binding ViewModelRune.CurrentSelection, Mode=TwoWay}" />
                 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button HorizontalAlignment="Center"
                     Content="Add"
                     Focusable="False"
-                    IsEnabled="{Binding Runes.CanAddRune}"
+                    IsEnabled="{Binding ViewModelRune.CanAddRune}"
                     Command="{Binding AddRuneCommand}" 
-                    CommandParameter="{Binding Runes.CurrentSelection}"/>
+                    CommandParameter="{Binding ViewModelRune.CurrentSelection}"/>
             <Button HorizontalAlignment="Center"
                     Focusable="False"
                     Command="{Binding ToggleRuneListSortModeCommand}"
-                    Content="{Binding Runes.SortModeString}"/>
+                    Content="{Binding ViewModelRune.SortModeString}"/>
         </StackPanel>
                     
         <TextBox Grid.Row="2" PlaceholderText="Filter Runes by Translation" 
-                 Text="{Binding Runes.FilterText}">
+                 Text="{Binding ViewModelRune.FilterText}">
             <TextBox.InnerRightContent>
                 <Button Grid.Column="0"
                         HorizontalAlignment="Center"
                         Theme="{StaticResource DeleteButtonTheme}"
                         Content="X"
                         Focusable="False"
-                        IsEnabled="{Binding Runes.CanClearFilters}"
+                        IsEnabled="{Binding ViewModelRune.CanClearFilters}"
                         Command="{Binding ClearRuneListFiltersCommand}" />
             </TextBox.InnerRightContent>
         </TextBox>
         
         <ScrollViewer Grid.Row="3" x:Name="ScrollView" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
-            <ItemsControl ItemsSource="{Binding Runes.RunesFiltered}">
+            <ItemsControl ItemsSource="{Binding ViewModelRune.RunesFiltered}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:Rune">
-                        <Button Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).PrimaryCommand, FallbackValue=''}"
+                        <Button Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).PrimaryCommand, FallbackValue=''}"
                                 CommandParameter="{Binding Glyph}"
                                 Focusable="False"
                                 Width="54" 
@@ -83,14 +83,14 @@
                             <Button.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Edit" 
-                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenRuneEditDialogCommand, FallbackValue=''}" 
+                                              Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenRuneEditDialogCommand, FallbackValue=''}" 
                                               CommandParameter="{Binding Id}" />
                                     <MenuItem Header="Copy" 
-                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CopyTextToClipboardCommand, FallbackValue=''}" 
+                                              Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).CopyTextToClipboardCommand, FallbackValue=''}" 
                                               CommandParameter="{Binding Glyph}" />
                                     <MenuItem Header="Delete" 
                                               Foreground="OrangeRed"
-                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).DeleteRuneCommand, FallbackValue=''}" 
+                                              Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).DeleteRuneCommand, FallbackValue=''}" 
                                               CommandParameter="{Binding Id}" />
                                 </ContextMenu>
                             </Button.ContextMenu>

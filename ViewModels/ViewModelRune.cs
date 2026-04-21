@@ -10,9 +10,9 @@ using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels;
 
-public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : ViewModelBase, ILoadSave
+public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : ViewModelBase, ILoadSave
 {
-    private MainWindowViewModel Vm { get; set; } = mainWindowViewModel;
+    private ViewModelMainWindow Vm { get; set; } = viewModelMainWindow;
     
     private readonly Dictionary<char, Rune> _runes = new();
 
@@ -53,6 +53,8 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
     {
         DataManagement.Save(Runes);
     }
+    
+    public Rune? this[char index] => _runes.GetValueOrDefault(index);
 
     public bool Add(int id, bool update = true)
     {
@@ -208,7 +210,7 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
         if (e.PropertyName is nameof(RunesFiltered))
         {
             OnPropertyChanged(nameof(CanAddRune));
-            Vm.Translations.Refresh();
+            Vm.ViewModelRuneSentence.Refresh();
         }
     }
 }

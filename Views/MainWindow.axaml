@@ -9,12 +9,12 @@
         xmlns:dialogs="clr-namespace:Descript.Views.Dialogs"
         mc:Ignorable="d" d:DesignWidth="1080" d:DesignHeight="720"
         x:Class="Descript.Views.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
+        x:DataType="vm:ViewModelMainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="Descript">
 
     <Design.DataContext>
-        <vm:MainWindowViewModel />
+        <vm:ViewModelMainWindow />
     </Design.DataContext>
 
     <Window.Styles>
