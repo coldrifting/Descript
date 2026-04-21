@@ -134,7 +134,7 @@ public class WordsViewModel(MainWindowViewModel mainWindowViewModel) : ViewModel
                 break;
             
             case nameof(Words):
-                //Vm.Translations.UpdateTranslations();
+                Vm.Translations.Refresh();
                 break;
         }
     }

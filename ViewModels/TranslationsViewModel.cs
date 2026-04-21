@@ -41,15 +41,21 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
         Add(DataManagement.Load<RuneSentence>());
     }
 
-    private ImmutableList<RuneChain> GetRuneChains(string sentence)
+    private ImmutableList<RuneChainExtended> GetRuneChains(string sentence)
     {
         return sentence
             .Split(' ')
-            .Select(s => Vm.Words.Words.FirstOrDefault(w => s.Equals(w.Glyphs), new RuneChain
+            .Select(s => Vm.Words.Words.FirstOrDefault(runeChain => s.Equals(runeChain.Glyphs), new RuneChain { Glyphs = s, Confidence = ConfidenceLevel.Confirmed }))
+            .Select(r => new RuneChainExtended
             {
-                Glyphs = s, 
-                Confidence = ConfidenceLevel.Confirmed
-            }))
+                Glyphs = r.Glyphs,
+                Confidence = r.Confidence,
+                Translation = r.Translation,
+                Runes = r.Glyphs
+                    .ToCharArray()
+                    .Select(c => Vm.Runes.Runes.FirstOrDefault(rx => c.Equals(rx.Glyph), new Rune { Glyph = c, Confidence = ConfidenceLevel.Confirmed } ))
+                    .ToImmutableList()
+            })
             .ToImmutableList();
     }
 
@@ -199,5 +205,10 @@ public partial class TranslationsViewModel(MainWindowViewModel mainWindowViewMod
         {
             IsSentenceValid = IsSentenceOkay();
         }
+    }
+
+    public void Refresh()
+    {
+        OnPropertyChanged(nameof(Translations));
     }
 }

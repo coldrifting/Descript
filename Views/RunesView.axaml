@@ -50,7 +50,7 @@
         </TextBox>
         
         <ScrollViewer Grid.Row="3" x:Name="ScrollView" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
-            <ItemsControl ItemsSource="{Binding Runes.Runes}">
+            <ItemsControl ItemsSource="{Binding Runes.RunesFiltered}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:Rune">
                         <Button Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).PrimaryCommand, FallbackValue=''}"

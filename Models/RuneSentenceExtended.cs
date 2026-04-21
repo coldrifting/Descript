@@ -4,5 +4,5 @@ namespace Descript.Models;
 
 public record RuneSentenceExtended : RuneSentence
 {
-    public required ImmutableList<RuneChain> RuneChains { get; init; }
+    public required ImmutableList<RuneChainExtended> RuneChains { get; init; }
 }

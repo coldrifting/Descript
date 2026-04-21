@@ -14,7 +14,7 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
 {
     private MainWindowViewModel Vm { get; set; } = mainWindowViewModel;
     
-    private readonly Dictionary<char, Rune> _allRunes = new();
+    private readonly Dictionary<char, Rune> _runes = new();
 
     public char CurrentSelection { get; set => SetField(ref field, value); } = (char)0;
     public string FilterText    { get; set => SetField(ref field, value); } = string.Empty;
@@ -23,25 +23,26 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
     public string SortModeString => SortMode.ToString().Replace("By", "By ");
 
     public bool CanClearFilters => CurrentSelection > 0 || FilterText.Length > 0;
-    public bool CanAddRune      => CurrentSelection != 0 && !_allRunes.ContainsKey(CurrentSelection);
+    public bool CanAddRune      => CurrentSelection != 0 && !_runes.ContainsKey(CurrentSelection);
+    
+    public IEnumerable<Rune> Runes => _runes.Values.OrderBy(r => r.Glyph);
     
     // Returns a filtered and sorted subset of all stored runes
-    public List<Rune> Runes => (SortMode switch
+    public List<Rune> RunesFiltered => (SortMode switch
         {
-            RuneSortMode.ByConfidence => _allRunes.Values.OrderBy(OrderByConfidence)
+            RuneSortMode.ByConfidence => _runes.Values.OrderBy(OrderByConfidence)
                 .ThenBy(OrderByTranslation)
                 .ThenBy(OrderByGlyph),
-            RuneSortMode.ByTranslation => _allRunes.Values.OrderBy(OrderByTranslation)
+            RuneSortMode.ByTranslation => _runes.Values.OrderBy(OrderByTranslation)
                 .ThenBy(OrderByConfidence)
                 .ThenBy(OrderByGlyph),
-            _ => _allRunes.Values.OrderBy(OrderByGlyph)
+            _ => _runes.Values.OrderBy(OrderByGlyph)
                 .ThenBy(OrderByConfidence)
                 .ThenBy(OrderByTranslation)
         })
         .Where(IsMatch)
         .ToList();
     
-    private IEnumerable<Rune> RunesOrdered => _allRunes.Values.OrderBy(r => r.Glyph);
 
     public void Load()
     {
@@ -50,7 +51,7 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
 
     public void Save()
     {
-        DataManagement.Save(RunesOrdered);
+        DataManagement.Save(Runes);
     }
 
     public bool Add(int id, bool update = true)
@@ -60,11 +61,11 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
     
     public bool Add(Rune rune, bool update = true)
     {
-        if (_allRunes.TryAdd(rune.Glyph, rune))
+        if (_runes.TryAdd(rune.Glyph, rune))
         {
             if (update)
             {
-                OnPropertyChanged(nameof(Runes));
+                OnPropertyChanged(nameof(RunesFiltered));
             }
 
             return true;
@@ -87,22 +88,22 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
 
         if (updated)
         {
-            OnPropertyChanged(nameof(Runes));
+            OnPropertyChanged(nameof(RunesFiltered));
         }
     }
 
     public void Edit(char glyph, string newTranslation, ConfidenceLevel newConfidence)
     {
-        if (_allRunes.TryGetValue(glyph, out Rune? rune))
+        if (_runes.TryGetValue(glyph, out Rune? rune))
         {
             string oldTranslation = rune.Translation;
             ConfidenceLevel oldConfidence = rune.Confidence;
 
             if (oldTranslation != newTranslation || oldConfidence != newConfidence)
             {
-                _allRunes[glyph] = rune with { Translation = newTranslation, Confidence = newConfidence };
+                _runes[glyph] = rune with { Translation = newTranslation, Confidence = newConfidence };
                 
-                OnPropertyChanged(nameof(Runes));
+                OnPropertyChanged(nameof(RunesFiltered));
             }
         }
         else
@@ -113,9 +114,9 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
 
     public void Delete(char glyph)
     {
-        if (_allRunes.Remove(glyph, out Rune? _))
+        if (_runes.Remove(glyph, out Rune? _))
         {
-            OnPropertyChanged(nameof(Runes));
+            OnPropertyChanged(nameof(RunesFiltered));
         }
         else
         {
@@ -125,7 +126,7 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
 
     public bool TryGet(char glyph, [MaybeNullWhen(false)] out Rune rune)
     {
-        if (_allRunes.TryGetValue(glyph, out rune))
+        if (_runes.TryGetValue(glyph, out rune))
         {
             return true;
         }
@@ -191,7 +192,7 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
         
         if (e.PropertyName is nameof(SortMode) or nameof(FilterText) or nameof(CurrentSelection))
         {
-            OnPropertyChanged(nameof(Runes));
+            OnPropertyChanged(nameof(RunesFiltered));
         }
 
         if (e.PropertyName is nameof(SortMode))
@@ -204,10 +205,10 @@ public sealed class RunesViewModel(MainWindowViewModel mainWindowViewModel) : Vi
             OnPropertyChanged(nameof(CanClearFilters));
         }
 
-        if (e.PropertyName is nameof(Runes))
+        if (e.PropertyName is nameof(RunesFiltered))
         {
             OnPropertyChanged(nameof(CanAddRune));
-            //Vm.Translations.UpdateTranslations();
+            Vm.Translations.Refresh();
         }
     }
 }

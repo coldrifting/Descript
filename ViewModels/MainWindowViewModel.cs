@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.Input;
 using Descript.Models;
