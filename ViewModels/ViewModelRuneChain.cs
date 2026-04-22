@@ -17,13 +17,12 @@ public class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow) : ViewM
 
     private readonly Dictionary<string, RuneChain> _allWords = new();
 
-    public List<RuneChain> Words => _allWords.Values
+    public IEnumerable<RuneChain> Words => _allWords.Values.OrderBy(word => word.Glyphs);
+    public IList<RuneChain> WordsFiltered => Words
         .Where(word => word.Translation.ContainsTrimmed(FilterText))
         .OrderBy(word => word.Translation == "" ? "Ω" : word.Translation)
         .ThenBy(word => word.Confidence)
         .ToList();
-
-    private IEnumerable<RuneChain> WordsOrdered => _allWords.Values.OrderBy(word => word.Glyphs);
 
     public string FilterText { get; set => SetField(ref field, value); } = string.Empty;
     
@@ -34,7 +33,7 @@ public class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow) : ViewM
 
     public void Save()
     {
-        DataManagement.Save(WordsOrdered);
+        DataManagement.Save(Words);
     }
     
     public RuneChain? this[string index] => _allWords.GetValueOrDefault(index);
@@ -132,7 +131,7 @@ public class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow) : ViewM
         switch (e.PropertyName)
         {
             case nameof(FilterText):
-                OnPropertyChanged(nameof(Words));
+                OnPropertyChanged(nameof(WordsFiltered));
                 break;
             
             case nameof(Words):

@@ -12,12 +12,6 @@
              x:DataType="vm:ViewModelMainWindow">
 
     <UserControl.Styles>
-        <Style Selector="Button.cancel:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="DarkRed" />
-        </Style>
-        <Style Selector="Button.cancel:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="Red" />
-        </Style>
 
         <Style Selector=".Translations Button">
             <Setter Property="Background" Value="Transparent" />
@@ -93,11 +87,7 @@
                         <Button Content="✕"
                                 Classes="cancel"
                                 Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ClearFilterTextCommand, FallbackValue=''}"
-                                IsVisible="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ShowFilterCancel, FallbackValue='False'}"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Padding="6 4"
-                                Margin="4 0" />
+                                IsVisible="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ShowFilterCancel, FallbackValue='False'}"/>
                     </TextBox.InnerRightContent>
                 </TextBox>
                 
@@ -111,11 +101,7 @@
                         <Button Content="✕"
                                 Classes="cancel"
                                 Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ClearFilterContextTextCommand, FallbackValue=''}"
-                                IsVisible="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ShowFilterContextCancel, FallbackValue='False'}"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Padding="6 4"
-                                Margin="4 0" />
+                                IsVisible="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ShowFilterContextCancel, FallbackValue='False'}"/>
                     </TextBox.InnerRightContent>
                 </TextBox>
                 

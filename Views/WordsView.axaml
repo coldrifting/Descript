@@ -16,7 +16,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     
-    <Grid RowDefinitions="20,*" RowSpacing="8">
+    <Grid RowDefinitions="40,*">
         <TextBox Grid.Row="0" 
                  PlaceholderText="Filter Words by Translation" 
                  Text="{Binding ViewModelRuneChain.FilterText}"
@@ -33,7 +33,7 @@
         </TextBox>
         
         <ScrollViewer Grid.Row="1" x:Name="ScrollView" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
-            <ItemsControl ItemsSource="{Binding ViewModelRuneChain.Words}">
+            <ItemsControl ItemsSource="{Binding ViewModelRuneChain.WordsFiltered}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:RuneChain">
                         <Button HorizontalAlignment="Stretch" 

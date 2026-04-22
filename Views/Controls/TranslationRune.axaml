@@ -28,7 +28,7 @@
     </UserControl.Styles>
     
     <Grid RowDefinitions="*,*" Margin="1">
-        <TextBlock Grid.Row="0" Text="{Binding Translation}"
+        <TextBlock Grid.Row="0" Text="{Binding Translation, FallbackValue='?'}"
                    HorizontalAlignment="Center"
                    FontSize="14"
                    Padding="2 0"

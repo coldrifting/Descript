@@ -19,31 +19,20 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
     public char CurrentSelection { get; set => SetField(ref field, value); } = (char)0;
     public string FilterText    { get; set => SetField(ref field, value); } = string.Empty;
     
-    public RuneSortMode SortMode { get; set => SetField(ref field, value); } = RuneSortMode.ByConfidence;
-    public string SortModeString => SortMode.ToString().Replace("By", "By ");
-
     public bool CanClearFilters => CurrentSelection > 0 || FilterText.Length > 0;
     public bool CanAddRune      => CurrentSelection != 0 && !_runes.ContainsKey(CurrentSelection);
     
     public IEnumerable<Rune> Runes => _runes.Values.OrderBy(r => r.Glyph);
     
     // Returns a filtered and sorted subset of all stored runes
-    public List<Rune> RunesFiltered => (SortMode switch
-        {
-            RuneSortMode.ByConfidence => _runes.Values.OrderBy(OrderByConfidence)
-                .ThenBy(OrderByTranslation)
-                .ThenBy(OrderByGlyph),
-            RuneSortMode.ByTranslation => _runes.Values.OrderBy(OrderByTranslation)
-                .ThenBy(OrderByConfidence)
-                .ThenBy(OrderByGlyph),
-            _ => _runes.Values.OrderBy(OrderByGlyph)
-                .ThenBy(OrderByConfidence)
-                .ThenBy(OrderByTranslation)
-        })
+    public List<Rune> RunesFiltered => _runes.Values
+        .OrderBy(OrderByConfidence)
+        .ThenBy(OrderByTranslation)
+        .ThenBy(OrderByGlyph)
+        .Append(Rune.FromId(CurrentSelection) with { Confidence = ConfidenceLevel.Confirmed })
         .Where(IsMatch)
         .ToList();
     
-
     public void Load()
     {
         Add(DataManagement.Load<Rune>());
@@ -144,17 +133,6 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
         OnPropertyChanged(nameof(FilterText));
         OnPropertyChanged(nameof(CurrentSelection));
     }
-    
-    public void ToggleSortMode()
-    {
-        SortMode = SortMode switch
-        {
-            RuneSortMode.ByTranslation => RuneSortMode.ByConfidence,
-            RuneSortMode.ByConfidence => RuneSortMode.ById,
-            RuneSortMode.ById => RuneSortMode.ByTranslation,
-            _ => SortMode
-        };
-    }
 
     // Helpers
     private static ConfidenceLevel OrderByConfidence(Rune rune)
@@ -174,6 +152,16 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
 
     private bool IsMatch(Rune r)
     {
+        if (r.Id == 0)
+        {
+            return false;
+        }
+        
+        if (r.Confidence == ConfidenceLevel.Confirmed && _runes.ContainsKey(r.Glyph))
+        {
+            return false;
+        }
+        
         return r.Translation.Trim().Contains(FilterText.Trim(), StringComparison.CurrentCultureIgnoreCase) 
                && IsFilterMatch(r.Id, CurrentSelection);
     }
@@ -192,14 +180,9 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
             FilterText = FilterText.ToLower();
         }
         
-        if (e.PropertyName is nameof(SortMode) or nameof(FilterText) or nameof(CurrentSelection))
+        if (e.PropertyName is nameof(FilterText) or nameof(CurrentSelection))
         {
             OnPropertyChanged(nameof(RunesFiltered));
-        }
-
-        if (e.PropertyName is nameof(SortMode))
-        {
-            OnPropertyChanged(nameof(SortModeString));
         }
 
         if (e.PropertyName is nameof(FilterText) or nameof(CurrentSelection))

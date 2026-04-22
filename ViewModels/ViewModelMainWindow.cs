@@ -63,9 +63,15 @@ public partial class ViewModelMainWindow : ViewModelBase
     private void OpenRuneEditDialog(char glyph)
     {
         ViewModelRune.TryGet(glyph, out Rune? rune);
-        if (rune == null)
+        
+        switch (rune)
         {
-            return;
+            case null when new Rune { Glyph = glyph } == Rune.FromId(ViewModelRune.CurrentSelection):
+                ViewModelRune.Add(ViewModelRune.CurrentSelection);
+                rune = new Rune {Glyph = glyph};
+                break;
+            case null:
+                return;
         }
 
         DialogTitle = "Input Rune Translation Guess";
@@ -147,12 +153,6 @@ public partial class ViewModelMainWindow : ViewModelBase
     }
 
     [RelayCommand]
-    private void ToggleRuneListSortMode()
-    {
-        ViewModelRune.ToggleSortMode();
-    }
-
-    [RelayCommand]
     private void AddRune(char glyph)
     {
         ViewModelRune.Add(glyph);
@@ -179,6 +179,10 @@ public partial class ViewModelMainWindow : ViewModelBase
     {
         if (ViewModelRuneSentence.IsSentenceDialogOpen)
         {
+            if (ViewModelRune[glyph] == null)
+            {
+                ViewModelRune.Add(new  Rune {Glyph = glyph});
+            }
             ViewModelRuneSentence.InsertIntoSentenceInput(glyph.ToString());
         }
         else
