@@ -11,24 +11,57 @@
         <ControlTemplate>
             <StackPanel Margin="10 4">
                 <TextBlock
-                    Text="Enter Raw Sentence"
+                    Text="Input Original Sentence"
                     HorizontalAlignment="Center"
                     Margin="5" />
+                <Grid ColumnDefinitions="*,*">
+                    <TextBox Grid.Column="0"
+                        x:Name="SentenceCategoryInput"
+                        PlaceholderText="Category"
+                        FontSize="24"
+                        MinLines="1"
+                        TextWrapping="WrapWithOverflow"
+                        Text="{Binding SentenceDetails.Category, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                        VerticalAlignment="Center"
+                        Margin="0 10 10 0"/>
+                    <TextBox Grid.Column="1"
+                        x:Name="SentenceSubCategoryInput"
+                        PlaceholderText="SubCategory"
+                        FontSize="24"
+                        MinLines="1"
+                        TextWrapping="WrapWithOverflow"
+                        Text="{Binding SentenceDetails.SubCategory, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                        VerticalAlignment="Center"
+                        Margin="0 10 0 0"/>
+                </Grid>
+                <TextBox
+                    x:Name="SentenceContextInput"
+                    PlaceholderText="Context"
+                    FontSize="24"
+                    MinLines="1"
+                    TextWrapping="WrapWithOverflow"
+                    Text="{Binding SentenceDetails.Context, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                    VerticalAlignment="Center"
+                    Margin="0 10 0 0"/>
                 <TextBox
                     x:Name="SentenceInput"
+                    PlaceholderText="Sentence"
                     FontSize="24"
                     MinLines="5"
                     TextWrapping="WrapWithOverflow"
-                    Text="{Binding Sentence, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                    Text="{Binding SentenceDetails.Sentence, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                     SelectionStart="{Binding SelectionStart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                     SelectionEnd="{Binding SelectionEnd, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                     VerticalAlignment="Center"
                     Margin="0 10"/>
                 <Grid ColumnDefinitions="*,*">
-                    <Button Grid.Column="0" Content="Cancel" IsCancel="True" Command="{TemplateBinding CancelDialogCommand}" />
+                    <Button Grid.Column="0" 
+                            Content="Cancel" 
+                            IsCancel="True" 
+                            Command="{TemplateBinding CancelDialogCommand}" />
                     <Button Grid.Column="1"
                             Classes="accent"
-                            Content="Submit"
+                            Content="{Binding SentenceDetails.SubmitButtonText, RelativeSource={RelativeSource TemplatedParent}, FallbackValue='Submit'}"
                             IsEnabled="{Binding IsValid, RelativeSource={RelativeSource TemplatedParent}}"
                             Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}}"
                             HorizontalAlignment="Right"

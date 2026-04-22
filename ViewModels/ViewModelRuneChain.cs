@@ -84,8 +84,8 @@ public class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow) : ViewM
         {
             return false;
         }
-        
-        return Add(RuneChain.FromString(rawWord));
+
+        return IsValidWord(rawWord) && Add(RuneChain.FromString(rawWord));
     }
 
     public void Edit(string wordRaw, string newTranslation, ConfidenceLevel newConfidence)

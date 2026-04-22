@@ -70,10 +70,10 @@
     <dh:DialogHost CloseOnClickAway="True" IsOpen="{Binding ViewModelRuneSentence.IsSentenceDialogOpen, Mode=TwoWay}">
         <dh:DialogHost.DialogContent>
             <dialogs:AddSentenceDialog Width="600"
-                                       Sentence="{Binding ViewModelRuneSentence.SentenceEntry, Mode=TwoWay}"
+                                       SentenceDetails="{Binding ViewModelRuneSentence.SentenceEntry, Mode=TwoWay}"
                                        SelectionStart="{Binding ViewModelRuneSentence.SelectionStart, Mode=TwoWay}"
                                        SelectionEnd="{Binding ViewModelRuneSentence.SelectionEnd, Mode=TwoWay}"
-                                       IsValid="{Binding ViewModelRuneSentence.IsSentenceValid}"
+                                       IsValid="{Binding ViewModelRuneSentence.SentenceEntry.IsValid}"
                                        SubmitCommand="{Binding ViewModelRuneSentence.SubmitSentenceCommand}"
                                        CancelDialogCommand="{Binding ViewModelRuneSentence.CancelDialogCommand}" />
         </dh:DialogHost.DialogContent>
@@ -96,10 +96,29 @@
                                 IsVisible="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ShowFilterCancel, FallbackValue='False'}"
                                 Background="Transparent"
                                 BorderThickness="0"
-                                Padding="4"
+                                Padding="6 4"
                                 Margin="4 0" />
                     </TextBox.InnerRightContent>
                 </TextBox>
+                
+                <TextBox Text="{Binding ViewModelRuneSentence.FilterContextText, Mode=TwoWay}"
+                         PlaceholderText="Filter by Context"
+                         VerticalContentAlignment="Center"
+                         Margin="8 4"
+                         Padding="10 0"
+                         Width="400">
+                    <TextBox.InnerRightContent>
+                        <Button Content="✕"
+                                Classes="cancel"
+                                Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ClearFilterContextTextCommand, FallbackValue=''}"
+                                IsVisible="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ShowFilterContextCancel, FallbackValue='False'}"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Padding="6 4"
+                                Margin="4 0" />
+                    </TextBox.InnerRightContent>
+                </TextBox>
+                
             </StackPanel>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
                 <ItemsControl ItemsSource="{Binding ViewModelRuneSentence.TranslationsFiltered}" Classes="Translations">

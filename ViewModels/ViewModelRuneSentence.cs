@@ -18,11 +18,14 @@ public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWind
     private readonly Dictionary<string, RuneSentence> _translations = new();
 
     public string FilterText { get; set => SetField(ref field, value); } = string.Empty;
+    public string FilterContextText { get; set => SetField(ref field, value); } = string.Empty;
     public bool ShowFilterCancel => FilterText.Length > 0;
+    public bool ShowFilterContextCancel => FilterContextText.Length > 0;
     
     private IEnumerable<RuneSentence> Translations => _translations.Values.OrderBy(s => s.Sentence);
     public IEnumerable<RuneSentenceExtended> TranslationsFiltered => _translations.Values
         .Where(rs => IsSentenceMatch(rs, FilterText))
+        .Where(rs => IsContextMatch(rs, FilterContextText))
         .Select(sentence => new RuneSentenceExtended
         {
             Sentence = sentence.Sentence,
@@ -33,12 +36,13 @@ public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWind
         });
     
     // Add Sentence Dialog
-    private string _sentenceId = "";
+    public RuneSentenceEdit SentenceEntry { get; set => SetField(ref field, value); } = new();
+    
     public bool IsSentenceDialogOpen { get; set => SetField(ref field, value); }
-    public string SentenceEntry { get; set => SetField(ref field, value); } = "";
-    public bool IsSentenceValid { get; set => SetField(ref field, value); }
     public int SelectionStart { get; set => SetField(ref field, value); }
     public int SelectionEnd { get; set => SetField(ref field, value); }
+
+    private const StringSplitOptions SplitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
 
     public void Load()
     {
@@ -71,16 +75,31 @@ public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWind
     [RelayCommand]
     private void OpenAddSentenceDialog()
     {
-        _sentenceId = "";
-        SentenceEntry = "";
+        SentenceEntry = new RuneSentenceEdit
+        {
+            AllSentences = _translations.Values.Select(rs => rs.Sentence)
+        };
         IsSentenceDialogOpen = true;
     }
     
     [RelayCommand]
     private void OpenEditSentenceDialog(string sentence)
     {
-        _sentenceId = sentence;
-        SentenceEntry = sentence;
+        SentenceEntry = new RuneSentenceEdit
+        {
+            AllSentences = _translations.Values.Select(rs => rs.Sentence),
+            
+            OriginalSentence = sentence,
+            OriginalCategory = _translations[sentence].Category,
+            OriginalSubCategory = _translations[sentence].SubCategory,
+            OriginalContext = _translations[sentence].Context,
+            
+            Sentence = sentence,
+            Category = _translations[sentence].Category,
+            SubCategory = _translations[sentence].SubCategory,
+            Context = _translations[sentence].Context
+        };
+        
         IsSentenceDialogOpen = true;
     }
 
@@ -97,20 +116,29 @@ public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWind
         OnPropertyChanged(nameof(TranslationsFiltered));
     }
 
+    [RelayCommand]
+    private void ClearFilterContextText()
+    {
+        FilterContextText = string.Empty;
+        OnPropertyChanged(nameof(TranslationsFiltered));
+    }
+
     public void InsertIntoSentenceInput(string input)
     {
         if (SelectionStart == SelectionEnd)
         {
-            SentenceEntry = SentenceEntry.Insert(Math.Min(SelectionStart, SentenceEntry.Length), input);
+            SentenceEntry.Sentence =
+                SentenceEntry.Sentence.Insert(Math.Min(SelectionStart, SentenceEntry.Sentence.Length), input);
+            
             SelectionEnd = SelectionStart + 1;
             SelectionStart = SelectionEnd;
         }
         else
         {
-            SentenceEntry = SelectionEnd > SelectionStart
-                ? SentenceEntry.Remove(SelectionStart, SelectionEnd - SelectionStart).Insert(SelectionStart, input)
-                : SentenceEntry.Remove(SelectionEnd, SelectionStart - SelectionEnd).Insert(SelectionEnd, input);
-            
+            SentenceEntry.Sentence = SelectionEnd > SelectionStart
+                ? SentenceEntry.Sentence.Remove(SelectionStart, SelectionEnd - SelectionStart).Insert(SelectionStart, input)
+                : SentenceEntry.Sentence.Remove(SelectionEnd, SelectionStart - SelectionEnd).Insert(SelectionEnd, input);
+
             SelectionStart = Math.Min(SelectionStart, SelectionEnd) + 1;
             SelectionEnd = SelectionStart;
         }
@@ -120,53 +148,58 @@ public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWind
     private void SubmitSentence()
     {
         IsSentenceDialogOpen = false;
-        
-        RuneSentence t = ConvertFromSentence(SentenceEntry.Trim());
 
-        _translations.Add(t.Sentence, t);
-        
-        // Remove old sentence if editing
-        if (_sentenceId != t.Sentence)
+        RuneSentence runeSentence = SentenceEntry.ToRuneSentence();
+
+        // Just update category and context
+        if (SentenceEntry.OriginalSentence.Trim() == SentenceEntry.Sentence.Trim())
         {
-            _translations.Remove(_sentenceId);
-            foreach (string se in _sentenceId.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            _translations[runeSentence.Sentence] = runeSentence;
+        }
+        else
+        {
+            _translations.Add(runeSentence.Sentence, runeSentence);
+            foreach (string str in runeSentence.Sentence.Split(' ', SplitOptions))
             {
-                if (!t.Sentence.Contains(se))
+                Vm.ViewModelRuneChain.Add(str);
+            }
+
+            // Remove old sentence and unused rune chains if editing
+            _translations.Remove(SentenceEntry.OriginalSentence);
+            foreach (string se in SentenceEntry.OriginalSentence.Split(' ', SplitOptions))
+            {
+                if (!runeSentence.Sentence.Contains(se))
                 {
                     Vm.ViewModelRuneChain.Remove(se);
                 }
             }
         }
-        
+
         OnPropertyChanged(nameof(TranslationsFiltered));
-    }
-    
-    private RuneSentence ConvertFromSentence(string sentence)
-    {
-        foreach (string str in sentence.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-        {
-            if (ViewModelRuneChain.IsValidWord(str))
-            {
-                Vm.ViewModelRuneChain.Add(str);
-            }
-
-        }
-
-        return RuneSentence.FromString(sentence);
     }
 
     private bool IsSentenceMatch(RuneSentence runeSentence, string sentence)
     {
         string currentTranslations = runeSentence.Sentence
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Split(' ', SplitOptions)
             .Select(s => Vm.ViewModelRuneChain[s]?.Translation ?? "")
             .Aggregate((a, b) => a + b);
         
         return sentence.ToLower()
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Split(' ', SplitOptions)
             .All(filterEntry => 
                 runeSentence.Sentence.ToLower().Contains(filterEntry, StringComparison.CurrentCultureIgnoreCase) || 
                 currentTranslations.ToLower().Contains(filterEntry, StringComparison.CurrentCultureIgnoreCase));
+    }
+
+    private static bool IsContextMatch(RuneSentence runeSentence, string context)
+    {
+        return context.ToLower()
+            .Split(' ', SplitOptions)
+            .All(filterEntry =>
+                runeSentence.Category.ToLower().Contains(filterEntry, StringComparison.CurrentCultureIgnoreCase) ||
+                runeSentence.SubCategory.ToLower().Contains(filterEntry, StringComparison.CurrentCultureIgnoreCase) ||
+                runeSentence.Context.ToLower().Contains(filterEntry, StringComparison.CurrentCultureIgnoreCase));
     }
     
     public bool Add(RuneSentence runeSentence, bool update = true)
@@ -206,7 +239,7 @@ public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWind
     private void DeleteSentence(string sentence)
     {
         // Remove words with no added info
-        foreach (string se in sentence.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        foreach (string se in sentence.Split(' ', SplitOptions))
         {
             Vm.ViewModelRuneChain.Remove(se);
         }
@@ -214,27 +247,21 @@ public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWind
         _translations.Remove(sentence);
         OnPropertyChanged(nameof(TranslationsFiltered));
     }
-
-    private bool IsSentenceOkay()
-    {
-        return !Translations
-            .Select(runeSentence => runeSentence.Sentence)
-            .Contains(SentenceEntry.Trim()) && SentenceEntry.Trim().Length != 0;
-    }
     
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
 
-        if (e.PropertyName is nameof(FilterText))
+        switch (e.PropertyName)
         {
-            OnPropertyChanged(nameof(ShowFilterCancel));
-            OnPropertyChanged(nameof(TranslationsFiltered));
-        }
-        
-        if (e.PropertyName is nameof(SentenceEntry))
-        {
-            IsSentenceValid = IsSentenceOkay();
+            case nameof(FilterText):
+                OnPropertyChanged(nameof(ShowFilterCancel));
+                OnPropertyChanged(nameof(TranslationsFiltered));
+                break;
+            case nameof(FilterContextText):
+                OnPropertyChanged(nameof(ShowFilterContextCancel));
+                OnPropertyChanged(nameof(TranslationsFiltered));
+                break;
         }
     }
 
