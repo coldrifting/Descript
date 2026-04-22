@@ -195,7 +195,7 @@ public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWind
             }
         }
 
-        OnPropertyChanged(nameof(TranslationsFiltered));
+        OnPropertyChanged(nameof(Translations));
     }
 
     private bool IsSentenceMatch(RuneSentence runeSentence, string sentence)
@@ -274,6 +274,10 @@ public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWind
 
         switch (e.PropertyName)
         {
+            case nameof(Translations):
+                OnPropertyChanged(nameof(TranslationsFiltered));
+                break;
+            
             case nameof(SortMode):
                 OnPropertyChanged(nameof(TranslationsFiltered));
                 break;

@@ -135,6 +135,7 @@ public class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow) : ViewM
                 break;
             
             case nameof(Words):
+                OnPropertyChanged(nameof(WordsFiltered));
                 Vm.ViewModelRuneSentence.Refresh();
                 break;
         }
