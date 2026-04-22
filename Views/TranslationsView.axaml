@@ -7,12 +7,18 @@
              xmlns:vm="clr-namespace:Descript.ViewModels"
              xmlns:dialogs="clr-namespace:Descript.Views.Dialogs"
              xmlns:controls="clr-namespace:Descript.Views.Controls"
+             xmlns:utils="clr-namespace:Descript.Utils"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Descript.Views.TranslationsView"
              x:DataType="vm:ViewModelMainWindow">
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <utils:SentenceSortModeDescriptionConverter x:Key="SentenceSortModeDescriptionConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
     <UserControl.Styles>
-
         <Style Selector=".Translations Button">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Padding" Value="4" />
@@ -73,16 +79,15 @@
         </dh:DialogHost.DialogContent>
 
         <Grid RowDefinitions="40,*">
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Background="DimGray">
-                <Button Classes="accent"
+            <Grid Grid.Row="0" ColumnDefinitions="110,*,*,200" Background="DimGray">
+                <Button Grid.Column="0" Classes="accent"
                         Content="Add Sentence"
                         Command="{Binding ViewModelRuneSentence.OpenAddSentenceDialogCommand}" />
-                <TextBox Text="{Binding ViewModelRuneSentence.FilterText, Mode=TwoWay}"
+                <TextBox Grid.Column="1" Text="{Binding ViewModelRuneSentence.FilterText, Mode=TwoWay}"
                          PlaceholderText="Search Sentences"
                          VerticalContentAlignment="Center"
                          Margin="8 4"
-                         Padding="10 0"
-                         Width="400">
+                         Padding="10 0">
                     <TextBox.InnerRightContent>
                         <Button Content="✕"
                                 Classes="cancel"
@@ -91,12 +96,11 @@
                     </TextBox.InnerRightContent>
                 </TextBox>
                 
-                <TextBox Text="{Binding ViewModelRuneSentence.FilterContextText, Mode=TwoWay}"
+                <TextBox Grid.Column="2" Text="{Binding ViewModelRuneSentence.FilterContextText, Mode=TwoWay}"
                          PlaceholderText="Filter by Context"
                          VerticalContentAlignment="Center"
                          Margin="8 4"
-                         Padding="10 0"
-                         Width="400">
+                         Padding="10 0">
                     <TextBox.InnerRightContent>
                         <Button Content="✕"
                                 Classes="cancel"
@@ -105,7 +109,20 @@
                     </TextBox.InnerRightContent>
                 </TextBox>
                 
-            </StackPanel>
+                <ComboBox Grid.Column="3" 
+                          SelectedIndex="0" 
+                          ItemsSource="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.SortModes, FallbackValue=''}"
+                          SelectedItem="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.SortMode, FallbackValue=''}"
+                          Width="180"
+                          Margin="8 4">
+                    <ComboBox.ItemTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding ., Converter={StaticResource SentenceSortModeDescriptionConverter}, FallbackValue=''}" />
+                      </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                
+            </Grid>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
                 <ItemsControl ItemsSource="{Binding ViewModelRuneSentence.TranslationsFiltered}" Classes="Translations">
                     <ItemsControl.ItemTemplate>

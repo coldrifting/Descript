@@ -38,3 +38,18 @@ public class StringNotEmptyConverter : IValueConverter
         throw new NotSupportedException();
     } 
 }
+
+
+public class SentenceSortModeDescriptionConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        SentenceSortMode sortMode = (SentenceSortMode)(value ?? SentenceSortMode.ByCategory);
+        return sortMode.GetDescription();
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotSupportedException();
+    } 
+}

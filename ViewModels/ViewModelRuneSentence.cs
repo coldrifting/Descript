@@ -23,24 +23,44 @@ public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWind
     public bool ShowFilterContextCancel => FilterContextText.Length > 0;
     
     private IEnumerable<RuneSentence> Translations => _translations.Values.OrderBy(s => s.Sentence);
-    public IEnumerable<RuneSentenceExtended> TranslationsFiltered => _translations.Values
+
+    public IEnumerable<RuneSentenceExtended> TranslationsFiltered => OrderBy(_translations.Values
         .Where(rs => IsSentenceMatch(rs, FilterText))
         .Where(rs => IsContextMatch(rs, FilterContextText))
-        .Select(sentence => new RuneSentenceExtended
+        .Select(sentence => RuneSentenceExtended.FromRuneSentence(sentence, GetRuneChains(sentence.Sentence))));
+
+    private IOrderedEnumerable<RuneSentenceExtended> OrderBy(IEnumerable<RuneSentenceExtended> runeSentences)
+    {
+        return SortMode switch
         {
-            Sentence = sentence.Sentence,
-            Category = sentence.Category,
-            SubCategory = sentence.SubCategory,
-            Context = sentence.Context,
-            RuneChains = GetRuneChains(sentence.Sentence)
-        });
-    
+            SentenceSortMode.ByCategory => runeSentences.OrderBy(rs => rs.Category)
+                .ThenBy(rs => rs.SubCategory.ToLower())
+                .ThenBy(rs => rs.SentenceTranslated.ToLower()),
+            SentenceSortMode.ByLeastTranslated => runeSentences.OrderByDescending(rs => rs.NumUntranslatedRuneChains)
+                .ThenBy(rs => rs.Category.ToLower())
+                .ThenBy(rs => rs.SubCategory.ToLower())
+                .ThenBy(rs => rs.SentenceTranslated.ToLower()),
+            _ => runeSentences.OrderBy(rs => rs.NumTranslatedRuneChains)
+                .ThenBy(rs => rs.Category.ToLower())
+                .ThenBy(rs => rs.SubCategory.ToLower())
+                .ThenBy(rs => rs.SentenceTranslated.ToLower())
+        };
+    }
+
     // Add Sentence Dialog
     public RuneSentenceEdit SentenceEntry { get; set => SetField(ref field, value); } = new();
-    
     public bool IsSentenceDialogOpen { get; set => SetField(ref field, value); }
     public int SelectionStart { get; set => SetField(ref field, value); }
     public int SelectionEnd { get; set => SetField(ref field, value); }
+    
+    public SentenceSortMode SortMode { get; set => SetField(ref field, value); } = SentenceSortMode.ByCategory;
+
+    public List<SentenceSortMode> SortModes =>
+    [
+        SentenceSortMode.ByCategory,
+        SentenceSortMode.ByLeastTranslated,
+        SentenceSortMode.ByMostTranslated
+    ];
 
     private const StringSplitOptions SplitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
 
@@ -254,6 +274,9 @@ public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWind
 
         switch (e.PropertyName)
         {
+            case nameof(SortMode):
+                OnPropertyChanged(nameof(TranslationsFiltered));
+                break;
             case nameof(FilterText):
                 OnPropertyChanged(nameof(ShowFilterCancel));
                 OnPropertyChanged(nameof(TranslationsFiltered));
