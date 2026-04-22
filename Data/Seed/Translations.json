@@ -1,9 +1,0 @@
-[
-  {
-    "Id": 0,
-    "WordIds": [0, 3, -1, 4, 1, 5],
-    "PlainWords": ["Cake"],
-    "Category": "Manual",
-    "SubCategory": "Page 3"
-  }
-]

@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:Descript.Models"
+             xmlns:converters="clr-namespace:Avalonia.Controls.Converters;assembly=Avalonia.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Descript.Views.Controls.TranslationRune"
+             x:DataType="models:Rune">
+
+    <UserControl.Resources>
+        <converters:EnumToBoolConverter x:Key="EnumToBoolConverter" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.runeHigh">
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Background" Value="MediumSeaGreen" />
+        </Style>
+        <Style Selector="TextBlock.runeMedium">
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Background" Value="DarkGoldenrod" />
+        </Style>
+        <Style Selector="TextBlock.runeLow">
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Background" Value="IndianRed" />
+        </Style>
+    </UserControl.Styles>
+    
+    <Grid RowDefinitions="*,*" Margin="1">
+        <TextBlock Grid.Row="0" Text="{Binding Translation, FallbackValue='?'}"
+                   HorizontalAlignment="Center"
+                   FontSize="14"
+                   Padding="2 0"
+                   FontWeight="Bold"
+                   Classes.runeLow="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Low}}"
+                   Classes.runeMedium="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Medium}}"
+                   Classes.runeHigh="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.High}}" />
+        
+        <TextBlock Grid.Row="1" Text="{Binding Glyph}"
+                   HorizontalAlignment="Center"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Classes.low="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Low}}"
+                   Classes.medium="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Medium}}"
+                   Classes.high="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.High}}" />
+    </Grid>
+</UserControl>

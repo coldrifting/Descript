@@ -1,6 +1,7 @@
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Descript.Models;
 
 namespace Descript.Views.Dialogs;
 
@@ -27,12 +28,12 @@ public partial class AddSentenceDialog : UserControl
         set => SetValue(SelectionEndProperty, value);
     }
     
-    public static readonly StyledProperty<string> SentenceProperty =
-        AvaloniaProperty.Register<EditTranslationDialog, string>(nameof(Sentence), defaultValue: "");
-    public string Sentence
+    public static readonly StyledProperty<RuneSentenceEdit> SentenceDetailsProperty =
+        AvaloniaProperty.Register<EditTranslationDialog, RuneSentenceEdit>(nameof(SentenceDetails), defaultValue: new RuneSentenceEdit());
+    public RuneSentenceEdit SentenceDetails
     {
-        get => GetValue(SentenceProperty);
-        set => SetValue(SentenceProperty, value);
+        get => GetValue(SentenceDetailsProperty);
+        set => SetValue(SentenceDetailsProperty, value);
     }
 
     public static readonly StyledProperty<bool> IsValidProperty =
@@ -49,5 +50,13 @@ public partial class AddSentenceDialog : UserControl
     {
         get => GetValue(SubmitCommandProperty);
         set => SetValue(SubmitCommandProperty, value);
+    }
+    
+    public static readonly StyledProperty<ICommand> CancelDialogCommandProperty =
+        AvaloniaProperty.Register<EditTranslationDialog, ICommand>(nameof(CancelDialogCommand));
+    public ICommand CancelDialogCommand
+    {
+        get => GetValue(CancelDialogCommandProperty);
+        set => SetValue(CancelDialogCommandProperty, value);
     }
 }

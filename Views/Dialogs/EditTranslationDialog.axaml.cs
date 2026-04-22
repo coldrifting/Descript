@@ -74,6 +74,14 @@ public partial class EditTranslationDialog : UserControl
         get => GetValue(SubmitCommandProperty);
         set => SetValue(SubmitCommandProperty, value);
     }
+    
+    public static readonly StyledProperty<ICommand> CancelDialogCommandProperty =
+        AvaloniaProperty.Register<EditTranslationDialog, ICommand>(nameof(CancelDialogCommand));
+    public ICommand CancelDialogCommand
+    {
+        get => GetValue(CancelDialogCommandProperty);
+        set => SetValue(CancelDialogCommandProperty, value);
+    }
 
     private void TextBox_OnTextChanged(object? sender, TextChangedEventArgs e)
     {

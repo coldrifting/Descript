@@ -1,0 +1,65 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:Descript.Models"
+             xmlns:controls="clr-namespace:Descript.Views.Controls"
+             xmlns:vm="clr-namespace:Descript.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="models:RuneSentenceExtended"
+             x:Class="Descript.Views.Controls.TranslationLine">
+    <Grid ColumnDefinitions="*,250" Background="Transparent">
+        <ItemsControl Grid.Column="0" ItemsSource="{Binding RuneChains}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="models:RuneChainExtended">
+                    <Button
+                        Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenWordEditDialogCommand, FallbackValue=''}"
+                        CommandParameter="{Binding Glyphs}"
+                        IsEnabled="{Binding Confidence}">
+                        <StackPanel>
+                            <controls:TranslationRuneChain IsVisible="{Binding !ShowRunes}" />
+                            <ItemsControl ItemsSource="{Binding Runes}"
+                                          IsVisible="{Binding ShowRunes}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="models:Rune">
+                                        <controls:TranslationRune />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+        <Grid Grid.Column="1" RowDefinitions="16,14,12" Margin="2">
+            <Label Grid.Row="0" FontSize="12" Foreground="Gray" Margin="0" Padding="0"
+                   HorizontalAlignment="Right" Content="{Binding Category}" />
+            <Label Grid.Row="1" FontSize="11" Foreground="Gray" Margin="0" Padding="0"
+                   HorizontalAlignment="Right" Content="{Binding SubCategory}" />
+            <Label Grid.Row="2" FontSize="10" Foreground="Gray" Margin="0" Padding="0"
+                   HorizontalAlignment="Right" Content="{Binding Context}" />
+        </Grid>
+    </Grid>
+
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="Edit"
+                      Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.OpenEditSentenceDialogCommand, FallbackValue=''}"
+                      CommandParameter="{Binding Sentence}" />
+            <MenuItem Header="Delete"
+                      Foreground="OrangeRed"
+                      Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.DeleteSentenceCommand, FallbackValue=''}"
+                      CommandParameter="{Binding Sentence}" />
+        </ContextMenu>
+    </UserControl.ContextMenu>
+</UserControl>
