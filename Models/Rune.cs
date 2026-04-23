@@ -45,4 +45,6 @@ public record Rune
     }
 
     public static UnicodeRange UnicodeRange => new(CodePointStart, 4096);
+
+    public bool IsCurrentSelection { get; set; }
 }

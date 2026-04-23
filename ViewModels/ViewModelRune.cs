@@ -29,7 +29,8 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
         .OrderBy(OrderByConfidence)
         .ThenBy(OrderByTranslation)
         .ThenBy(OrderByGlyph)
-        .Append(Rune.FromId(CurrentSelection) with { Confidence = ConfidenceLevel.Confirmed })
+        .Select(r => r.Id == CurrentSelection ? r with { IsCurrentSelection = true } : r)
+        .Append(Rune.FromId(CurrentSelection) with { Confidence = ConfidenceLevel.Confirmed, IsCurrentSelection = true})
         .Where(IsMatch)
         .ToList();
     

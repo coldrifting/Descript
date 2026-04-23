@@ -35,14 +35,17 @@ public partial class ViewModelRuneSentence(ViewModelMainWindow viewModelMainWind
         {
             SentenceSortMode.ByCategory => runeSentences.OrderBy(rs => rs.Category)
                 .ThenBy(rs => rs.SubCategory.ToLower())
+                .ThenBy(rs => rs.Context.ToLower())
                 .ThenBy(rs => rs.SentenceTranslated.ToLower()),
             SentenceSortMode.ByLeastTranslated => runeSentences.OrderByDescending(rs => rs.NumUntranslatedRuneChains)
                 .ThenBy(rs => rs.Category.ToLower())
                 .ThenBy(rs => rs.SubCategory.ToLower())
+                .ThenBy(rs => rs.Context.ToLower())
                 .ThenBy(rs => rs.SentenceTranslated.ToLower()),
             _ => runeSentences.OrderBy(rs => rs.NumTranslatedRuneChains)
                 .ThenBy(rs => rs.Category.ToLower())
                 .ThenBy(rs => rs.SubCategory.ToLower())
+                .ThenBy(rs => rs.Context.ToLower())
                 .ThenBy(rs => rs.SentenceTranslated.ToLower())
         };
     }

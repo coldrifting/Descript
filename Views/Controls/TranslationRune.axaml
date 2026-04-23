@@ -32,7 +32,7 @@
     <Grid RowDefinitions="*,*" Margin="1">
         <TextBlock Grid.Row="0" Text="{Binding Translation, Converter={StaticResource EmptyStringToQuestionMarkConverter}, FallbackValue='?'}"
                    HorizontalAlignment="Center"
-                   FontSize="14"
+                   FontSize="18"
                    Padding="2 0"
                    FontWeight="Bold"
                    Classes.runeLow="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Low}}"
@@ -41,7 +41,7 @@
         
         <TextBlock Grid.Row="1" Text="{Binding Glyph}"
                    HorizontalAlignment="Center"
-                   FontSize="16"
+                   FontSize="20"
                    FontWeight="Bold"
                    Classes.low="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Low}}"
                    Classes.medium="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Medium}}"

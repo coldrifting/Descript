@@ -36,8 +36,7 @@ public static class DataManagement
         Converters =
         {
             new JsonStringEnumConverter<ConfidenceLevel>()
-        },
-        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+        }
     };
 
     public static T[] Load<T>()
@@ -80,7 +79,7 @@ public static class DataManagement
         try
         {
             Console.WriteLine($"Saving: {fileName}");
-            File.WriteAllText(filePath, Regex.Unescape(json));
+            File.WriteAllText(filePath, json);
         }
         catch (Exception ex)
         {

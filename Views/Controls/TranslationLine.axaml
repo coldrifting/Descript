@@ -12,27 +12,47 @@
         <ItemsControl Grid.Column="0" ItemsSource="{Binding RuneChains}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="models:RuneChainExtended">
-                    <Button
-                        Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenWordEditDialogCommand, FallbackValue=''}"
-                        CommandParameter="{Binding Glyphs}"
-                        IsEnabled="{Binding Confidence}">
-                        <StackPanel>
-                            <controls:TranslationRuneChain IsVisible="{Binding !ShowRunes}" />
-                            <ItemsControl ItemsSource="{Binding Runes}"
-                                          IsVisible="{Binding ShowRunes}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="models:Rune">
-                                        <controls:TranslationRune />
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
+                    <StackPanel Orientation="Vertical">
+                        <Button
+                            Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenWordEditDialogCommand, FallbackValue=''}"
+                            CommandParameter="{Binding Glyphs}"
+                            IsEnabled="{Binding Confidence}"
+                            IsVisible="{Binding !ShowRunes}"
+                            Margin="0 0 4 0"
+                            Padding="4 8">
+                                <controls:TranslationRuneChain IsVisible="{Binding !ShowRunes}" />
+                        </Button>
+                        <StackPanel IsVisible="{Binding ShowRunes}" Margin="0 0 8 0">
+                            <StackPanel Orientation="Horizontal">
+                                <ItemsControl ItemsSource="{Binding Runes}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="models:Rune">
+                                            <Button
+                                                Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenRuneEditDialogCommand, FallbackValue=''}"
+                                                CommandParameter="{Binding Glyph}"
+                                                Padding="0 8">
+                                                <controls:TranslationRune />
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                                <Button
+                                    Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenWordEditDialogCommand, FallbackValue=''}"
+                                    CommandParameter="{Binding Glyphs}"
+                                    IsEnabled="{Binding Confidence}"
+                                    IsVisible="{Binding ShowWordDialogButton}"
+                                    Padding="4 12"
+                                    Margin="4 0"
+                                    Content="+"
+                                    Background="DodgerBlue"/>
+                            </StackPanel>
                         </StackPanel>
-                    </Button>
+                    </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>
