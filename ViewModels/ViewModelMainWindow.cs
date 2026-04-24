@@ -74,7 +74,7 @@ public partial class ViewModelMainWindow : ViewModelBase
                 return;
         }
 
-        DialogTitle = "Input Rune Translation Guess";
+        DialogTitle = $"Input Rune Translation Guess - {glyph}";
         DialogType = DialogType.RuneEdit;
         TranslationCase = CaseConversion.Lowercase;
         _dialogRuneEdit = glyph;
@@ -95,7 +95,7 @@ public partial class ViewModelMainWindow : ViewModelBase
             return;
         }
 
-        DialogTitle = "Input Word Translation Guess";
+        DialogTitle = $"Input Word Translation Guess - {wordRaw}";
         DialogType = DialogType.WordEdit;
         TranslationCase = CaseConversion.Titlecase;
         _dialogWordEdit = wordRaw;
@@ -165,12 +165,22 @@ public partial class ViewModelMainWindow : ViewModelBase
     }
 
     [RelayCommand]
-    private void CopyTextToClipboard(char glyph)
+    private void CopyGlyphToClipboard(char glyph)
     {
         IClipboard? clipboard = ClipboardHelper.GetClipboard();
         if (clipboard is not null)
         {
              clipboard.SetTextAsync(glyph.ToString());
+        }
+    }
+
+    [RelayCommand]
+    private void CopyGlyphsToClipboard(string glyphs)
+    {
+        IClipboard? clipboard = ClipboardHelper.GetClipboard();
+        if (clipboard is not null)
+        {
+             clipboard.SetTextAsync(glyphs);
         }
     }
 

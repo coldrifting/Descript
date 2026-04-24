@@ -24,7 +24,7 @@
     <dh:DialogHost CloseOnClickAway="True" IsOpen="{Binding IsDialogOpen, Mode=TwoWay}">
         <dh:DialogHost.DialogContent>
             <dialogs:EditTranslationDialog
-                Title="Input Translation Guess"
+                Title="{Binding DialogTitle}"
                 Translation="{Binding DialogEntryTranslation, Mode=TwoWay}"
                 TranslationCase="{Binding TranslationCase}"
                 Confidence="{Binding DialogEntryConfidence, Mode=TwoWay}"

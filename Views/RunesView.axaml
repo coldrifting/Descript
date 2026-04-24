@@ -81,7 +81,7 @@
                                               Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenRuneEditDialogCommand, FallbackValue=''}" 
                                               CommandParameter="{Binding Glyph}" />
                                     <MenuItem Header="Copy" 
-                                              Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).CopyTextToClipboardCommand, FallbackValue=''}" 
+                                              Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).CopyGlyphToClipboardCommand, FallbackValue=''}" 
                                               CommandParameter="{Binding Glyph}" />
                                     <MenuItem Header="Delete" 
                                               Foreground="OrangeRed"

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using CommunityToolkit.Mvvm.Input;
 using Descript.Data;
 using Descript.Interfaces;
 using Descript.Models;
@@ -11,7 +12,7 @@ using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels;
 
-public class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow) : ViewModelBase, ILoadSave
+public partial class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow) : ViewModelBase, ILoadSave
 {
     private ViewModelMainWindow Vm { get; } = viewModelMainWindow;
 
@@ -37,7 +38,20 @@ public class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow) : ViewM
     }
     
     public RuneChain? this[string index] => _allWords.GetValueOrDefault(index);
-
+    
+    [RelayCommand]
+    private void Primary(string glyphs)
+    {
+        if (Vm.ViewModelRuneSentence.IsSentenceDialogOpen)
+        {
+            Vm.ViewModelRuneSentence.InsertIntoSentenceInput(glyphs);
+        }
+        else
+        {
+            Vm.OpenWordEditDialogCommand.Execute(glyphs);
+        }
+    }
+    
     public bool TryGet(string word, [MaybeNullWhen(false)] out RuneChain runeChain)
     {
         runeChain = _allWords.Values.FirstOrDefault(runeChain => runeChain.Equals(word));

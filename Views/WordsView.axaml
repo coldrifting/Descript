@@ -38,7 +38,7 @@
                     <DataTemplate DataType="models:RuneChain">
                         <Button HorizontalAlignment="Stretch" 
                                 Theme="{StaticResource GridItem}"
-                                Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenWordEditDialogCommand, FallbackValue=''}"
+                                Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneChain.PrimaryCommand, FallbackValue=''}"
                                 CommandParameter="{Binding Glyphs}" >
                             <StackPanel Orientation="Horizontal">
                                 <Label Content="{Binding Glyphs}"
@@ -53,6 +53,16 @@
                                        IsVisible="{Binding Translation, Converter={StaticResource StringNotEmptyConverter}}"
                                        Foreground="{Binding Confidence, Converter={StaticResource ConfidenceToBrushConverter}}"/>
                             </StackPanel>
+                            <Button.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Edit" 
+                                          Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenWordEditDialogCommand, FallbackValue=''}" 
+                                          CommandParameter="{Binding Glyphs}" />
+                                <MenuItem Header="Copy" 
+                                          Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).CopyGlyphsToClipboardCommand, FallbackValue=''}" 
+                                          CommandParameter="{Binding Glyphs}" />
+                            </ContextMenu>
+                        </Button.ContextMenu>
                         </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
