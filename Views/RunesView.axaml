@@ -41,8 +41,11 @@
         </TextBox>
         
         <ScrollViewer Grid.Row="2" x:Name="ScrollView" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
-            <ItemsControl ItemsSource="{Binding ViewModelRune.RunesFiltered}">
-                <ItemsControl.ItemTemplate>
+            <ItemsRepeater ItemsSource="{Binding ViewModelRune.RunesFiltered}">
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout MinColumnSpacing="2" MinRowSpacing="2" Orientation="Horizontal" />
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
                     <DataTemplate DataType="models:Rune">
                         <Button Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).PrimaryCommand, FallbackValue=''}"
                                 CommandParameter="{Binding Glyph}"
@@ -88,13 +91,8 @@
                             </Button.ContextMenu>
                         </Button>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Margin="2" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
         </ScrollViewer>
     </Grid>
 </UserControl>

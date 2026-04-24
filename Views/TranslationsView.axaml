@@ -60,10 +60,9 @@
         <Style Selector="Button.rune:pressed > Grid > TextBlock">
             <Setter Property="Foreground" Value="DodgerBlue" />
         </Style>
-
-        <Style Selector=".Translations > ContentPresenter">
-            <Setter Property="BorderBrush" Value="DimGray" />
-            <Setter Property="BorderThickness" Value="0 0 0 1" />
+        
+        <Style Selector=".Translations > ContentPresenter:nth-child(2n)">
+            <Setter Property="Background" Value="#44444444" />
         </Style>
     </UserControl.Styles>
 
@@ -83,7 +82,7 @@
                 <Button Grid.Column="0" Classes="accent"
                         Content="Add Sentence"
                         Command="{Binding ViewModelRuneSentence.OpenAddSentenceDialogCommand}" />
-                <TextBox Grid.Column="1" Text="{Binding ViewModelRuneSentence.FilterText, Mode=TwoWay}"
+                <TextBox Grid.Column="1" Text="{Binding ViewModelRuneSentence.FilterText, Delay=300, Mode=TwoWay}"
                          PlaceholderText="Search Sentences"
                          VerticalContentAlignment="Center"
                          Margin="8 4"
@@ -96,7 +95,7 @@
                     </TextBox.InnerRightContent>
                 </TextBox>
                 
-                <TextBox Grid.Column="2" Text="{Binding ViewModelRuneSentence.FilterContextText, Mode=TwoWay}"
+                <TextBox Grid.Column="2" Text="{Binding ViewModelRuneSentence.FilterContextText, Delay=300, Mode=TwoWay}"
                          PlaceholderText="Filter by Context"
                          VerticalContentAlignment="Center"
                          Margin="8 4"
@@ -125,16 +124,16 @@
             </Grid>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
                 <ItemsControl ItemsSource="{Binding ViewModelRuneSentence.TranslationsFiltered}" Classes="Translations">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="models:RuneSentenceExtended">
-                            <controls:TranslationLine/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Vertical"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="models:RuneSentenceExtended">
+                            <controls:TranslationLine Classes="Translation"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
         </Grid>

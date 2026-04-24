@@ -17,14 +17,13 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
     private readonly Dictionary<char, Rune> _runes = new();
 
     public char CurrentSelection { get; set => SetField(ref field, value); } = (char)0;
-    public string FilterText    { get; set => SetField(ref field, value); } = string.Empty;
+    public string FilterText    { get; set => SetField(ref field, value.ToLower()); } = string.Empty;
     
     public bool CanClearFilters => CurrentSelection > 0 || FilterText.Length > 0;
     public bool CanAddRune      => CurrentSelection != 0 && !_runes.ContainsKey(CurrentSelection);
     
     public IEnumerable<Rune> Runes => _runes.Values.OrderBy(r => r.Glyph);
     
-    // Returns a filtered and sorted subset of all stored runes
     public List<Rune> RunesFiltered => _runes.Values
         .OrderBy(OrderByConfidence)
         .ThenBy(OrderByTranslation)
@@ -176,25 +175,27 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
     {
         base.OnPropertyChanged(e);
         
-        if (e.PropertyName is nameof(FilterText))
-        {
-            FilterText = FilterText.ToLower();
-        }
         
         if (e.PropertyName is nameof(FilterText) or nameof(CurrentSelection))
         {
             OnPropertyChanged(nameof(RunesFiltered));
-        }
-
-        if (e.PropertyName is nameof(FilterText) or nameof(CurrentSelection))
-        {
             OnPropertyChanged(nameof(CanClearFilters));
         }
 
         if (e.PropertyName is nameof(RunesFiltered))
         {
             OnPropertyChanged(nameof(CanAddRune));
+        }
+
+        if (e.PropertyName is nameof(Runes))
+        {
+            OnPropertyChanged(nameof(RunesFiltered));
             Vm.ViewModelRuneSentence.Refresh();
+        }
+
+        if (e.PropertyName is nameof(CurrentSelection))
+        {
+            OnPropertyChanged(nameof(RunesFiltered));
         }
     }
 }
