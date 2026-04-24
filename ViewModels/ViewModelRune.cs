@@ -56,7 +56,7 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
         {
             if (update)
             {
-                OnPropertyChanged(nameof(RunesFiltered));
+                OnPropertyChanged(nameof(Runes));
             }
 
             return true;
@@ -79,7 +79,7 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
 
         if (updated)
         {
-            OnPropertyChanged(nameof(RunesFiltered));
+            OnPropertyChanged(nameof(Runes));
         }
     }
 
@@ -94,7 +94,7 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
             {
                 _runes[glyph] = rune with { Translation = newTranslation, Confidence = newConfidence };
                 
-                OnPropertyChanged(nameof(RunesFiltered));
+                OnPropertyChanged(nameof(Runes));
             }
         }
         else
@@ -107,7 +107,7 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
     {
         if (_runes.Remove(glyph, out Rune? _))
         {
-            OnPropertyChanged(nameof(RunesFiltered));
+            OnPropertyChanged(nameof(Runes));
         }
         else
         {
@@ -174,7 +174,6 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
-        
         
         if (e.PropertyName is nameof(FilterText) or nameof(CurrentSelection))
         {
