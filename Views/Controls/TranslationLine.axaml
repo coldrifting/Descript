@@ -8,11 +8,11 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="models:RuneSentenceExtended"
              x:Class="Descript.Views.Controls.TranslationLine">
-    <Grid ColumnDefinitions="*,250" Background="Transparent">
+    <Grid ColumnDefinitions="*,Auto" Background="Transparent">
         <ItemsControl Grid.Column="0" ItemsSource="{Binding RuneChains}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="models:RuneChainExtended">
-                    <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Vertical" Margin="8 0 0 0">
                         <Button
                             Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenWordEditDialogCommand, FallbackValue=''}"
                             CommandParameter="{Binding Glyphs}"

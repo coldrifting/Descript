@@ -6,8 +6,9 @@
              xmlns:vm="clr-namespace:Descript.ViewModels"
              xmlns:utils="clr-namespace:Descript.Utils"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Descript.Views.WordsView"
-             x:DataType="vm:ViewModelMainWindow">
+             x:Class="Descript.Views.RuneChainsView"
+             x:DataType="vm:ViewModelRuneChain"
+             x:Name="RuneChainsControl">
     
     <UserControl.Resources>
         <ResourceDictionary>
@@ -19,26 +20,26 @@
     <Grid RowDefinitions="40,*">
         <TextBox Grid.Row="0" 
                  PlaceholderText="Filter Words by Translation" 
-                 Text="{Binding ViewModelRuneChain.FilterText}"
+                 Text="{Binding FilterText}"
                  Margin="0 8">
             <TextBox.InnerRightContent>
                 <Button Grid.Column="0"
                         HorizontalAlignment="Center"
-                        Theme="{StaticResource DeleteButtonTheme}"
-                        Content="X"
+                        Classes="cancel"
+                        Content="x"
                         Focusable="False"
-                        IsEnabled="{Binding ViewModelRune.CanClearFilters}"
-                        Command="{Binding ClearRuneListFiltersCommand}" />
+                        IsVisible="{Binding CanClearFilters}"
+                        Command="{Binding ClearFiltersCommand}" />
             </TextBox.InnerRightContent>
         </TextBox>
         
         <ScrollViewer Grid.Row="1" x:Name="ScrollView" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
-            <ItemsControl ItemsSource="{Binding ViewModelRuneChain.WordsFiltered}">
+            <ItemsControl ItemsSource="{Binding WordsFiltered}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:RuneChain">
                         <Button HorizontalAlignment="Stretch" 
                                 Theme="{StaticResource GridItem}"
-                                Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneChain.PrimaryCommand, FallbackValue=''}"
+                                Command="{Binding #RuneChainsControl.((vm:ViewModelRuneChain)DataContext).PrimaryCommand, FallbackValue=''}"
                                 CommandParameter="{Binding Glyphs}" >
                             <StackPanel Orientation="Horizontal">
                                 <Label Content="{Binding Glyphs}"
@@ -56,10 +57,10 @@
                             <Button.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Edit" 
-                                          Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenWordEditDialogCommand, FallbackValue=''}" 
+                                          Command="{Binding #RuneChainsControl.((vm:ViewModelRuneChain)DataContext).EditChainCommand, FallbackValue=''}" 
                                           CommandParameter="{Binding Glyphs}" />
                                 <MenuItem Header="Copy" 
-                                          Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).CopyGlyphsToClipboardCommand, FallbackValue=''}" 
+                                          Command="{Binding #RuneChainsControl.((vm:ViewModelRuneChain)DataContext).CopyChainCommand, FallbackValue=''}" 
                                           CommandParameter="{Binding Glyphs}" />
                             </ContextMenu>
                         </Button.ContextMenu>

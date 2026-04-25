@@ -10,7 +10,7 @@
              xmlns:utils="clr-namespace:Descript.Utils"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Descript.Views.TranslationsView"
-             x:DataType="vm:ViewModelMainWindow">
+             x:DataType="vm:ViewModelRuneSentence">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -66,23 +66,23 @@
         </Style>
     </UserControl.Styles>
 
-    <dh:DialogHost CloseOnClickAway="True" IsOpen="{Binding ViewModelRuneSentence.IsSentenceDialogOpen, Mode=TwoWay}">
+    <dh:DialogHost CloseOnClickAway="True" IsOpen="{Binding IsSentenceDialogOpen, Mode=TwoWay}">
         <dh:DialogHost.DialogContent>
             <dialogs:AddSentenceDialog Width="600"
-                                       SentenceDetails="{Binding ViewModelRuneSentence.SentenceEntry, Mode=TwoWay}"
-                                       SelectionStart="{Binding ViewModelRuneSentence.SelectionStart, Mode=TwoWay}"
-                                       SelectionEnd="{Binding ViewModelRuneSentence.SelectionEnd, Mode=TwoWay}"
-                                       IsValid="{Binding ViewModelRuneSentence.SentenceEntry.IsValid}"
-                                       SubmitCommand="{Binding ViewModelRuneSentence.SubmitSentenceCommand}"
-                                       CancelDialogCommand="{Binding ViewModelRuneSentence.CancelDialogCommand}" />
+                                       SentenceDetails="{Binding SentenceEntry, Mode=TwoWay}"
+                                       SelectionStart="{Binding SelectionStart, Mode=TwoWay}"
+                                       SelectionEnd="{Binding SelectionEnd, Mode=TwoWay}"
+                                       IsValid="{Binding SentenceEntry.IsValid}"
+                                       SubmitCommand="{Binding SubmitSentenceCommand}"
+                                       CancelDialogCommand="{Binding CancelDialogCommand}" />
         </dh:DialogHost.DialogContent>
 
         <Grid RowDefinitions="40,*">
             <Grid Grid.Row="0" ColumnDefinitions="110,*,*,200" Background="DimGray">
                 <Button Grid.Column="0" Classes="accent"
                         Content="Add Sentence"
-                        Command="{Binding ViewModelRuneSentence.OpenAddSentenceDialogCommand}" />
-                <TextBox Grid.Column="1" Text="{Binding ViewModelRuneSentence.FilterText, Delay=300, Mode=TwoWay}"
+                        Command="{Binding OpenAddSentenceDialogCommand}" />
+                <TextBox Grid.Column="1" Text="{Binding FilterText, Delay=300, Mode=TwoWay}"
                          PlaceholderText="Search Sentences"
                          VerticalContentAlignment="Center"
                          Margin="8 4"
@@ -90,12 +90,12 @@
                     <TextBox.InnerRightContent>
                         <Button Content="✕"
                                 Classes="cancel"
-                                Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ClearFilterTextCommand, FallbackValue=''}"
-                                IsVisible="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ShowFilterCancel, FallbackValue='False'}"/>
+                                Command="{Binding ClearFilterTextCommand, FallbackValue=''}"
+                                IsVisible="{Binding ShowFilterCancel, FallbackValue='False'}"/>
                     </TextBox.InnerRightContent>
                 </TextBox>
                 
-                <TextBox Grid.Column="2" Text="{Binding ViewModelRuneSentence.FilterContextText, Delay=300, Mode=TwoWay}"
+                <TextBox Grid.Column="2" Text="{Binding FilterContextText, Delay=300, Mode=TwoWay}"
                          PlaceholderText="Filter by Context"
                          VerticalContentAlignment="Center"
                          Margin="8 4"
@@ -103,15 +103,15 @@
                     <TextBox.InnerRightContent>
                         <Button Content="✕"
                                 Classes="cancel"
-                                Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ClearFilterContextTextCommand, FallbackValue=''}"
-                                IsVisible="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.ShowFilterContextCancel, FallbackValue='False'}"/>
+                                Command="{Binding ClearFilterContextTextCommand, FallbackValue=''}"
+                                IsVisible="{Binding ShowFilterContextCancel, FallbackValue='False'}"/>
                     </TextBox.InnerRightContent>
                 </TextBox>
                 
                 <ComboBox Grid.Column="3" 
                           SelectedIndex="0" 
-                          ItemsSource="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.SortModes, FallbackValue=''}"
-                          SelectedItem="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).ViewModelRuneSentence.SortMode, FallbackValue=''}"
+                          ItemsSource="{Binding SortModes, FallbackValue=''}"
+                          SelectedItem="{Binding SortMode, FallbackValue=''}"
                           Width="180"
                           Margin="8 4">
                     <ComboBox.ItemTemplate>
@@ -123,7 +123,7 @@
                 
             </Grid>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
-                <ItemsControl ItemsSource="{Binding ViewModelRuneSentence.TranslationsFiltered}" Classes="Translations">
+                <ItemsControl ItemsSource="{Binding TranslationsFiltered}" Classes="Translations">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Vertical"/>

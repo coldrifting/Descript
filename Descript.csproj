@@ -49,7 +49,7 @@
         <DependentUpon>SentenceView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
-      <Compile Update="Views\WordsView.axaml.cs">
+      <Compile Update="Views\RuneChainsView.axaml.cs">
         <DependentUpon>WordView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>

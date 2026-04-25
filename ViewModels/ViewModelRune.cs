@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Avalonia.Input.Platform;
+using CommunityToolkit.Mvvm.Input;
 using Descript.Data;
 using Descript.Interfaces;
 using Descript.Models;
+using Descript.Utils;
 using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels;
 
-public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : ViewModelBase, ILoadSave
+public partial class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : ViewModelBase, ILoadSave
 {
     private ViewModelMainWindow Vm { get; set; } = viewModelMainWindow;
     
@@ -125,7 +128,7 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
         return false;
     }
 
-    public void ClearFilters()
+    private void ClearFilters()
     {
         CurrentSelection = (char)0;
         FilterText = string.Empty;
@@ -169,6 +172,44 @@ public sealed class ViewModelRune(ViewModelMainWindow viewModelMainWindow) : Vie
     private static bool IsFilterMatch(int num, int filter)
     {
         return (filter & num) == filter;
+    }
+
+    [RelayCommand]
+    private void AddRune(char glyph)
+    {
+        Add(glyph);
+    }
+    
+    [RelayCommand]
+    private void EditRune(char glyph)
+    {
+        Vm.OpenRuneEditDialogCommand.Execute(glyph);
+    }
+
+    [RelayCommand]
+    private void Primary(char glyph)
+    {
+        if (Vm.ViewModelRuneSentence.IsSentenceDialogOpen)
+        {
+            Vm.ViewModelRuneSentence.InsertIntoSentenceInput(glyph.ToString());
+        }
+        else
+        {
+            Vm.OpenRuneEditDialogCommand.Execute(glyph);
+        }
+    }
+    
+    [RelayCommand]
+    private void CopyRune(char glyph)
+    {
+        IClipboard? clipboard = ClipboardHelper.GetClipboard();
+        clipboard?.SetTextAsync(glyph.ToString());
+    }
+    
+    [RelayCommand]
+    private void ClearRuneListFilters()
+    {
+        ClearFilters();
     }
     
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)

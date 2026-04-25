@@ -10,6 +10,7 @@
         mc:Ignorable="d" d:DesignWidth="1080" d:DesignHeight="720"
         x:Class="Descript.Views.MainWindow"
         x:DataType="vm:ViewModelMainWindow"
+        x:Name="Window"
         Icon="/Assets/avalonia-logo.ico"
         Title="Descript">
 
@@ -43,10 +44,17 @@
                                     Value="{Binding IsRuneListShown}"
                                     ToggleCommand="{Binding ShowRunesListCommand}" />
                 </StackPanel>
-                <views:RunesView Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsRuneListShown}" />
-                <views:WordsView Grid.Row="1" Grid.Column="0" IsVisible="{Binding !IsRuneListShown}" />
+                
+                <views:RunesView Grid.Row="1" Grid.Column="0" 
+                                 DataContext="{Binding ViewModelRune}"
+                                 IsVisible="{Binding #Window.((vm:ViewModelMainWindow)DataContext).IsRuneListShown, FallbackValue='True'}" />
+                
+                <views:RuneChainsView Grid.Row="1" Grid.Column="0" 
+                                 DataContext="{Binding ViewModelRuneChain}"
+                                 IsVisible="{Binding !#Window.((vm:ViewModelMainWindow)DataContext).IsRuneListShown, FallbackValue='False'}" />
             </Grid>
-            <views:TranslationsView Grid.Column="1" />
+            <views:TranslationsView Grid.Column="1" 
+                                    DataContext="{Binding ViewModelRuneSentence}" />
         </Grid>
     </dh:DialogHost>
 

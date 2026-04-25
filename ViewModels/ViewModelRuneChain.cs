@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.Input;
 using Descript.Data;
 using Descript.Interfaces;
@@ -17,7 +18,7 @@ public partial class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow)
     private ViewModelMainWindow Vm { get; } = viewModelMainWindow;
 
     private readonly Dictionary<string, RuneChain> _allWords = new();
-
+    
     public IEnumerable<RuneChain> Words => _allWords.Values.OrderBy(word => word.Glyphs);
     public IList<RuneChain> WordsFiltered => Words
         .Where(word => word.Translation.ContainsTrimmed(FilterText))
@@ -26,6 +27,13 @@ public partial class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow)
         .ToList();
 
     public string FilterText { get; set => SetField(ref field, value); } = string.Empty;
+    public bool CanClearFilters => FilterText.Length > 0;
+
+    [RelayCommand]
+    private void ClearFilters()
+    {
+        FilterText = string.Empty;
+    }
     
     public void Load()
     {
@@ -38,19 +46,6 @@ public partial class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow)
     }
     
     public RuneChain? this[string index] => _allWords.GetValueOrDefault(index);
-    
-    [RelayCommand]
-    private void Primary(string glyphs)
-    {
-        if (Vm.ViewModelRuneSentence.IsSentenceDialogOpen)
-        {
-            Vm.ViewModelRuneSentence.InsertIntoSentenceInput(glyphs);
-        }
-        else
-        {
-            Vm.OpenWordEditDialogCommand.Execute(glyphs);
-        }
-    }
     
     public bool TryGet(string word, [MaybeNullWhen(false)] out RuneChain runeChain)
     {
@@ -138,6 +133,35 @@ public partial class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow)
         return str.ToCharArray().All(c => Rune.CodePointStart <= c && c <= Rune.CodePointStart + 4096);
     }
     
+    [RelayCommand]
+    private void Primary(string glyphs)
+    {
+        if (Vm.ViewModelRuneSentence.IsSentenceDialogOpen)
+        {
+            Vm.ViewModelRuneSentence.InsertIntoSentenceInput(glyphs);
+        }
+        else
+        {
+            Vm.OpenWordEditDialogCommand.Execute(glyphs);
+        }
+    }
+
+    [RelayCommand]
+    private void EditChain(string glyphs)
+    {
+        Vm.OpenWordEditDialogCommand.Execute(glyphs);
+    }
+    
+    [RelayCommand]
+    private void CopyChain(string glyphs)
+    {
+        IClipboard? clipboard = ClipboardHelper.GetClipboard();
+        if (clipboard is not null)
+        {
+             clipboard.SetTextAsync(glyphs);
+        }
+    }
+    
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
@@ -145,6 +169,7 @@ public partial class ViewModelRuneChain(ViewModelMainWindow viewModelMainWindow)
         switch (e.PropertyName)
         {
             case nameof(FilterText):
+                OnPropertyChanged(nameof(CanClearFilters));
                 OnPropertyChanged(nameof(WordsFiltered));
                 break;
             

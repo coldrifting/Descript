@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.Input;
 using Descript.Models;
-using Descript.Utils;
 using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels;
@@ -34,6 +32,14 @@ public partial class ViewModelMainWindow : ViewModelBase
         ViewModelRune.Save();
         ViewModelRuneChain.Save();
         ViewModelRuneSentence.Save();
+    }
+    
+    public bool IsRuneListShown { get; set => SetField(ref field, value); } = true;
+    
+    [RelayCommand]
+    private void ShowRunesList(bool shouldShowRunesList)
+    {
+        IsRuneListShown = shouldShowRunesList;
     }
     
     // Edit Rune Modal Dialog
@@ -143,75 +149,10 @@ public partial class ViewModelMainWindow : ViewModelBase
         DialogType = DialogType.None;
         IsDialogOpen = false;
     }
-    
-    // Runes List 
-    
-    [RelayCommand]
-    private void ClearRuneListFilters()
-    {
-        ViewModelRune.ClearFilters();
-    }
-
-    [RelayCommand]
-    private void AddRune(char glyph)
-    {
-        ViewModelRune.Add(glyph);
-    }
-    
-    [RelayCommand]
-    private void DeleteRune(char glyph)
-    {
-        ViewModelRune.Delete(glyph);
-    }
-
-    [RelayCommand]
-    private void CopyGlyphToClipboard(char glyph)
-    {
-        IClipboard? clipboard = ClipboardHelper.GetClipboard();
-        if (clipboard is not null)
-        {
-             clipboard.SetTextAsync(glyph.ToString());
-        }
-    }
-
-    [RelayCommand]
-    private void CopyGlyphsToClipboard(string glyphs)
-    {
-        IClipboard? clipboard = ClipboardHelper.GetClipboard();
-        if (clipboard is not null)
-        {
-             clipboard.SetTextAsync(glyphs);
-        }
-    }
-
-    [RelayCommand]
-    private void Primary(char glyph)
-    {
-        if (ViewModelRuneSentence.IsSentenceDialogOpen)
-        {
-            if (ViewModelRune[glyph] == null)
-            {
-                ViewModelRune.Add(new  Rune {Glyph = glyph});
-            }
-            ViewModelRuneSentence.InsertIntoSentenceInput(glyph.ToString());
-        }
-        else
-        {
-            OpenRuneEditDialog(glyph);
-        }
-    }
 
     private bool IsDialogValid()
     {
         return DialogEntryTranslation.Trim() != string.Empty || DialogEntryConfidence == ConfidenceLevel.Low;
-    }
-
-    public bool IsRuneListShown { get; set => SetField(ref field, value); } = true;
-    
-    [RelayCommand]
-    private void ShowRunesList(bool shouldShowRunesList)
-    {
-        IsRuneListShown = shouldShowRunesList;
     }
     
     // Keep everything synced

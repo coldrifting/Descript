@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace Descript.Views;
 
-public partial class WordsView : UserControl
+public partial class RuneChainsView : UserControl
 {
-    public WordsView()
+    public RuneChainsView()
     {
         InitializeComponent();
     }

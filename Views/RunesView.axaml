@@ -8,7 +8,8 @@
              xmlns:utils="clr-namespace:Descript.Utils"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Descript.Views.RunesView"
-             x:DataType="vm:ViewModelMainWindow">
+             x:DataType="vm:ViewModelRune"
+             x:Name="RunesControl">
     
     <UserControl.Resources>
         <ResourceDictionary>
@@ -27,27 +28,27 @@
         
         <controls:SegmentSelectControl Grid.Row="0" 
                                        AccentColor="{DynamicResource SystemAccentColor}"
-                                       Selection="{Binding ViewModelRune.CurrentSelection, Mode=TwoWay}" />
+                                       Selection="{Binding CurrentSelection, Mode=TwoWay}" />
                     
         <TextBox Grid.Row="1" PlaceholderText="Filter Runes by Translation" 
-                 Text="{Binding ViewModelRune.FilterText}">
+                 Text="{Binding FilterText}">
             <TextBox.InnerRightContent>
                 <Button Grid.Column="0"
                         Content="x"
                         Classes="cancel"
-                        IsVisible="{Binding ViewModelRune.CanClearFilters}"
+                        IsVisible="{Binding CanClearFilters}"
                         Command="{Binding ClearRuneListFiltersCommand}" />
             </TextBox.InnerRightContent>
         </TextBox>
         
         <ScrollViewer Grid.Row="2" x:Name="ScrollView" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
-            <ItemsRepeater ItemsSource="{Binding ViewModelRune.RunesFiltered}">
+            <ItemsRepeater ItemsSource="{Binding RunesFiltered}">
                 <ItemsRepeater.Layout>
                     <UniformGridLayout MinColumnSpacing="2" MinRowSpacing="2" Orientation="Horizontal" />
                 </ItemsRepeater.Layout>
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate DataType="models:Rune">
-                        <Button Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).PrimaryCommand, FallbackValue=''}"
+                        <Button Command="{Binding #RunesControl.((vm:ViewModelRune)DataContext).PrimaryCommand, FallbackValue=''}"
                                 CommandParameter="{Binding Glyph}"
                                 Focusable="False"
                                 Width="54" 
@@ -78,14 +79,10 @@
                             <Button.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Edit" 
-                                              Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).OpenRuneEditDialogCommand, FallbackValue=''}" 
+                                              Command="{Binding #RunesControl.((vm:ViewModelRune)DataContext).EditRuneCommand, FallbackValue=''}" 
                                               CommandParameter="{Binding Glyph}" />
                                     <MenuItem Header="Copy" 
-                                              Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).CopyGlyphToClipboardCommand, FallbackValue=''}" 
-                                              CommandParameter="{Binding Glyph}" />
-                                    <MenuItem Header="Delete" 
-                                              Foreground="OrangeRed"
-                                              Command="{Binding $parent[Window].((vm:ViewModelMainWindow)DataContext).DeleteRuneCommand, FallbackValue=''}" 
+                                              Command="{Binding #RunesControl.((vm:ViewModelRune)DataContext).CopyRuneCommand, FallbackValue=''}" 
                                               CommandParameter="{Binding Glyph}" />
                                 </ContextMenu>
                             </Button.ContextMenu>
