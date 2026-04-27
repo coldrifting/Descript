@@ -112,7 +112,25 @@
                 </DataTemplate>
                 <!-- Must be below to be selected last -->
                 <DataTemplate DataType="{x:Type models:PhraseBase}">
-                        <TextBlock Text="{Binding Glyphs}" Classes.phraseAbsolute="true"/>
+                        <TextBlock Text="{Binding Glyphs}" Classes.phraseAbsolute="true">
+                            <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Copy"
+                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelPhrases.CopyCommand, FallbackValue=''}"
+                                              CommandParameter="{Binding Glyphs}" />
+                                    <MenuItem Header="Filter"
+                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.FilterCommand, FallbackValue=''}"
+                                              CommandParameter="{Binding Glyphs}" />
+                                    <MenuItem Header="Edit"
+                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.Dialog.OpenCommand, FallbackValue=''}"
+                                              CommandParameter="{Binding #SentenceItem.((models:Sentence)DataContext).OriginalSentence, FallbackValue=''}" />
+                                    <MenuItem Header="Delete"
+                                              Foreground="OrangeRed"
+                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.DeleteSentenceCommand, FallbackValue=''}"
+                                              CommandParameter="{Binding #SentenceItem.((models:Sentence)DataContext).OriginalSentence, FallbackValue=''}" />
+                                </ContextMenu>
+                            </TextBlock.ContextMenu>
+                        </TextBlock>
                 </DataTemplate>
             </ItemsControl.DataTemplates>
             <ItemsControl.ItemsPanel>
