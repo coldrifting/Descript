@@ -16,13 +16,15 @@ public partial class Sentence : ViewModelBase
     public string SubCategory { get; set => SetField(ref field, value); } = string.Empty;
     public string Context { get; set => SetField(ref field, value); } = string.Empty;
     
-    public float TranslatedPhrasesPercentage => 
-        Phrases.Count(p => p is Phrase { Confidence: ConfidenceLevel.High }) / 
-        (float)Phrases.Count(p => p is Phrase px && px.Confidence != ConfidenceLevel.Confirmed);
-    
-    public float UntranslatedPhrasesPercentage => 
-        Phrases.Count(p => p is Phrase { Confidence: ConfidenceLevel.Low or ConfidenceLevel.Medium }) / 
-        (float)Phrases.Count(p => p is Phrase px && px.Confidence != ConfidenceLevel.Confirmed);
+    public float NumUntranslatedPhrases =>
+        Phrases.Count(p => p is Phrase { Confidence: ConfidenceLevel.Low or ConfidenceLevel.Medium });
+
+    public float NumUntranslatedElements => Phrases
+            .OfType<Phrase>()
+            .Where(p => p.Translation == string.Empty)
+            .SelectMany(p => p.Elements)
+            .Select(e => e.Confidence != ConfidenceLevel.High)
+            .Count();
     
     public static string[] Split(string sentence)
     {

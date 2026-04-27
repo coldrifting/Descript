@@ -17,7 +17,6 @@ namespace Descript.ViewModels;
 public partial class ViewModelPhrases(MainWindowViewModel mainWindowViewModel) : ViewModelBase
 {
     private MainWindowViewModel Vm { get; } = mainWindowViewModel;
-    
     public DialogPhrase Dialog { get; } = new(mainWindowViewModel);
     
     private readonly Dictionary<string, Phrase> _allPhrases = new();

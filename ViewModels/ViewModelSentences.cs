@@ -14,7 +14,6 @@ namespace Descript.ViewModels;
 public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel) : ViewModelBase
 {
     private MainWindowViewModel Vm { get; } = mainWindowViewModel;
-    
     public DialogSentence Dialog { get; } = new(mainWindowViewModel);
 
     private readonly Dictionary<string, Sentence> _sentences = new();
@@ -26,8 +25,8 @@ public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel)
     
     public IEnumerable<Sentence> Sentences => _sentences.Values.OrderBy(s => s.OriginalSentence);
     public IEnumerable<Sentence> SentencesFiltered => OrderBy(_sentences.Values
-        .Where(sentence => IsSentenceMatch(sentence, FilterText))
-        .Where(sentence => IsContextMatch(sentence, FilterContextText)));
+        .Where(sentence => IsSentenceMatch(sentence, FilterText) && 
+                           IsContextMatch(sentence, FilterContextText)));
 
     private IOrderedEnumerable<Sentence> OrderBy(IEnumerable<Sentence> sentences)
     {
@@ -37,12 +36,16 @@ public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel)
                 .ThenBy(sentence => sentence.SubCategory.ToLower())
                 .ThenBy(sentence => sentence.Context.ToLower())
                 .ThenBy(sentence => sentence.OriginalSentence.ToLower()),
-            SentenceSortMode.ByLeastTranslated => sentences.OrderByDescending(sentence => sentence.UntranslatedPhrasesPercentage)
+            SentenceSortMode.ByLeastTranslated => sentences
+                .OrderByDescending(sentence => sentence.NumUntranslatedPhrases)
+                .ThenByDescending(sentence => sentence.NumUntranslatedElements)
                 .ThenBy(sentence => sentence.Category.ToLower())
                 .ThenBy(sentence => sentence.SubCategory.ToLower())
                 .ThenBy(sentence => sentence.Context.ToLower())
                 .ThenBy(sentence => sentence.OriginalSentence.ToLower()),
-            _ => sentences.OrderBy(sentence => sentence.TranslatedPhrasesPercentage)
+            _ => sentences
+                .OrderBy(sentence => sentence.NumUntranslatedPhrases)
+                .ThenBy(sentence => sentence.NumUntranslatedElements)
                 .ThenBy(sentence => sentence.Category.ToLower())
                 .ThenBy(sentence => sentence.SubCategory.ToLower())
                 .ThenBy(sentence => sentence.Context.ToLower())
@@ -131,7 +134,9 @@ public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel)
     {
         if (sentence == sentenceFlat.Sentence)
         {
-            //_sentences[sentenceFlat.Sentence].Phrases
+            _sentences[sentenceFlat.Sentence].Category = sentenceFlat.Category;
+            _sentences[sentenceFlat.Sentence].SubCategory = sentenceFlat.SubCategory;
+            _sentences[sentenceFlat.Sentence].Context = sentenceFlat.Context;
         }
         else
         {
