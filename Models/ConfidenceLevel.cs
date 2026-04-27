@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Descript.Models;
 
 public enum ConfidenceLevel
@@ -8,3 +12,8 @@ public enum ConfidenceLevel
     Low
 }
 
+public static class ConfidenceLevelEx
+{
+    public static IEnumerable<ConfidenceLevel> All => 
+        Enum.GetValues<ConfidenceLevel>().Except([ConfidenceLevel.Confirmed]);
+}

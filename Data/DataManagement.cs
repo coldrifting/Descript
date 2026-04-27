@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Descript.Models;
+using Descript.Models.Flat;
 
 namespace Descript.Data;
 
@@ -36,62 +36,71 @@ public static class DataManagement
         }
     };
 
-    public static T[] Load<T>()
+    public static Translations Load()
     {
         if (!Directory.Exists(FolderPath))
         {
             Console.WriteLine($"Directory does not exist: {FolderPath}");
-            return [];
+            return new Translations();
         }
 
-        string fileName = typeof(T).Name.Pluralize();
-        string filePath = Path.Combine(FolderPath, $"{fileName}.json");
+        string filePath = Path.Combine(FolderPath, "Translations.json");
         if (!File.Exists(filePath))
         {
-            Console.WriteLine($"File not found: {filePath}");
-            return [];
+            Console.WriteLine($"Translations File not found: {filePath}");
+            return new Translations();
         }
 
         string json = File.ReadAllText(filePath);
-        T[] items = JsonSerializer.Deserialize<T[]>(json, SerializerOptions) ?? [];
+        Translations translations = JsonSerializer.Deserialize<Translations>(json, SerializerOptions) ?? new Translations();
 
-        return items;
+        return translations;
     }
     
-    public static void Save<T>(IEnumerable<T> items)
+    public static void Save(Translations translations)
     {
         if (!Directory.Exists(FolderPath))
         {
             Console.WriteLine($"Directory does not exist: {FolderPath}");
-            return;
+            try
+            {
+                Directory.CreateDirectory(FolderPath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Unable to create directory: {FolderPath}");
+                return;
+            }
         }
 
-        string fileName = typeof(T).Name.Pluralize() + ".json";
-        string filePath = Path.Combine(FolderPath, $"{fileName}");
+        string filePath = Path.Combine(FolderPath, "Translations.json");
+
+        string elementsJson = JsonSerializer.Serialize(translations.Elements, SerializerOptions)
+            .Replace("},{", "},\n\t\t{")
+            .Replace("[{", "[\n\t\t{")
+            .Replace("}]", "}\n\t]");
+        string phrasesJson = JsonSerializer.Serialize(translations.Phrases, SerializerOptions)
+            .Replace("},{", "},\n\t\t{")
+            .Replace("[{", "[\n\t\t{")
+            .Replace("}]", "}\n\t]");
+        string sentencesJson = JsonSerializer.Serialize(translations.Sentences, SerializerOptions)
+            .Replace("},{", "},\n\t\t{")
+            .Replace("[{", "[\n\t\t{")
+            .Replace("}]", "}\n\t]");
+
+        string json = $"{{\n\t\"Elements\": {elementsJson}," + 
+                      $"\n\t\"Phrases\": {phrasesJson}," +
+                      $"\n\t\"Sentences\": {sentencesJson} \n }}";
         
-        string json = JsonSerializer.Serialize(items, SerializerOptions)
-            .Replace("[{", "[\n\t{")
-            .Replace("}]", "}\n]")
-            .Replace("},{", "},\n\t{");
         try
         {
-            Console.WriteLine($"Saving: {fileName}");
             File.WriteAllText(filePath, json);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to save data: {fileName}");
+            Console.WriteLine($"Failed to save data: {filePath}");
             Console.WriteLine(ex.Message);
         }
-    }
-
-    private static string Pluralize(this string str)
-    {
-        if (str.EndsWith('y'))
-        {
-            return string.Concat(str.AsSpan(0, str.Length - 1), "ies");
-        }
-
-        return str + "s";
     }
 }

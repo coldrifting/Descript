@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Descript.ViewModels"
+             xmlns:models="clr-namespace:Descript.Models"
+             xmlns:utils="clr-namespace:Descript.Utils"
+             xmlns:views="clr-namespace:Descript.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Descript.Views.Elements.ElementListItem"
+             x:DataType="models:Element">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <utils:StringNotEmptyConverter x:Key="StringNotEmptyConverter" />
+            <utils:ConfidenceLevelToBrushConverter x:Key="ConfidenceToBrushConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Button
+        Command="{Binding $parent[views:ViewElements].((vm:ViewModelElement)DataContext).PrimaryCommand, FallbackValue=''}"
+        CommandParameter="{Binding Glyph}"
+        Focusable="False"
+        Width="54"
+        Height="78"
+        Classes.gridItem="True"
+        Classes.currentSelection="{Binding IsCurrentSelection}">
+        <Grid RowDefinitions="*,16,5">
+            <Label Grid.Row="0"
+                   Margin="0"
+                   Padding="0"
+                   Content="{Binding Glyph}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Top"
+                   Foreground="{Binding Confidence, Converter={StaticResource ConfidenceToBrushConverter}}"
+                   FontSize="40" />
+            <Label Grid.Row="1"
+                   Margin="0"
+                   Padding="3 0"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Content="{Binding Translation}"
+                   CornerRadius="3"
+                   IsVisible="{Binding Translation, Converter={StaticResource StringNotEmptyConverter}}"
+                   Foreground="Black"
+                   Background="{Binding Confidence, Converter={StaticResource ConfidenceToBrushConverter}}"
+                   FontSize="13" />
+        </Grid>
+        <Button.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Edit"
+                          Command="{Binding $parent[views:ViewElements].((vm:ViewModelElement)DataContext).EditRuneCommand, FallbackValue=''}"
+                          CommandParameter="{Binding Glyph}" />
+                <MenuItem Header="Copy"
+                          Command="{Binding $parent[views:ViewElements].((vm:ViewModelElement)DataContext).CopyCommand, FallbackValue=''}"
+                          CommandParameter="{Binding Glyph}" />
+                <MenuItem Header="Filter"
+                          Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.FilterCharCommand, FallbackValue=''}"
+                          CommandParameter="{Binding Glyph}" />
+            </ContextMenu>
+        </Button.ContextMenu>
+    </Button>
+</UserControl>

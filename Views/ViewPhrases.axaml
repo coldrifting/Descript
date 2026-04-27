@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:Descript.Models"
+             xmlns:vm="clr-namespace:Descript.ViewModels"
+             xmlns:elements="clr-namespace:Descript.Views.Elements"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Descript.Views.ViewPhrases"
+             x:DataType="vm:ViewModelPhrases"
+             x:Name="RuneChainsControl">
+    
+    <DockPanel Width="256">
+        <TextBox DockPanel.Dock="Top"
+                 PlaceholderText="Filter Words by Translation" 
+                 Text="{Binding FilterText}"
+                 Margin="0 8">
+            <TextBox.InnerRightContent>
+                <Button Grid.Column="0"
+                        HorizontalAlignment="Center"
+                        Classes="cancel"
+                        Content="x"
+                        Focusable="False"
+                        IsVisible="{Binding CanClearFilters}"
+                        Command="{Binding ClearFiltersCommand}" />
+            </TextBox.InnerRightContent>
+        </TextBox>
+        
+        <ScrollViewer x:Name="ScrollView" VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
+            <ItemsControl ItemsSource="{Binding PhrasesFiltered}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="models:Phrase">
+                        <elements:PhraseListItem Width="240" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+    
+</UserControl>

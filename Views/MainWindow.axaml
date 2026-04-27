@@ -9,53 +9,70 @@
         xmlns:dialogs="clr-namespace:Descript.Views.Dialogs"
         mc:Ignorable="d" d:DesignWidth="1080" d:DesignHeight="720"
         x:Class="Descript.Views.MainWindow"
-        x:DataType="vm:ViewModelMainWindow"
+        x:DataType="vm:MainWindowViewModel"
         x:Name="Window"
         Icon="/Assets/avalonia-logo.ico"
         Title="Descript">
 
     <Design.DataContext>
-        <vm:ViewModelMainWindow />
+        <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <Window.Styles>
-        <dh:DialogHostStyles />
-    </Window.Styles>
-
-    <dh:DialogHost CloseOnClickAway="True" IsOpen="{Binding IsDialogOpen, Mode=TwoWay}">
+    <dh:DialogHost IsOpen="{Binding ViewModelElement.Dialog.IsOpen, Mode=TwoWay}" 
+                   CloseOnClickAway="True"
+                   dh:DialogHostStyle.CornerRadius="6">
         <dh:DialogHost.DialogContent>
-            <dialogs:EditTranslationDialog
-                Title="{Binding DialogTitle}"
-                Translation="{Binding DialogEntryTranslation, Mode=TwoWay}"
-                TranslationCase="{Binding TranslationCase}"
-                Confidence="{Binding DialogEntryConfidence, Mode=TwoWay}"
-                ConfidenceLevels="{Binding ConfidenceLevels}"
-                IsValid="{Binding IsDialogEntryValid, Mode=TwoWay}"
-                SubmitCommand="{Binding SubmitDialogCommand}"
-                CancelDialogCommand="{Binding CancelDialogCommand}"/>
+            <dialogs:DialogElement DataContext="{Binding ViewModelElement.Dialog}"/>
         </dh:DialogHost.DialogContent>
 
-        <Grid ColumnDefinitions="256,*">
-            <Grid Grid.Column="0" RowDefinitions="40,*">
-                <StackPanel Grid.Row="0" Orientation="Horizontal"
-                            Background="DimGray">
-                    <c:ButtonToggle Item1Label="Runes"
-                                    Item2Label="Words"
-                                    Value="{Binding IsRuneListShown}"
-                                    ToggleCommand="{Binding ShowRunesListCommand}" />
-                </StackPanel>
-                
-                <views:RunesView Grid.Row="1" Grid.Column="0" 
-                                 DataContext="{Binding ViewModelRune}"
-                                 IsVisible="{Binding #Window.((vm:ViewModelMainWindow)DataContext).IsRuneListShown, FallbackValue='True'}" />
-                
-                <views:RuneChainsView Grid.Row="1" Grid.Column="0" 
-                                 DataContext="{Binding ViewModelRuneChain}"
-                                 IsVisible="{Binding !#Window.((vm:ViewModelMainWindow)DataContext).IsRuneListShown, FallbackValue='False'}" />
+        <dh:DialogHost IsOpen="{Binding ViewModelPhrases.Dialog.IsOpen, Mode=TwoWay}"
+                       CloseOnClickAway="True" 
+                       dh:DialogHostStyle.CornerRadius="6">
+            <dh:DialogHost.DialogContent>
+                <dialogs:DialogPhrase DataContext="{Binding ViewModelPhrases.Dialog}"/>
+            </dh:DialogHost.DialogContent>
+
+            <Grid ColumnDefinitions="Auto,*">
+                <Grid Grid.Column="0" RowDefinitions="Auto,*">
+                    <StackPanel Grid.Row="0" Classes.menubar="True">
+                        <StackPanel Classes.menubarItem="True">
+                            <c:ToggleButton Item1Label="Runes"
+                                            Item2Label="Words"
+                                            Value="{Binding IsRuneListShown}"
+                                            ToggleCommand="{Binding ShowRunesListCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <views:ViewElements Grid.Row="1" 
+                                        DataContext="{Binding ViewModelElement}" 
+                                        IsVisible="{Binding IsShown}"/>
+                    
+                    <views:ViewPhrases Grid.Row="1" 
+                                       DataContext="{Binding ViewModelPhrases}" 
+                                       IsVisible="{Binding IsShown}"/>
+                </Grid>
+
+
+                <dh:DialogHost Grid.Column="1" 
+                               IsOpen="{Binding ViewModelSentences.Dialog.IsOpen, Mode=TwoWay}"
+                               CloseOnClickAway="False" 
+                               dh:DialogHostStyle.CornerRadius="6">
+                    <dh:DialogHost.DialogContent>
+                        <dialogs:DialogSentence DataContext="{Binding ViewModelSentences.Dialog}"/>
+                    </dh:DialogHost.DialogContent>
+
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Classes.menubar="True">
+                            <StackPanel Classes.menubarItem="True">
+                                <views:ViewSentencesHeader DataContext="{Binding ViewModelSentences}" />
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        <views:ViewSentences DataContext="{Binding ViewModelSentences}"/>
+                    </DockPanel>
+                </dh:DialogHost>
             </Grid>
-            <views:TranslationsView Grid.Column="1" 
-                                    DataContext="{Binding ViewModelRuneSentence}" />
-        </Grid>
+        </dh:DialogHost>
     </dh:DialogHost>
 
 </Window>

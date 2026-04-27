@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:Descript.Models"
+             xmlns:vm="clr-namespace:Descript.ViewModels"
+             xmlns:elements="clr-namespace:Descript.Views.Elements"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Descript.Views.ViewSentences"
+             x:DataType="vm:ViewModelSentences">
+
+    <ScrollViewer VerticalScrollBarVisibility="Visible" AllowAutoHide="False">
+        <ItemsControl ItemsSource="{Binding SentencesFiltered}" Classes.sentences="true">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="models:Sentence">
+                    <elements:SentenceListItem />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>

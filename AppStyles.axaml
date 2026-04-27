@@ -1,0 +1,279 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Font Settings -->
+    <Style Selector="Button">
+        <Setter Property="FontFamily" Value="avares://Descript/Assets/Fonts#Tunic Runes" />
+    </Style>
+    <Style Selector="Label">
+        <Setter Property="FontFamily" Value="avares://Descript/Assets/Fonts#Tunic Runes" />
+    </Style>
+    <Style Selector="TextBox">
+        <Setter Property="FontFamily" Value="avares://Descript/Assets/Fonts#Tunic Runes" />
+    </Style>
+    <Style Selector="TextBlock">
+        <Setter Property="FontFamily" Value="avares://Descript/Assets/Fonts#Tunic Runes" />
+    </Style>
+
+    <!-- Cancel Search Button -->
+    <Style Selector="Button.cancel">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="6 4" />
+        <Setter Property="Margin" Value="4 0" />
+        <Style Selector="^:disabled">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="Transparent" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="DarkRed" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Red" />
+            <Setter Property="RenderTransform" Value="scale(0.95)" />
+        </Style>
+    </Style>
+
+    <!-- Grid Item (Elements and Phrases Lists) -->
+    <Style Selector="Button.gridItem">
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Setter Property="Margin" Value="2" />
+        <Setter Property="Padding" Value="3" />
+        <Setter Property="BorderThickness" Value="3" />
+        <Setter Property="CornerRadius" Value="3" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />
+        </Style>
+        <Style Selector="^.currentSelection /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="DarkSlateGray" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}" />
+            <Setter Property="RenderTransform" Value="scale(0.98)" />
+        </Style>
+        <Style Selector="^.currentSelection:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="DarkSlateGray" />
+            <Setter Property="RenderTransform" Value="scale(0.98)" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Gray" />
+        </Style>
+    </Style>
+
+    <!-- Top Menu Bar -->
+    <Style Selector="StackPanel.menubar">
+        <Setter Property="Background" Value="DimGray" />
+    </Style>
+
+    <Style Selector="StackPanel.menubarItem">
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Margin" Value="3" />
+    </Style>
+    
+    <Style Selector="StackPanel.dialog">
+        <Setter Property="Margin" Value="4 10" />
+        <Style Selector="^.wide">
+            <Setter Property="Width" Value="800" />
+        </Style>
+    </Style>
+
+    <!-- Sentences -->
+    <Style Selector="ItemsControl.sentences > ContentPresenter">
+        <Setter Property="Padding" Value="5 0 0 0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Height" Value="64" />
+        <Style Selector="^:nth-child(2n)">
+            <Setter Property="Background" Value="#44444444" />
+        </Style>
+    </Style>
+
+    <Style Selector="StackPanel.sentenceInfo">
+        <Style Selector="^ Label">
+            <Setter Property="Foreground" Value="DimGray" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+    </Style>
+
+    <Style Selector="TextBlock.phraseAbsolute">
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="Margin" Value="2 0 2 5" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <Style Selector="Button.sentencePhrase">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Height" Value="56" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Margin" Value="1 0" />
+        <Setter Property="Padding" Value="2" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontFamily" Value="Tunic Runes" />
+
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(1.0)" />
+        </Style>
+
+        <Style Selector="^.high">
+            <Setter Property="Foreground" Value="MediumSeaGreen" />
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Foreground" Value="MediumSeaGreen" />
+            </Style>
+            <Style Selector="^:pressed /template/ ContentPresenter">
+                <Setter Property="Background" Value="MediumSeaGreen" />
+                <Setter Property="Foreground" Value="Black" />
+            </Style>
+        </Style>
+        <Style Selector="^.medium">
+            <Setter Property="Foreground" Value="DarkGoldenrod" />
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Foreground" Value="DarkGoldenrod" />
+            </Style>
+            <Style Selector="^:pressed /template/ ContentPresenter">
+                <Setter Property="Background" Value="DarkGoldenrod" />
+                <Setter Property="Foreground" Value="Black" />
+            </Style>
+        </Style>
+        <Style Selector="^.low">
+            <Setter Property="Foreground" Value="IndianRed" />
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Foreground" Value="IndianRed" />
+            </Style>
+            <Style Selector="^:pressed /template/ ContentPresenter">
+                <Setter Property="Background" Value="IndianRed" />
+                <Setter Property="Foreground" Value="Black" />
+            </Style>
+        </Style>
+
+        <Style Selector="^ StackPanel">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Style Selector="^ TextBlock">
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Style Selector="^.phraseTranslation">
+                    <Setter Property="FontSize" Value="18" />
+                </Style>
+            </Style>
+        </Style>
+    </Style>
+
+    <Style Selector="Button.sentenceElement">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Height" Value="56" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="2" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontFamily" Value="Tunic Runes" />
+
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(1.0)" />
+        </Style>
+
+        <Style Selector="^.high">
+            <Setter Property="Foreground" Value="MediumSeaGreen" />
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Foreground" Value="MediumSeaGreen" />
+            </Style>
+            <Style Selector="^:pressed /template/ ContentPresenter">
+                <Setter Property="Background" Value="MediumSeaGreen" />
+                <Setter Property="Foreground" Value="Black" />
+            </Style>
+        </Style>
+        <Style Selector="^.medium">
+            <Setter Property="Foreground" Value="DarkGoldenrod" />
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Foreground" Value="DarkGoldenrod" />
+            </Style>
+            <Style Selector="^:pressed /template/ ContentPresenter">
+                <Setter Property="Background" Value="DarkGoldenrod" />
+                <Setter Property="Foreground" Value="Black" />
+            </Style>
+        </Style>
+        <Style Selector="^.low">
+            <Setter Property="Foreground" Value="IndianRed" />
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Foreground" Value="IndianRed" />
+            </Style>
+            <Style Selector="^:pressed /template/ ContentPresenter">
+                <Setter Property="Background" Value="IndianRed" />
+                <Setter Property="Foreground" Value="Black" />
+            </Style>
+        </Style>
+
+        <Style Selector="^ StackPanel">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Style Selector="^ TextBlock">
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Style Selector="^.phraseTranslation">
+                    <Setter Property="FontSize" Value="18" />
+                </Style>
+            </Style>
+        </Style>
+    </Style>
+
+    <Style Selector="ItemsControl.sentenceElementList">
+        <Setter Property="Margin" Value="2 0" />
+        <Style Selector="^ > ContentPresenter:nth-child(1) > Button">
+            <Setter Property="CornerRadius" Value="5 0 0 5" />
+        </Style>
+
+        <Style Selector="^ > ContentPresenter:nth-last-child(1) > Button">
+            <Setter Property="CornerRadius" Value="0 5 5 0" />
+        </Style>
+
+        <Style Selector="^ > ContentPresenter:nth-child(1):nth-last-child(1) > Button">
+            <Setter Property="CornerRadius" Value="5" />
+        </Style>
+    </Style>
+
+
+    <Style Selector="ItemsControl.sentenceElementList.hasAddPhrase">
+        <Setter Property="Margin" Value=" 2 0 0 0" />
+        <Style Selector="^ > ContentPresenter:nth-last-child(1) > Button">
+            <Setter Property="CornerRadius" Value="0" />
+        </Style>
+
+        <Style Selector="^ > ContentPresenter:nth-child(1):nth-last-child(1) > Button">
+            <Setter Property="CornerRadius" Value="5 0 0 5" />
+        </Style>
+    </Style>
+
+    <Style Selector="Button.addPhrase">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="0 0 2 0" />
+        <Setter Property="Height" Value="56" />
+        <Setter Property="Width" Value="32" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="CornerRadius" Value="0 5 5 0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+
+        <Setter Property="Foreground" Value="DodgerBlue" />
+        <Style Selector="^:pointerover /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="DodgerBlue" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="DodgerBlue" />
+            <Setter Property="Foreground" Value="Black" />
+        </Style>
+
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(1.0)" />
+        </Style>
+    </Style>
+
+</Styles>

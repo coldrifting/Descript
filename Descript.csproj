@@ -40,21 +40,32 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Views\Dialogs\AddSentenceDialog.axaml" />
-      <AdditionalFiles Include="Views\Dialogs\EditTranslationDialog.axaml" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Views\TranslationsView.axaml.cs">
+      <Compile Update="Views\ViewSentences.axaml.cs">
         <DependentUpon>SentenceView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
-      <Compile Update="Views\RuneChainsView.axaml.cs">
+      <Compile Update="Views\ViewPhrases.axaml.cs">
         <DependentUpon>WordView.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
-      <Compile Update="Views\RunesView.axaml.cs">
+      <Compile Update="Views\ViewElements.axaml.cs">
         <DependentUpon>RuneView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\Dialogs\DialogPhrase.axaml.cs">
+        <DependentUpon>EditRuneChainDialog.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\Elements\ElementListItem.axaml.cs">
+        <DependentUpon>ElementListItem.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\Elements\PhraseListItem.axaml.cs">
+        <DependentUpon>PhraseListItem.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\Elements\SentenceListItem.axaml.cs">
+        <DependentUpon>TranslationLine.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
     </ItemGroup>

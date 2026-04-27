@@ -1,5 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
              x:Class="Descript.App"
              RequestedThemeVariant="Dark">
   
@@ -10,75 +11,13 @@
                 <ColorPaletteResources x:Key="Dark" Accent="Teal" />
             </FluentTheme.Palettes>
         </FluentTheme>
-        <Style Selector="TextBlock">
-            <Setter Property="FontFamily" Value="avares://Descript/Assets/Fonts#Tunic Runes" />
-        </Style>
-        <Style Selector="Label">
-            <Setter Property="FontFamily" Value="avares://Descript/Assets/Fonts#Tunic Runes" />
-        </Style>
-        <Style Selector="TextBox">
-            <Setter Property="FontFamily" Value="avares://Descript/Assets/Fonts#Tunic Runes" />
-        </Style>
-        <Style Selector="Button.cancel">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="6 4"/>
-            <Setter Property="Margin" Value="4 0"/>
-        </Style>
-        <Style Selector="Button.cancel:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="DarkRed" />
-        </Style>
-        <Style Selector="Button.cancel:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="Red" />
-        </Style>
+        <dialogHostAvalonia:DialogHostStyles />
+        <StyleInclude Source="AppStyles.axaml" />
     </Application.Styles>
              
     <Application.Resources>
         <FontFamily x:Key="TunicRunesFont">
             avares://Descript/Assets/Fonts#Tunic Runes
         </FontFamily>
-        
-        <ControlTheme x:Key="DeleteButtonTheme" TargetType="Button">
-            <Setter Property="Background" Value="Red"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Padding" Value="6 4"/>
-            <Setter Property="Margin" Value="4"/>
-            <Setter Property="CornerRadius" Value="2"/>
-            <Style Selector="^:disabled">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Foreground" Value="Transparent"/>
-            </Style>
-            <Style Selector="^:pointerover">
-                <Setter Property="Background" Value="IndianRed"/>
-                <Setter Property="Foreground" Value="White"/>
-            </Style>
-            <Style Selector="^:pressed">
-                <Setter Property="Background" Value="DarkRed"/>
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="RenderTransform" Value="scale(0.98)" /> 
-            </Style>
-        </ControlTheme>
-        
-        <ControlTheme x:Key="GridItem" TargetType="Button">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="Margin" Value="2"/>
-            <Setter Property="Padding" Value="3"/>
-            <Setter Property="BorderThickness" Value="3"/>
-            <Setter Property="CornerRadius" Value="3"/>
-            <Style Selector="^:pointerover">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}"/>
-            </Style>
-            <Style Selector="^:pressed">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource SystemAccentColor}"/>
-                <Setter Property="RenderTransform" Value="scale(0.98)" /> 
-            </Style>
-            <Style Selector="^:disabled">
-                <Setter Property="Background" Value="Gray"/>
-            </Style>
-        </ControlTheme>
-        
     </Application.Resources>
 </Application>

@@ -1,0 +1,142 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:Descript.Models"
+             xmlns:vm="clr-namespace:Descript.ViewModels"
+             xmlns:converters="clr-namespace:Avalonia.Controls.Converters;assembly=Avalonia.Controls"
+             xmlns:utils="clr-namespace:Descript.Utils"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="models:Sentence"
+             x:Class="Descript.Views.Elements.SentenceListItem"
+             x:Name="SentenceItem">
+    
+    <UserControl.Resources>
+        <converters:EnumToBoolConverter x:Key="EnumToBoolConverter" />
+        <utils:EmptyStringToQuestionMarkConverter x:Key="EmptyStringToQuestionMarkConverter" />
+    </UserControl.Resources>
+    
+    <!-- Transparent Background needed for context menu -->
+    <Grid ColumnDefinitions="*,Auto" Background="Transparent">
+        <ItemsControl Grid.Column="0" ItemsSource="{Binding Phrases}">
+            <ItemsControl.DataTemplates>
+                <DataTemplate DataType="{x:Type models:Phrase}">
+                    <StackPanel Orientation="Horizontal">
+                        <!-- Confirmed Phrases -->
+                        <Button
+                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelPhrases.Dialog.OpenCommand, FallbackValue=''}"
+                            CommandParameter="{Binding Glyphs}"
+                            IsEnabled="{Binding Confidence}"
+                            IsVisible="{Binding !ShowElements}"
+                            Classes.low="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Low}}"
+                            Classes.medium="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Medium}}"
+                            Classes.high="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.High}}"
+                            Classes.sentencePhrase="True">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="{Binding Translation}" Classes.phraseTranslation="True"/>
+                                <TextBlock Text="{Binding Glyphs}"/>
+                            </StackPanel>
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Copy"
+                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelPhrases.CopyCommand, FallbackValue=''}"
+                                              CommandParameter="{Binding Glyphs}" />
+                                    <MenuItem Header="Filter"
+                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.FilterCommand, FallbackValue=''}"
+                                              CommandParameter="{Binding Glyphs}" />
+                                    <MenuItem Header="Edit"
+                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.Dialog.OpenCommand, FallbackValue=''}"
+                                              CommandParameter="{Binding #SentenceItem.((models:Sentence)DataContext).OriginalSentence, FallbackValue=''}" />
+                                    <MenuItem Header="Delete"
+                                              Foreground="OrangeRed"
+                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.DeleteSentenceCommand, FallbackValue=''}"
+                                              CommandParameter="{Binding #SentenceItem.((models:Sentence)DataContext).OriginalSentence, FallbackValue=''}" />
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                        </Button>
+                        
+                        <!-- Phrases In Progress -->
+                        <ItemsControl ItemsSource="{Binding Elements}" 
+                                      IsVisible="{Binding ShowElements}"
+                                      Classes.sentenceElementList="true"
+                                      Classes.hasAddPhrase="{Binding ShowAddPhraseButton}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="models:Element">
+                                    <Button
+                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelElement.Dialog.OpenCommand, FallbackValue=''}"
+                                        CommandParameter="{Binding Glyph}"
+                                        Classes.low="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Low}}"
+                                        Classes.medium="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Medium}}"
+                                        Classes.high="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.High}}"
+                                        Classes.sentenceElement="True">
+                                        <StackPanel Orientation="Vertical">
+                                            <TextBlock Text="{Binding Translation, Converter={StaticResource EmptyStringToQuestionMarkConverter}, FallbackValue='?'}" 
+                                                       Classes.phraseTranslation="True"/>
+                                            <TextBlock Text="{Binding Glyph}"/>
+                                        </StackPanel>
+                                        <Button.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Copy"
+                                                          Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelElement.CopyCommand, FallbackValue=''}"
+                                                          CommandParameter="{Binding Glyph}" />
+                                                <MenuItem Header="Filter"
+                                                          Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.FilterCharCommand, FallbackValue=''}"
+                                                          CommandParameter="{Binding Glyph}" />
+                                                <MenuItem Header="Edit"
+                                                          Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.Dialog.OpenCommand, FallbackValue=''}"
+                                                          CommandParameter="{Binding #SentenceItem.((models:Sentence)DataContext).OriginalSentence, FallbackValue=''}" />
+                                                <MenuItem Header="Delete"
+                                                          Foreground="OrangeRed"
+                                                          Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.DeleteSentenceCommand, FallbackValue=''}"
+                                                          CommandParameter="{Binding #SentenceItem.((models:Sentence)DataContext).OriginalSentence, FallbackValue=''}" />
+                                            </ContextMenu>
+                                        </Button.ContextMenu>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                        
+                        <!-- Convert to Confirmed Phrase -->
+                        <Button
+                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelPhrases.Dialog.OpenCommand, FallbackValue=''}"
+                            CommandParameter="{Binding Glyphs}"
+                            IsVisible="{Binding ShowAddPhraseButton}"
+                            Content="+"
+                            Classes.addPhrase="True"/>
+                    </StackPanel>
+                </DataTemplate>
+                <!-- Must be below to be selected last -->
+                <DataTemplate DataType="{x:Type models:PhraseBase}">
+                        <TextBlock Text="{Binding Glyphs}" Classes.phraseAbsolute="true"/>
+                </DataTemplate>
+            </ItemsControl.DataTemplates>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+        <StackPanel Grid.Column="1" Orientation="Vertical" Classes.sentenceInfo="true">
+            <Label Content="{Binding Category}" />
+            <Label Content="{Binding SubCategory}" />
+            <Label Content="{Binding Context}" />
+        </StackPanel>
+    </Grid>
+
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="Edit"
+                      Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.Dialog.OpenCommand, FallbackValue=''}"
+                      CommandParameter="{Binding OriginalSentence}" />
+            <MenuItem Header="Delete"
+                      Foreground="OrangeRed"
+                      Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.DeleteSentenceCommand, FallbackValue=''}"
+                      CommandParameter="{Binding OriginalSentence}" />
+        </ContextMenu>
+    </UserControl.ContextMenu>
+</UserControl>

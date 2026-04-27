@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Descript.ViewModels"
+             xmlns:utils="clr-namespace:Descript.Utils"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Descript.Views.ViewSentencesHeader"
+             x:DataType="viewModels:ViewModelSentences">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <utils:SentenceSortModeDescriptionConverter x:Key="SentenceSortModeDescriptionConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid ColumnDefinitions="Auto,*,*,Auto" ColumnSpacing="4">
+        <Button Grid.Column="0" Classes="accent"
+                Content="Add Sentence"
+                Command="{Binding Dialog.OpenCommand}" />
+        
+        <TextBox Grid.Column="1" Text="{Binding FilterText, Delay=300, Mode=TwoWay}"
+                 PlaceholderText="Search Sentences"
+                 VerticalContentAlignment="Center"
+                 Padding="10 0">
+            <TextBox.InnerRightContent>
+                <Button Content="✕"
+                        Classes="cancel"
+                        Command="{Binding ClearFilterTextCommand, FallbackValue=''}"
+                        IsVisible="{Binding ShowFilterCancel, FallbackValue='False'}" />
+            </TextBox.InnerRightContent>
+        </TextBox>
+
+        <TextBox Grid.Column="2" Text="{Binding FilterContextText, Delay=300, Mode=TwoWay}"
+                 PlaceholderText="Filter by Context"
+                 VerticalContentAlignment="Center"
+                 Padding="10 0">
+            <TextBox.InnerRightContent>
+                <Button Content="✕"
+                        Classes="cancel"
+                        Command="{Binding ClearFilterContextTextCommand, FallbackValue=''}"
+                        IsVisible="{Binding ShowFilterContextCancel, FallbackValue='False'}" />
+            </TextBox.InnerRightContent>
+        </TextBox>
+
+        <ComboBox Grid.Column="3" SelectedIndex="0"
+                  ItemsSource="{Binding SortModes, FallbackValue=''}"
+                  SelectedItem="{Binding SortMode, FallbackValue=''}"
+                  Width="180">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock
+                        Text="{Binding ., Converter={StaticResource SentenceSortModeDescriptionConverter}, FallbackValue=''}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+    </Grid>
+</UserControl>
