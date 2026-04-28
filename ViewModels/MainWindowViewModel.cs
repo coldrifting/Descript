@@ -43,7 +43,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public void SaveData()
     {
-        Console.WriteLine("Saving Data to File...");
+        Console.WriteLine($"[{DateTime.Now.ToLongTimeString()}] Saving Data to File...");
         Translations translations = new()
         {
             Elements = ViewModelElement.Elements.Where(Element.ShouldSave).Select(ElementFlat.FromElement).ToArray(),

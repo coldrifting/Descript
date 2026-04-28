@@ -169,6 +169,8 @@
                 <Setter Property="Foreground" Value="DimGray" />
                 <Setter Property="HorizontalAlignment" Value="Right" />
                 <Setter Property="FontSize" Value="12" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Margin" Value="1" />
             </Style>
         </Style>
     </Style>

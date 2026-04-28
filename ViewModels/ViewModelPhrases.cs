@@ -25,7 +25,7 @@ public partial class ViewModelPhrases(MainWindowViewModel mainWindowViewModel) :
     
     public IEnumerable<Phrase> Phrases => _allPhrases.Values.OrderBy(phrase => phrase.Glyphs);
     public IList<Phrase> PhrasesFiltered => Phrases
-        .Where(phrase => phrase.Translation.ContainsTrimmed(FilterText))
+        .Where(phrase => phrase.Translation.ContainsTrimmed(FilterText) || phrase.Glyphs.ContainsTrimmed(FilterText))
         .OrderBy(phrase => phrase.Translation == "" ? "Ω" : phrase.Translation)
         .ToList();
 
