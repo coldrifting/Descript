@@ -1,0 +1,12 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style Selector="StackPanel.menubar">
+        <Setter Property="Background" Value="DimGray" />
+    </Style>
+
+    <Style Selector="StackPanel.menubarItem">
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Margin" Value="3" />
+    </Style>
+</Styles>

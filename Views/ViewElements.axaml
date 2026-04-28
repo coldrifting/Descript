@@ -20,10 +20,9 @@
                  Text="{Binding FilterText}">
             <TextBox.InnerRightContent>
                 <Button Grid.Column="0"
-                        Content="x"
-                        Classes="cancel"
+                        Classes.cancel="True"
                         IsVisible="{Binding CanClearFilters}"
-                        Command="{Binding ClearRuneListFiltersCommand}" />
+                        Command="{Binding ClearFiltersCommand}" />
             </TextBox.InnerRightContent>
         </TextBox>
         

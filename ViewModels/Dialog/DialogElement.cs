@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Descript.Models;
@@ -11,11 +10,10 @@ public partial class DialogElement(MainWindowViewModel mainWindowViewModel) : Vi
     private MainWindowViewModel Vm { get; } = mainWindowViewModel;
     
     public bool IsOpen { get; set => SetField(ref field, value); }
-    public string Title { get; set => SetField(ref field, value); } = string.Empty;
     
     public bool IsValid => Translation.Trim() != string.Empty || Confidence == ConfidenceLevel.Low;
     
-    private char _glyph;
+    public char Glyph { get; private set => SetField(ref field, value); }
     
     public string Translation { get; set => SetField(ref field, value.ToLower()); } = string.Empty;
     public ConfidenceLevel Confidence { get; set => SetField(ref field, value); } = ConfidenceLevel.Low;
@@ -23,24 +21,19 @@ public partial class DialogElement(MainWindowViewModel mainWindowViewModel) : Vi
     [RelayCommand]
     public void Open(char glyph)
     {
-        Vm.ViewModelElement.TryGet(glyph, out Element? element);
-        element ??= new Element { Glyph = glyph };
-        Console.WriteLine(element);
+        Element element = Vm.ViewModelElement[glyph] ?? new Element { Glyph = glyph };
         
-        _glyph = element.Glyph;
+        Glyph = element.Glyph;
         Translation = element.Translation;
         Confidence = element.Confidence;
         
-        Console.WriteLine(Translation);
-        
-        Title = $"Input Element Translation Guess - {element.Glyph}";
         IsOpen = true;
     }
     
     [RelayCommand]
     private void Submit()
     {
-        Vm.ViewModelElement.Edit(_glyph, Translation, Confidence);
+        Vm.ViewModelElement.AddOrEdit(Glyph, Translation, Confidence);
         
         IsOpen = false;
     }

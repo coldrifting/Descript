@@ -4,45 +4,31 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Descript.ViewModels"
              xmlns:views="clr-namespace:Descript.Views"
-             xmlns:utils="clr-namespace:Descript.Utils"
              xmlns:models="clr-namespace:Descript.Models"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Descript.Views.Elements.PhraseListItem"
              x:DataType="models:Phrase">
-    
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <utils:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
-            <utils:ConfidenceLevelToBrushConverter x:Key="ConfidenceToBrushConverter"/>
-        </ResourceDictionary>
-    </UserControl.Resources>
-    
+
     <Button HorizontalAlignment="Stretch"
             Classes.gridItem="True"
+            Classes.phrase="True"
+            Classes.high="{Binding HasTranslation}"
+            Classes.low="{Binding !HasTranslation}"
+            Content="{Binding DisplayString}"
             Command="{Binding $parent[views:ViewPhrases].((vm:ViewModelPhrases)DataContext).PrimaryCommand, FallbackValue=''}"
-            CommandParameter="{Binding Glyphs}" >
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="{Binding Glyphs}"
-                                       FontSize="16"
-                                       Foreground="{Binding Confidence, Converter={StaticResource ConfidenceToBrushConverter}}"/>
-                                <Label Content="-"
-                                       FontSize="16"
-                                       IsVisible="{Binding Translation, Converter={StaticResource StringNotEmptyConverter}}"
-                                       Foreground="{Binding Confidence, Converter={StaticResource ConfidenceToBrushConverter}}"/>
-                                <Label Content="{Binding Translation}"
-                                       FontSize="16"
-                                       IsVisible="{Binding Translation, Converter={StaticResource StringNotEmptyConverter}}"
-                                       Foreground="{Binding Confidence, Converter={StaticResource ConfidenceToBrushConverter}}"/>
-                            </StackPanel>
-                            <Button.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Edit" 
-                                          Command="{Binding $parent[views:ViewPhrases].((vm:ViewModelPhrases)DataContext).EditPhraseCommand, FallbackValue=''}" 
-                                          CommandParameter="{Binding Glyphs}" />
-                                <MenuItem Header="Copy" 
-                                          Command="{Binding $parent[views:ViewPhrases].((vm:ViewModelPhrases)DataContext).CopyCommand, FallbackValue=''}" 
-                                          CommandParameter="{Binding Glyphs}" />
-                            </ContextMenu>
-                        </Button.ContextMenu>
-                        </Button>
+            CommandParameter="{Binding Glyphs}">
+        <Button.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Edit"
+                          Command="{Binding $parent[views:ViewPhrases].((vm:ViewModelPhrases)DataContext).EditCommand, FallbackValue=''}"
+                          CommandParameter="{Binding Glyphs}" />
+                <MenuItem Header="Copy"
+                          Command="{Binding $parent[views:ViewPhrases].((vm:ViewModelPhrases)DataContext).CopyCommand, FallbackValue=''}"
+                          CommandParameter="{Binding Glyphs}" />
+                <MenuItem Header="Filter"
+                          Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.FilterCommand, FallbackValue=''}"
+                          CommandParameter="{Binding Glyphs}" />
+            </ContextMenu>
+        </Button.ContextMenu>
+    </Button>
 </UserControl>

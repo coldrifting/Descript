@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Descript.ViewModels"
+             xmlns:models="clr-namespace:Descript.Models"
              xmlns:utils="clr-namespace:Descript.Utils"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Descript.Views.ViewSentencesHeader"
@@ -24,8 +25,7 @@
                  VerticalContentAlignment="Center"
                  Padding="10 0">
             <TextBox.InnerRightContent>
-                <Button Content="✕"
-                        Classes="cancel"
+                <Button Classes.cancel="True"
                         Command="{Binding ClearFilterTextCommand, FallbackValue=''}"
                         IsVisible="{Binding ShowFilterCancel, FallbackValue='False'}" />
             </TextBox.InnerRightContent>
@@ -36,15 +36,14 @@
                  VerticalContentAlignment="Center"
                  Padding="10 0">
             <TextBox.InnerRightContent>
-                <Button Content="✕"
-                        Classes="cancel"
+                <Button Classes.cancel="True"
                         Command="{Binding ClearFilterContextTextCommand, FallbackValue=''}"
                         IsVisible="{Binding ShowFilterContextCancel, FallbackValue='False'}" />
             </TextBox.InnerRightContent>
         </TextBox>
 
         <ComboBox Grid.Column="3" SelectedIndex="0"
-                  ItemsSource="{Binding SortModes, FallbackValue=''}"
+                  ItemsSource="{Binding Source={x:Static models:SentenceSortModeEx.SortModes}}"
                   SelectedItem="{Binding SortMode, FallbackValue=''}"
                   Width="180">
             <ComboBox.ItemTemplate>

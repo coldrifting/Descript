@@ -21,11 +21,12 @@ public partial class ViewModelPhrases(MainWindowViewModel mainWindowViewModel) :
     
     private readonly Dictionary<string, Phrase> _allPhrases = new();
     
+    public Phrase? this[string index] => _allPhrases.GetValueOrDefault(index);
+    
     public IEnumerable<Phrase> Phrases => _allPhrases.Values.OrderBy(phrase => phrase.Glyphs);
     public IList<Phrase> PhrasesFiltered => Phrases
-        .Where(phrase => phrase.Confidence != ConfidenceLevel.Confirmed && phrase.Translation.ContainsTrimmed(FilterText))
+        .Where(phrase => phrase.Translation.ContainsTrimmed(FilterText))
         .OrderBy(phrase => phrase.Translation == "" ? "Ω" : phrase.Translation)
-        .ThenBy(phrase => phrase.Confidence)
         .ToList();
 
     public string FilterText { get; set => SetField(ref field, value); } = string.Empty;
@@ -33,104 +34,6 @@ public partial class ViewModelPhrases(MainWindowViewModel mainWindowViewModel) :
 
     public bool IsShown => !Vm.IsRuneListShown;
     public void UpdateIsShown() => OnPropertyChanged(nameof(IsShown));
-    
-    [RelayCommand]
-    private void ClearFilters()
-    {
-        FilterText = string.Empty;
-    }
-    
-    public Phrase? this[string index] => _allPhrases.GetValueOrDefault(index);
-    
-    public bool TryGet(string word, [MaybeNullWhen(false)] out Phrase phrase)
-    {
-        return _allPhrases.TryGetValue(word, out phrase);
-    }
-    
-    public void Add(IEnumerable<PhraseFlat> phrases)
-    {
-        foreach (PhraseFlat phraseFlat in phrases)
-        {
-            ImmutableArray<Element> elements = [..phraseFlat.Glyphs.Select(g => Vm.ViewModelElement[g])];
-
-            Add(new Phrase {Elements = elements, Confidence = phraseFlat.Confidence, Translation = phraseFlat.Translation }, false);
-        }
-        
-        OnPropertyChanged(nameof(Phrases));
-    }
-    
-    public bool Add(Phrase phrase, bool update = true)
-    {
-        if (_allPhrases.TryAdd(phrase.Glyphs, phrase))
-        {
-            if (update)
-            {
-                OnPropertyChanged(nameof(Phrases));
-            }
-
-            return true;
-        }
-
-        Console.WriteLine($"Phrase {phrase.Glyphs} already exists");
-        return false;
-    }
-
-    public bool Add(string glyphs, bool update = true)
-    {
-        if (TryGet(glyphs, out Phrase? _))
-        {
-            return false;
-        }
-
-        ImmutableArray<Element> elements = [..glyphs.Select(g => Vm.ViewModelElement[g])];
-
-        return Add(new Phrase { Elements = elements}, update);
-    }
-
-    public void Add(string[] glyphs)
-    {
-        foreach (string glyph in glyphs)
-        {
-            Add(glyph, false);
-        }
-        
-        OnPropertyChanged(nameof(Phrases));
-    }
-
-    public void Edit(string glyphs, string newTranslation, ConfidenceLevel newConfidence)
-    {
-        if (_allPhrases.TryGetValue(glyphs, out Phrase? phrase))
-        {
-            string oldTranslation = phrase.Translation;
-            ConfidenceLevel oldConfidence = phrase.Confidence;
-
-            if (oldTranslation == newTranslation && oldConfidence == newConfidence)
-            {
-                return;
-            }
-
-            phrase.Translation = newTranslation;
-            phrase.Confidence = newConfidence;
-
-            OnPropertyChanged(nameof(Phrases));
-        }
-        else
-        {
-            Console.WriteLine($"Word {phrase?.Glyphs ?? "(null)"} does not exist");
-        }
-    }
-
-    public void Remove(string glyphs)
-    {
-        if (TryGet(glyphs, out Phrase? phrase))
-        {
-            if (phrase.Translation.Trim() == "")
-            {
-                _allPhrases.Remove(glyphs);
-                OnPropertyChanged(nameof(Phrases));
-            }
-        }
-    }
     
     [RelayCommand]
     private void Primary(string glyphs)
@@ -146,16 +49,138 @@ public partial class ViewModelPhrases(MainWindowViewModel mainWindowViewModel) :
     }
 
     [RelayCommand]
-    private void EditPhrase(string glyphs)
+    private void Edit(string glyphs)
     {
         Dialog.Open(glyphs);
     }
     
     [RelayCommand]
-    private void Copy(string glyphs)
+    private static void Copy(string glyphs)
     {
         IClipboard? clipboard = ClipboardHelper.GetClipboard();
         clipboard?.SetTextAsync(glyphs);
+    }
+    
+    [RelayCommand]
+    private void ClearFilters()
+    {
+        FilterText = string.Empty;
+    }
+    
+    public bool TryGet(string word, [MaybeNullWhen(false)] out Phrase phrase)
+    {
+        return _allPhrases.TryGetValue(word, out phrase);
+    }
+    
+    public void Add(IEnumerable<PhraseFlat> phrases)
+    {
+        foreach (PhraseFlat phraseFlat in phrases)
+        {
+            ImmutableArray<Element> elements = [..phraseFlat.Glyphs.Select(g => Vm.ViewModelElement[g] ?? Vm.ViewModelElement.AddOrEdit(g))];
+
+            Add(new Phrase {Elements = elements, Translation = phraseFlat.Translation }, false);
+        }
+        
+        OnPropertyChanged(nameof(Phrases));
+    }
+    
+    private void Add(Phrase phrase, bool update = true)
+    {
+        if (_allPhrases.TryAdd(phrase.Glyphs, phrase))
+        {
+            if (update)
+            {
+                OnPropertyChanged(nameof(Phrases));
+            }
+
+            return;
+        }
+
+        Console.WriteLine($"Phrase {phrase.Glyphs} already exists");
+    }
+
+    private Phrase Add(string glyphs, bool update = true)
+    {
+        if (TryGet(glyphs, out Phrase? existingPhrase))
+        {
+            return existingPhrase;
+        }
+
+        ImmutableArray<Element> elements = [..glyphs.Select(g => Vm.ViewModelElement[g] ?? Vm.ViewModelElement.AddOrEdit(g))];
+
+        Phrase phrase = new() { Elements = elements};
+        Add(phrase, update);
+        return phrase;
+    }
+
+    public void Add(string[] glyphs)
+    {
+        foreach (string glyph in glyphs)
+        {
+            Add(glyph, false);
+        }
+        
+        OnPropertyChanged(nameof(Phrases));
+    }
+
+    public void Edit(string glyphs, string newTranslation)
+    {
+        if (_allPhrases.TryGetValue(glyphs, out Phrase? phrase))
+        {
+            string oldTranslation = phrase.Translation;
+
+            if (oldTranslation == newTranslation)
+            {
+                return;
+            }
+
+            phrase.Translation = newTranslation;
+
+            OnPropertyChanged(nameof(Phrases));
+        }
+        else
+        {
+            Console.WriteLine($"Word {phrase?.Glyphs ?? "(null)"} does not exist");
+        }
+    }
+
+    public void Remove(IEnumerable<string> glyphsSet)
+    {
+        foreach (string glyphs in glyphsSet)
+        {
+            Remove(glyphs, false);
+        }
+        
+        OnPropertyChanged(nameof(Phrases));
+    }
+
+    public IEnumerable<PhraseBase> GetPhrases(string sentenceRaw)
+    {
+        return Sentence
+            .Split(sentenceRaw)
+            .Select(phrase => Element.IsElement(phrase.FirstOrDefault(' ')) 
+                ? Add(phrase) 
+                : new PhraseBase(phrase));
+    }
+
+    private void Remove(string glyphs, bool update = true)
+    {
+        if (!TryGet(glyphs, out Phrase? phrase))
+        {
+            return;
+        }
+
+        if (phrase.Translation.Trim() != "")
+        {
+            return;
+        }
+
+        _allPhrases.Remove(glyphs);
+
+        if (update)
+        {
+            OnPropertyChanged(nameof(Phrases));
+        }
     }
     
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)

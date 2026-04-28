@@ -9,10 +9,12 @@
              x:DataType="dialog:DialogElement">
 
     <StackPanel Classes.dialog="True">
-        <TextBlock
-            Text="{Binding Title}"
-            HorizontalAlignment="Center"
-            Margin="5" />
+        <StackPanel Orientation="Vertical">
+            <TextBlock Text="Guess Element" Classes.title="True" />
+            <Border Classes.titleGlyph="True">
+                <TextBlock Text="{Binding Glyph}" />
+            </Border>
+        </StackPanel>
         <Grid
             RowDefinitions="50,50"
             ColumnDefinitions="100,200"

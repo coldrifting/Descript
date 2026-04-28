@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Avalonia.Input.Platform;
 using CommunityToolkit.Mvvm.Input;
@@ -20,23 +19,22 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
 
     private readonly Dictionary<char, Element> _elements = new();
 
-    public char CurrentSelection { get; set => SetField(ref field, value); } = (char)0;
+    public int CurrentSelection { get; set => SetField(ref field, value); } = 0;
     public string FilterText    { get; set => SetField(ref field, value.ToLower()); } = string.Empty;
     
     public bool CanClearFilters => CurrentSelection > 0 || FilterText.Length > 0;
-    public bool CanAddRune      => CurrentSelection != 0 && !_elements.ContainsKey(CurrentSelection);
+    public bool CanAddRune      => CurrentSelection != 0 && !_elements.ContainsKey(Element.GlyphFromId(CurrentSelection));
 
     public bool IsShown => Vm.IsRuneListShown;
     public void UpdateIsShown() => OnPropertyChanged(nameof(IsShown));
     
+    public Element? this[char glyph] => _elements.GetValueOrDefault(glyph);
+    
     public IEnumerable<Element> Elements => _elements.Values.OrderBy(r => r.Glyph);
     public List<ElementGroup> ElementsFilteredAndGrouped => _elements.Values
-        .OrderBy(OrderByConfidence)
-        .ThenBy(OrderByTranslation)
-        .ThenBy(OrderByGlyph)
-        .Select(element => element.Id == CurrentSelection ? Element.Select.Invoke(element) : element)
-        .Append(Element.FromIdSelected(CurrentSelection))
-        .Where(IsMatch)
+        .WithSelection(CurrentSelection)
+        .Ordered()
+        .Matching(FilterText, CurrentSelection)
         .Chunk(4)
         .Select(batch => new ElementGroup
         {
@@ -47,20 +45,49 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
         })
         .ToList();
     
-    public Element this[char glyph]
+    [RelayCommand]
+    private void Primary(char glyph)
     {
-        get
+        if (Vm.ViewModelSentences.Dialog.IsOpen)
         {
-            Element? element = _elements.GetValueOrDefault(glyph);
-            if (element == null)
+            Vm.ViewModelSentences.Dialog.InsertAtCursor(glyph.ToString());
+            if (_elements.TryGetValue(glyph, out Element? _))
             {
-                _elements[glyph] = new Element { Glyph = glyph };
+                return;
             }
 
-            return _elements[glyph];
+            _elements.Add(glyph, new Element { Glyph = glyph });
+            OnPropertyChanged(nameof(Elements));
+        }
+        else
+        {
+            Dialog.Open(glyph);
         }
     }
-
+    
+    [RelayCommand]
+    private void Edit(char glyph)
+    {
+        Dialog.Open(glyph);
+    }
+    
+    [RelayCommand]
+    private static void Copy(char glyph)
+    {
+        IClipboard? clipboard = ClipboardHelper.GetClipboard();
+        clipboard?.SetTextAsync(glyph.ToString());
+    }
+    
+    [RelayCommand]
+    private void ClearFilters()
+    {
+        CurrentSelection = 0;
+        FilterText = string.Empty;
+        
+        OnPropertyChanged(nameof(FilterText));
+        OnPropertyChanged(nameof(CurrentSelection));
+    }
+    
     public bool Add(int id, bool update = true)
     {
         return Add(Element.FromId(id), update);
@@ -92,7 +119,7 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
         OnPropertyChanged(nameof(Elements));
     }
 
-    public void Edit(char glyph, string newTranslation, ConfidenceLevel newConfidence)
+    public Element AddOrEdit(char glyph, string newTranslation = "", ConfidenceLevel newConfidence = ConfidenceLevel.Low)
     {
         if (_elements.TryGetValue(glyph, out Element? element))
         {
@@ -101,7 +128,7 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
 
             if (oldTranslation == newTranslation && oldConfidence == newConfidence)
             {
-                return;
+                return element;
             }
             
             element.Translation = newTranslation;
@@ -111,115 +138,12 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
         {
             _elements[glyph] = new Element { Glyph = glyph, Translation = newTranslation, Confidence = newConfidence };
         }
+        
         OnPropertyChanged(nameof(Elements));
-    }
-
-    public void Delete(char glyph)
-    {
-        if (_elements.Remove(glyph, out Element? _))
-        {
-            OnPropertyChanged(nameof(Elements));
-        }
-        else
-        {
-            Console.WriteLine($"Element {glyph} does not exist");
-        }
-    }
-
-    public bool TryGet(char glyph, [MaybeNullWhen(false)] out Element element)
-    {
-        if (_elements.TryGetValue(glyph, out element))
-        {
-            return true;
-        }
-        Console.WriteLine($"Element {glyph} does not exist");
-        return false;
-    }
-
-    private void ClearFilters()
-    {
-        CurrentSelection = (char)0;
-        FilterText = string.Empty;
         
-        OnPropertyChanged(nameof(FilterText));
-        OnPropertyChanged(nameof(CurrentSelection));
+        return _elements[glyph];
     }
 
-    // Helpers
-    private static ConfidenceLevel OrderByConfidence(Element rune)
-    {
-        return rune.Confidence;
-    }
-
-    private static string OrderByTranslation(Element rune)
-    {
-        return rune.Translation == "" ? "ZZZZZZZ" : rune.Translation;
-    }
-
-    private static int OrderByGlyph(Element rune)
-    {
-        return rune.Glyph;
-    }
-
-    private bool IsMatch(Element r)
-    {
-        if (r.Id == 0)
-        {
-            return false;
-        }
-        
-        if (r.Confidence == ConfidenceLevel.Confirmed && _elements.ContainsKey(r.Glyph))
-        {
-            return false;
-        }
-        
-        return r.Translation.Trim().Contains(FilterText.Trim(), StringComparison.CurrentCultureIgnoreCase) 
-               && IsFilterMatch(r.Id, CurrentSelection);
-    }
-    
-    private static bool IsFilterMatch(int num, int filter)
-    {
-        return (filter & num) == filter;
-    }
-
-    [RelayCommand]
-    private void AddRune(char glyph)
-    {
-        Add(glyph);
-    }
-    
-    [RelayCommand]
-    private void EditRune(char glyph)
-    {
-        Dialog.Open(glyph);
-    }
-
-    [RelayCommand]
-    private void Primary(char glyph)
-    {
-        if (Vm.ViewModelSentences.Dialog.IsOpen)
-        {
-            Vm.ViewModelSentences.Dialog.InsertAtCursor(glyph.ToString());
-        }
-        else
-        {
-            Dialog.Open(glyph);
-        }
-    }
-    
-    [RelayCommand]
-    private void Copy(char glyph)
-    {
-        IClipboard? clipboard = ClipboardHelper.GetClipboard();
-        clipboard?.SetTextAsync(glyph.ToString());
-    }
-    
-    [RelayCommand]
-    private void ClearRuneListFilters()
-    {
-        ClearFilters();
-    }
-    
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);

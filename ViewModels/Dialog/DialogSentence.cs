@@ -1,8 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
-using Descript.Models;
 using Descript.Models.Flat;
 using Descript.ViewModels.Base;
 
@@ -14,22 +14,16 @@ public partial class DialogSentence(MainWindowViewModel mainWindowViewModel) : V
     
     public bool IsOpen { get; set => SetField(ref field, value); }
     public string Title { get; set => SetField(ref field, value); } = string.Empty;
+    public string ErrorMessage { get; private set => SetField(ref field, value); } = string.Empty;
 
-    private string[] _allSentences = [];
+    private IEnumerable<string> _allSentences = [];
 
-    public bool IsValid =>
-        Sentence.Trim().Length > 0 &&
-        (_originalSentence != null && _originalSentence.Trim() != Sentence.Trim()
-            ? !Enumerable.Contains(_allSentences, Sentence.Trim())
-            : (_originalSentence != null && _originalSentence.Trim() != Sentence.Trim()) ||
-              _originalCategory.Trim() != Category.Trim() ||
-              _originalSubCategory.Trim() != SubCategory.Trim() ||
-              _originalContext.Trim() != Context.Trim());
+    public bool IsValid => ValidateSentence();
 
-    private string? _originalSentence = string.Empty;
-    private string _originalCategory = string.Empty;
-    private string _originalSubCategory = string.Empty;
-    private string _originalContext = string.Empty;
+    private string? _originalSentence;
+    private string? _originalCategory;
+    private string? _originalSubCategory;
+    private string? _originalContext;
     
     public string Sentence { get; set => SetField(ref field, value); } = string.Empty;
     public string Category { get; set => SetField(ref field, value); } = string.Empty;
@@ -44,19 +38,34 @@ public partial class DialogSentence(MainWindowViewModel mainWindowViewModel) : V
     [RelayCommand]
     private void Open(string? sentenceRaw)
     {
-        _allSentences = Vm.ViewModelSentences.Sentences.Select(s => s.OriginalSentence).ToArray();
-        Vm.ViewModelSentences.TryGet(sentenceRaw ?? "", out Sentence? sentence);
-        sentence ??= new Sentence { OriginalSentence = "", Phrases = []};
+        _allSentences = Vm.ViewModelSentences.AllOriginalSentences;
         
-        _originalSentence = sentence.OriginalSentence;
-        _originalCategory = sentence.Category;
-        _originalSubCategory = sentence.SubCategory;
-        _originalContext = sentence.Context;
-        
-        Sentence = sentence.OriginalSentence;
-        Category = sentence.Category;
-        SubCategory = sentence.SubCategory;
-        Context = sentence.Context;
+        if (sentenceRaw is null)
+        {
+            _originalSentence = null;
+            _originalCategory = null;
+            _originalSubCategory = null;
+            _originalContext = null;
+            
+            Sentence = "";
+            Category = "";
+            SubCategory = "";
+            Context = "";
+        }
+        else
+        {
+            SentenceFlat? sentenceFlat = Vm.ViewModelSentences.GetFlattened(sentenceRaw);
+            
+            _originalSentence = sentenceFlat?.Sentence;
+            _originalCategory = sentenceFlat?.Category;
+            _originalSubCategory = sentenceFlat?.SubCategory;
+            _originalContext = sentenceFlat?.Context;
+            
+            Sentence = sentenceFlat?.Sentence ?? "";
+            Category = sentenceFlat?.Category ?? "";
+            SubCategory = sentenceFlat?.SubCategory ?? "";
+            Context = sentenceFlat?.Context ?? "";
+        }
         
         Title = "Input Sentence Translation Guess";
         IsOpen = true;
@@ -73,7 +82,7 @@ public partial class DialogSentence(MainWindowViewModel mainWindowViewModel) : V
             Context = Context.Trim()
         };
         
-        Vm.ViewModelSentences.Edit(_originalSentence ?? Sentence, sentence);
+        Vm.ViewModelSentences.Edit(sentence, _originalSentence);
         
         IsOpen = false;
     }
@@ -102,6 +111,33 @@ public partial class DialogSentence(MainWindowViewModel mainWindowViewModel) : V
 
             SelectionStart = Math.Min(SelectionStart, SelectionEnd) + 1;
             SelectionEnd = SelectionStart;
+        }
+    }
+
+    private bool ValidateSentence()
+    {
+        if (Sentence.Trim().Length == 0)
+        {
+            ErrorMessage = "Sentence cannot be empty";
+            return false;
+        }
+        
+        bool sentenceEqual = string.Equals(_originalSentence?.Trim(), Sentence.Trim(), StringComparison.Ordinal);
+        bool categoryEqual = string.Equals(_originalCategory?.Trim(), Category.Trim(), StringComparison.Ordinal);
+        bool subCategoryEqual = string.Equals(_originalSubCategory?.Trim(), SubCategory.Trim(), StringComparison.Ordinal);
+        bool contextEqual = string.Equals(_originalContext?.Trim(), Context.Trim(), StringComparison.Ordinal);
+
+        switch (sentenceEqual)
+        {
+            case true when categoryEqual && subCategoryEqual && contextEqual:
+                ErrorMessage = "Sentence Info has not changed";
+                return false;
+            case false when _allSentences.Contains(Sentence.Trim()):
+                ErrorMessage = "Sentence Already Exists";
+                return false;
+            default:
+                ErrorMessage = "";
+                return true;
         }
     }
     

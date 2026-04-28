@@ -1,0 +1,29 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style Selector="Button.cancel">
+        <Setter Property="Content" Value="✕" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="4 2" />
+        
+        <Style Selector="^ /template/ ContentPresenter">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="5 3" />
+        </Style>
+        
+        <Style Selector="^:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="DarkRed" />
+        </Style>
+        
+        <Style Selector="^:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Red" />
+            <Setter Property="RenderTransform" Value="scale(0.95)" />
+        </Style>
+    </Style>
+</Styles>

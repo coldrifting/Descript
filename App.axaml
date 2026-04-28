@@ -3,7 +3,7 @@
              xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
              x:Class="Descript.App"
              RequestedThemeVariant="Dark">
-  
+
     <Application.Styles>
         <FluentTheme>
             <FluentTheme.Palettes>
@@ -11,13 +11,13 @@
                 <ColorPaletteResources x:Key="Dark" Accent="Teal" />
             </FluentTheme.Palettes>
         </FluentTheme>
+        
         <dialogHostAvalonia:DialogHostStyles />
-        <StyleInclude Source="AppStyles.axaml" />
+        
+        <StyleInclude Source="Styles/ButtonCancel.axaml"/>
+        <StyleInclude Source="Styles/Menubar.axaml"/>
+        <StyleInclude Source="Styles/Dialog.axaml"/>
+        <StyleInclude Source="Styles/ButtonGridItem.axaml"/>
+        <StyleInclude Source="Styles/Sentences.axaml"/>
     </Application.Styles>
-             
-    <Application.Resources>
-        <FontFamily x:Key="TunicRunesFont">
-            avares://Descript/Assets/Fonts#Tunic Runes
-        </FontFamily>
-    </Application.Resources>
 </Application>

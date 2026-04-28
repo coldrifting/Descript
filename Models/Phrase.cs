@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -17,19 +16,15 @@ public class Phrase() : PhraseBase("")
     }
 
     public string Translation { get; set => SetField(ref field, value); } = string.Empty;
-    public ConfidenceLevel Confidence { get; set => SetField(ref field, value); } = ConfidenceLevel.Low;
+    public string DisplayString => Translation != string.Empty ? Glyphs + " · " + Translation : Glyphs;
     
-    public bool ShowElements => Confidence == ConfidenceLevel.Low && 
-                                Translation == "";
-
-    public bool ShowAddPhraseButton => Confidence == ConfidenceLevel.Low && 
-                                       Translation == "" && 
-                                       Elements.All(s => s.Confidence == ConfidenceLevel.High);
+    public bool HasTranslation => Translation != "";
+    public bool ShowAddPhraseButton => !HasTranslation && Elements.All(s => s.Confidence == ConfidenceLevel.High);
     
-    public static Func<Phrase, bool> ShouldSave => phrase => phrase.Translation != "";
     
     public void Refresh()
     {
         OnPropertyChanged(nameof(Elements));
+        OnPropertyChanged(nameof(DisplayString));
     }
 }

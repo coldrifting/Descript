@@ -15,6 +15,10 @@ public class Element : ViewModelBase
     private const int CodePointStart = 0xE000;
     public int Id => Glyph - CodePointStart;
     
+    public static char EmptyGlyph => (char)CodePointStart;
+
+    public static char GlyphFromId(int id) => (char)(CodePointStart + id);
+    
     public static Element FromId(int id)
     {
         return new Element
@@ -33,15 +37,15 @@ public class Element : ViewModelBase
         };
     }
 
-    public static Func<Element, Element> Select => element =>
-        new Element
+    public Element WithSelected =>
+        new()
         {
-            Glyph = element.Glyph,
-            Confidence = element.Confidence,
-            Translation = element.Translation,
+            Glyph = Glyph,
+            Translation = Translation,
+            Confidence = Confidence,
             IsCurrentSelection = true
         };
-    
+
     public static Func<Element, bool> ShouldSave => element => element.Translation != "";
 
     public static bool IsElement(char glyph)

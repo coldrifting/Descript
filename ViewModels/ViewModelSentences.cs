@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
 using Descript.Models;
 using Descript.Models.Flat;
+using Descript.Utils;
 using Descript.ViewModels.Base;
 using Descript.ViewModels.Dialog;
 
@@ -23,48 +23,30 @@ public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel)
     public bool ShowFilterCancel => FilterText.Length > 0;
     public bool ShowFilterContextCancel => FilterContextText.Length > 0;
     
-    public IEnumerable<Sentence> Sentences => _sentences.Values.OrderBy(s => s.OriginalSentence);
-    public IEnumerable<Sentence> SentencesFiltered => OrderBy(_sentences.Values
-        .Where(sentence => IsSentenceMatch(sentence, FilterText) && 
-                           IsContextMatch(sentence, FilterContextText)));
+    public SentenceSortMode SortMode { get; set => SetField(ref field, value); } = SentenceSortMode.ByCategory;
 
-    private IOrderedEnumerable<Sentence> OrderBy(IEnumerable<Sentence> sentences)
-    {
-        return SortMode switch
-        {
-            SentenceSortMode.ByCategory => sentences.OrderBy(rs => rs.Category)
-                .ThenBy(sentence => sentence.SubCategory.ToLower())
-                .ThenBy(sentence => sentence.Context.ToLower())
-                .ThenBy(sentence => sentence.OriginalSentence.ToLower()),
-            SentenceSortMode.ByLeastTranslated => sentences
-                .OrderByDescending(sentence => sentence.NumUntranslatedPhrases)
-                .ThenByDescending(sentence => sentence.NumUntranslatedElements)
-                .ThenBy(sentence => sentence.Category.ToLower())
-                .ThenBy(sentence => sentence.SubCategory.ToLower())
-                .ThenBy(sentence => sentence.Context.ToLower())
-                .ThenBy(sentence => sentence.OriginalSentence.ToLower()),
-            _ => sentences
-                .OrderBy(sentence => sentence.NumUntranslatedPhrases)
-                .ThenBy(sentence => sentence.NumUntranslatedElements)
-                .ThenBy(sentence => sentence.Category.ToLower())
-                .ThenBy(sentence => sentence.SubCategory.ToLower())
-                .ThenBy(sentence => sentence.Context.ToLower())
-                .ThenBy(sentence => sentence.OriginalSentence.ToLower())
-        };
-    }
+    public IEnumerable<string> AllOriginalSentences => _sentences.Values.Select(s => s.SentenceOriginal);
+    
+    public IEnumerable<Sentence> Sentences => _sentences.Values;
+    public IEnumerable<Sentence> SentencesFiltered => _sentences.Values
+        .Where(sentence => Sentence.Matches(sentence, FilterText, FilterContextText))
+        .OrderBy(SortMode);
 
     // Add Sentence Dialog
     public int SelectionStart { get; set => SetField(ref field, value); }
     public int SelectionEnd { get; set => SetField(ref field, value); }
     
-    public SentenceSortMode SortMode { get; set => SetField(ref field, value); } = SentenceSortMode.ByCategory;
+    [RelayCommand]
+    private void Filter(string filter)
+    {
+        FilterText = filter;
+    }
 
-    public List<SentenceSortMode> SortModes =>
-    [
-        SentenceSortMode.ByCategory,
-        SentenceSortMode.ByLeastTranslated,
-        SentenceSortMode.ByMostTranslated
-    ];
+    [RelayCommand]
+    private void FilterChar(char filter)
+    {
+        FilterText = filter.ToString();
+    }
 
     [RelayCommand]
     private void ClearFilterText()
@@ -80,44 +62,14 @@ public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel)
         OnPropertyChanged(nameof(SentencesFiltered));
     }
 
-    private bool IsSentenceMatch(Sentence sentence, string sentenceRaw)
+    [RelayCommand]
+    private void DeleteSentence(string sentenceRaw)
     {
-        string currentTranslations = sentence.OriginalSentence
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(s => Vm.ViewModelPhrases[s]?.Translation ?? "")
-            .Aggregate((a, b) => a + b);
+        // Remove words with no added info
+        RemovePhrases(sentenceRaw);
+        _sentences.Remove(sentenceRaw);
         
-        return sentenceRaw.ToLower()
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .All(filterEntry => 
-                sentence.OriginalSentence.ToLower().Contains(filterEntry, StringComparison.CurrentCultureIgnoreCase) || 
-                currentTranslations.ToLower().Contains(filterEntry, StringComparison.CurrentCultureIgnoreCase));
-    }
-
-    private static bool IsContextMatch(Sentence sentence, string context)
-    {
-        return context.ToLower()
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .All(filterEntry =>
-                sentence.Category.ToLower().Contains(filterEntry, StringComparison.CurrentCultureIgnoreCase) ||
-                sentence.SubCategory.ToLower().Contains(filterEntry, StringComparison.CurrentCultureIgnoreCase) ||
-                sentence.Context.ToLower().Contains(filterEntry, StringComparison.CurrentCultureIgnoreCase));
-    }
-    
-    public bool Add(SentenceFlat sentenceFlat, bool update = true)
-    {
-        if (_sentences.TryAdd(sentenceFlat.Sentence, ToSentence(sentenceFlat)))
-        {
-            if (update)
-            {
-                OnPropertyChanged(nameof(Sentences));
-            }
-
-            return true;
-        }
-
-        Console.WriteLine($"Sentence {sentenceFlat.Sentence} already exists");
-        return false;
+        OnPropertyChanged(nameof(Sentences));
     }
 
     public void Add(IEnumerable<SentenceFlat> sentences)
@@ -130,9 +82,9 @@ public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel)
         OnPropertyChanged(nameof(Sentences));
     }
 
-    public void Edit(string sentence, SentenceFlat sentenceFlat)
+    public void Edit(SentenceFlat sentenceFlat, string? originalRawSentence)
     {
-        if (sentence == sentenceFlat.Sentence)
+        if (originalRawSentence == sentenceFlat.Sentence)
         {
             _sentences[sentenceFlat.Sentence].Category = sentenceFlat.Category;
             _sentences[sentenceFlat.Sentence].SubCategory = sentenceFlat.SubCategory;
@@ -140,74 +92,52 @@ public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel)
         }
         else
         {
-            foreach (Phrase oldPhrase in _sentences[sentence].Phrases.OfType<Phrase>().Where(oldPhrase => oldPhrase is { Translation: "" }))
+            if (originalRawSentence is not null)
             {
-                Vm.ViewModelPhrases.Remove(oldPhrase.Glyphs);
+                RemovePhrases(originalRawSentence);
+                _sentences.Remove(originalRawSentence);
             }
-            
-            _sentences.Remove(sentence);
             Add(sentenceFlat);
         }
         
         OnPropertyChanged(nameof(Sentences));
     }
 
-    public bool TryGet(string sentenceRaw, [MaybeNullWhen(false)] out Sentence sentence)
+    public SentenceFlat? GetFlattened(string sentenceRaw)
     {
-        return _sentences.TryGetValue(sentenceRaw, out sentence);
+        return _sentences.TryGetValue(sentenceRaw, out Sentence? sentence) 
+            ? SentenceFlat.FromSentence(sentence) 
+            : null;
     }
 
-    private Sentence ToSentence(SentenceFlat sentenceFlat)
+    private void Add(SentenceFlat sentenceFlat, bool update = true)
     {
-        List<PhraseBase> phrases = [];
-        
-        string[] sentencePhrases = Sentence.Split(sentenceFlat.Sentence);
-        foreach (string phrase in sentencePhrases)
+        if (_sentences.TryAdd(sentenceFlat.Sentence, sentenceFlat.ToSentence(Vm.ViewModelPhrases)))
         {
-            if (Element.IsElement(phrase.FirstOrDefault(' ')))
+            if (update)
             {
-                Vm.ViewModelPhrases.Add(phrase);
-                phrases.Add(Vm.ViewModelPhrases[phrase] ?? throw new ArgumentException(""));
+                OnPropertyChanged(nameof(Sentences));
             }
-            else
-            {
-                phrases.Add(new PhraseBase(phrase));
-            }
+
+            return;
         }
 
-        return new Sentence
-        {
-            OriginalSentence = sentenceFlat.Sentence,
-            Phrases = [..phrases],
-            Category = sentenceFlat.Category,
-            SubCategory = sentenceFlat.SubCategory,
-            Context = sentenceFlat.Context,
-        };
+        Console.WriteLine($"Sentence {sentenceFlat.Sentence} already exists");
     }
 
-    [RelayCommand]
-    private void DeleteSentence(string sentence)
+    private void RemovePhrases(string sentenceRaw)
     {
-        // Remove words with no added info
-        foreach (Phrase oldPhrase in _sentences[sentence].Phrases.OfType<Phrase>().Where(oldPhrase => oldPhrase is { Translation: "" }))
+        if (!_sentences.TryGetValue(sentenceRaw, out Sentence? sentence))
         {
-            Vm.ViewModelPhrases.Remove(oldPhrase.Glyphs);
+            return;
         }
+
+        IEnumerable<string> glyphsSet = sentence.Phrases
+            .OfType<Phrase>()
+            .Where(oldPhrase => oldPhrase is { Translation: "" })
+            .Select(s => s.Glyphs);
         
-        _sentences.Remove(sentence);
-        OnPropertyChanged(nameof(Sentences));
-    }
-
-    [RelayCommand]
-    private void Filter(string filter)
-    {
-        FilterText = filter;
-    }
-
-    [RelayCommand]
-    private void FilterChar(char filter)
-    {
-        FilterText = filter.ToString();
+        Vm.ViewModelPhrases.Remove(glyphsSet);
     }
     
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)

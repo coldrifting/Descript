@@ -36,8 +36,8 @@ public partial class MainWindowViewModel : ViewModelBase
         Translations translations = new()
         {
             Elements = ViewModelElement.Elements.Where(Element.ShouldSave).Select(ElementFlat.FromElement).ToArray(),
-            Phrases = ViewModelPhrases.Phrases.Where(Phrase.ShouldSave).Select(PhraseFlat.FromPhrase).ToArray(),
-            Sentences = ViewModelSentences.Sentences.Select(SentenceFlat.FromSentence).ToArray()
+            Phrases = ViewModelPhrases.Phrases.Where(phrase => phrase.HasTranslation).Select(PhraseFlat.FromPhrase).ToArray(),
+            Sentences = ViewModelSentences.Sentences.OrderBy(sentence => sentence.SentenceOriginal).Select(SentenceFlat.FromSentence).ToArray()
         };
         
         DataManagement.Save(translations);

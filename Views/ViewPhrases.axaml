@@ -17,10 +17,7 @@
                  Margin="0 8">
             <TextBox.InnerRightContent>
                 <Button Grid.Column="0"
-                        HorizontalAlignment="Center"
-                        Classes="cancel"
-                        Content="x"
-                        Focusable="False"
+                        Classes.cancel="True"
                         IsVisible="{Binding CanClearFilters}"
                         Command="{Binding ClearFiltersCommand}" />
             </TextBox.InnerRightContent>
