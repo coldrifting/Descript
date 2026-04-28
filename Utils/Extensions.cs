@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using Avalonia.Media;
 using Descript.Models;
 
 namespace Descript.Utils;
@@ -45,6 +46,14 @@ public static class Extensions {
                 .GetCustomAttributes(typeof(DescriptionAttribute), false);
             
             return attributes.Length > 0 ? attributes[0].Description : value.ToString();
+        }
+    }
+
+    extension(ISolidColorBrush brush)
+    {
+        public ISolidColorBrush WithOpacity(double opacity)
+        {
+            return new SolidColorBrush(brush.Color, opacity);
         }
     }
 
