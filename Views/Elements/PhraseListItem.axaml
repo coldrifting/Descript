@@ -14,6 +14,7 @@
             Classes.phrase="True"
             Classes.high="{Binding HasTranslation}"
             Classes.low="{Binding !HasTranslation}"
+            Classes.displaysRunes="true"
             Content="{Binding DisplayString}"
             Command="{Binding $parent[views:ViewPhrases].((vm:ViewModelPhrases)DataContext).PrimaryCommand, FallbackValue=''}"
             CommandParameter="{Binding Glyphs}">

@@ -4,7 +4,11 @@
              x:Class="Descript.App"
              RequestedThemeVariant="Dark"
              x:Name="Descript">
-
+    
+    <Application.Resources>
+        <FontFamily x:Key="TunicRunesFont">avares://Descript/Assets/Fonts#Tunic Runes</FontFamily>
+    </Application.Resources>
+    
     <Application.Styles>
         <FluentTheme>
             <FluentTheme.Palettes>
@@ -15,6 +19,7 @@
         
         <dialogHostAvalonia:DialogHostStyles />
         
+        <StyleInclude Source="Styles/Fonts.axaml"/>
         <StyleInclude Source="Styles/ButtonCancel.axaml"/>
         <StyleInclude Source="Styles/Menubar.axaml"/>
         <StyleInclude Source="Styles/Dialog.axaml"/>

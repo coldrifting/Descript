@@ -16,7 +16,9 @@
                                        AccentColor="{DynamicResource SystemAccentColor}"
                                        Selection="{Binding CurrentSelection, Mode=TwoWay}" />
                     
-        <TextBox Grid.Row="1" PlaceholderText="Filter Runes by Translation" 
+        <TextBox Grid.Row="1" 
+                 Classes.displaysRunes="True"
+                 PlaceholderText="Filter Runes by Translation" 
                  Text="{Binding FilterText}">
             <TextBox.InnerRightContent>
                 <Button Grid.Column="0"

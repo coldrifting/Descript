@@ -20,7 +20,8 @@
         Classes.low="{Binding Confidence, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static models:ConfidenceLevel.Low}}"
         Classes.selected="{Binding IsCurrentSelection}">
         <StackPanel Orientation="Vertical">
-            <TextBlock Text="{Binding Glyph}"/>
+            <TextBlock Classes.displaysRunes="True"
+                       Text="{Binding Glyph}"/>
             <Border IsVisible="{Binding Translation, Converter={x:Static StringConverters.IsNotNullOrEmpty}, FallbackValue='False'}">
                 <TextBlock Text="{Binding Translation}" />
             </Border>

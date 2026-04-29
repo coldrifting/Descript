@@ -1,0 +1,15 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        
+        <Style Selector="Button.displaysRunes">
+                <Setter Property="FontFamily" Value="avares://Descript/Assets/Fonts#Tunic Runes"/>
+        </Style>
+        
+        <Style Selector="TextBlock.displaysRunes">
+                <Setter Property="FontFamily" Value="avares://Descript/Assets/Fonts#Tunic Runes"/>
+        </Style>
+        
+        <Style Selector="TextBox.displaysRunes">
+                <Setter Property="FontFamily" Value="avares://Descript/Assets/Fonts#Tunic Runes"/>
+        </Style>
+</Styles>

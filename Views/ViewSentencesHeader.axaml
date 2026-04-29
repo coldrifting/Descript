@@ -22,6 +22,7 @@
                 Command="{Binding ViewModelDialog.OpenCommand}" />
         
         <TextBox Grid.Column="1" 
+                 Classes.displaysRunes="True"
                  Text="{Binding FilterText, Delay=300, Mode=TwoWay}"
                  SelectionStart="{Binding FilterTextSelectionStart, Mode=TwoWay}"
                  SelectionEnd="{Binding FilterTextSelectionEnd, Mode=TwoWay}"
@@ -38,6 +39,7 @@
         </TextBox>
 
         <TextBox Grid.Column="2" 
+                 Classes.displaysRunes="True"
                  Text="{Binding FilterContextText, Delay=300, Mode=TwoWay}"
                  PlaceholderText="Filter by Context"
                  VerticalContentAlignment="Center"

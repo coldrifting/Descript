@@ -30,7 +30,7 @@
                             Classes.phrase="True">
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="{Binding Translation}" Classes.phraseTranslation="True" />
-                                <TextBlock Text="{Binding Glyphs}" />
+                                <TextBlock Text="{Binding Glyphs}" Classes.displaysRunes="True" />
                             </StackPanel>
                             <Button.ContextMenu>
                                 <ContextMenu>
@@ -69,7 +69,7 @@
                                             <TextBlock
                                                 Text="{Binding Translation, Converter={StaticResource EmptyStringToQuestionMarkConverter}, FallbackValue='?'}"
                                                 Classes.phraseTranslation="True" />
-                                            <TextBlock Text="{Binding Glyph}" />
+                                            <TextBlock Text="{Binding Glyph}" Classes.displaysRunes="True" />
                                         </StackPanel>
                                         <Button.ContextMenu>
                                             <ContextMenu>
@@ -110,7 +110,7 @@
                 <!-- Must be below phrase class to be selected last -->
                 <DataTemplate DataType="{x:Type models:PhraseBase}">
                     <Border Classes.literal="true">
-                        <TextBlock Text="{Binding Glyphs}" />
+                        <TextBlock Text="{Binding Glyphs}" Classes.displaysRunes="True" />
                         <Border.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Copy"

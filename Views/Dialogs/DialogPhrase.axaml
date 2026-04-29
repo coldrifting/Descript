@@ -11,7 +11,7 @@
         <StackPanel Orientation="Vertical">
             <TextBlock Text="Guess Phrase" Classes.title="True" />
             <Border Classes.titleGlyph="True">
-                <TextBlock Text="{Binding Glyphs}" />
+                <TextBlock Text="{Binding Glyphs}" Classes.displaysRunes="True" />
             </Border>
         </StackPanel>
         <Grid ColumnDefinitions="Auto,*" Margin="5 20">
