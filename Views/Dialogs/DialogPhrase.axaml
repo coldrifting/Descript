@@ -5,7 +5,7 @@
              xmlns:dialog="clr-namespace:Descript.ViewModels.Dialog"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Descript.Views.Dialogs.DialogPhrase"
-             x:DataType="dialog:DialogPhrase">
+             x:DataType="dialog:ViewModelDialogPhrase">
 
     <StackPanel Classes.dialog="True">
         <StackPanel Orientation="Vertical">

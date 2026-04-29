@@ -18,18 +18,18 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <dh:DialogHost IsOpen="{Binding ViewModelElement.Dialog.IsOpen, Mode=TwoWay}" 
+    <dh:DialogHost IsOpen="{Binding ViewModelElement.ViewModelDialog.IsOpen, Mode=TwoWay}" 
                    CloseOnClickAway="True"
                    dh:DialogHostStyle.CornerRadius="6">
         <dh:DialogHost.DialogContent>
-            <dialogs:DialogElement DataContext="{Binding ViewModelElement.Dialog}"/>
+            <dialogs:DialogElement DataContext="{Binding ViewModelElement.ViewModelDialog}"/>
         </dh:DialogHost.DialogContent>
 
-        <dh:DialogHost IsOpen="{Binding ViewModelPhrases.Dialog.IsOpen, Mode=TwoWay}"
+        <dh:DialogHost IsOpen="{Binding ViewModelPhrases.ViewModelDialog.IsOpen, Mode=TwoWay}"
                        CloseOnClickAway="True" 
                        dh:DialogHostStyle.CornerRadius="6">
             <dh:DialogHost.DialogContent>
-                <dialogs:DialogPhrase DataContext="{Binding ViewModelPhrases.Dialog}"/>
+                <dialogs:DialogPhrase DataContext="{Binding ViewModelPhrases.ViewModelDialog}"/>
             </dh:DialogHost.DialogContent>
 
             <Grid ColumnDefinitions="Auto,*">
@@ -54,11 +54,11 @@
 
 
                 <dh:DialogHost Grid.Column="1" 
-                               IsOpen="{Binding ViewModelSentences.Dialog.IsOpen, Mode=TwoWay}"
+                               IsOpen="{Binding ViewModelSentences.ViewModelDialog.IsOpen, Mode=TwoWay}"
                                CloseOnClickAway="False" 
                                dh:DialogHostStyle.CornerRadius="6">
                     <dh:DialogHost.DialogContent>
-                        <dialogs:DialogSentence DataContext="{Binding ViewModelSentences.Dialog}"/>
+                        <dialogs:DialogSentence DataContext="{Binding ViewModelSentences.ViewModelDialog}"/>
                     </dh:DialogHost.DialogContent>
 
                     <DockPanel>

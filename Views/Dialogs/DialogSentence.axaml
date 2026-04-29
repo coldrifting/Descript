@@ -5,7 +5,7 @@
              xmlns:dialog="clr-namespace:Descript.ViewModels.Dialog"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Descript.Views.Dialogs.DialogSentence"
-             x:DataType="dialog:DialogSentence">
+             x:DataType="dialog:ViewModelDialogSentence">
 
     <StackPanel Classes.dialog="True" Classes.wide="True">
         <TextBlock
@@ -51,7 +51,9 @@
             SelectionStart="{Binding SelectionStart, Mode=TwoWay}"
             SelectionEnd="{Binding SelectionEnd, Mode=TwoWay}"
             VerticalAlignment="Center"
-            Margin="0 10" />
+            Margin="0 10"
+            KeyDown="SentenceInput_OnKeyDown"
+            KeyUp="SentenceInput_OnKeyUp"/>
         <Grid ColumnDefinitions="*,450,120">
             <!-- Disable Escape key when adding sentences since it takes so long to input elements! -->
             <Button Grid.Column="0"

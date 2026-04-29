@@ -4,13 +4,23 @@ using System.ComponentModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
 using Descript.Models.Flat;
+using Descript.Utils;
 using Descript.ViewModels.Base;
+using Descript.ViewModels.Input;
 
 namespace Descript.ViewModels.Dialog;
 
-public partial class DialogSentence(MainWindowViewModel mainWindowViewModel) : ViewModelBase
+public partial class ViewModelDialogSentence : ViewModelBase
 {
-    private MainWindowViewModel Vm { get; } = mainWindowViewModel;
+    public ViewModelDialogSentence(MainWindowViewModel mainWindowViewModel)
+    {
+        Vm = mainWindowViewModel;
+        ViewModelElementInput = new ViewModelElementInput(mainWindowViewModel, InsertAtCursor);
+    }
+    
+    private MainWindowViewModel Vm { get; }
+
+    public ViewModelElementInput ViewModelElementInput { get; }
     
     public bool IsOpen { get; set => SetField(ref field, value); }
     public string Title { get; set => SetField(ref field, value); } = string.Empty;
@@ -24,7 +34,7 @@ public partial class DialogSentence(MainWindowViewModel mainWindowViewModel) : V
     private string? _originalCategory;
     private string? _originalSubCategory;
     private string? _originalContext;
-    
+
     public string Sentence { get; set => SetField(ref field, value); } = string.Empty;
     public string Category { get; set => SetField(ref field, value); } = string.Empty;
     public string SubCategory { get; set => SetField(ref field, value); } = string.Empty;
@@ -95,23 +105,13 @@ public partial class DialogSentence(MainWindowViewModel mainWindowViewModel) : V
     
     public void InsertAtCursor(string input)
     {
-        if (SelectionStart == SelectionEnd)
-        {
-            Sentence =
-                Sentence.Insert(Math.Min(SelectionStart, Sentence.Length), input);
-            
-            SelectionEnd = SelectionStart + 1;
-            SelectionStart = SelectionEnd;
-        }
-        else
-        {
-            Sentence = SelectionEnd > SelectionStart
-                ? Sentence.Remove(SelectionStart, SelectionEnd - SelectionStart).Insert(SelectionStart, input)
-                : Sentence.Remove(SelectionEnd, SelectionStart - SelectionEnd).Insert(SelectionEnd, input);
-
-            SelectionStart = Math.Min(SelectionStart, SelectionEnd) + 1;
-            SelectionEnd = SelectionStart;
-        }
+        CursorHelper.InsertAtCursor(input, 
+            SelectionStart, 
+            SelectionEnd, 
+            Sentence, 
+            i => SelectionStart = i, 
+            i => SelectionEnd = i, 
+            s => Sentence = s);
     }
 
     private bool ValidateSentence()

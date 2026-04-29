@@ -16,14 +16,20 @@
     </UserControl.Resources>
 
     <Grid ColumnDefinitions="Auto,*,*,Auto" ColumnSpacing="4">
-        <Button Grid.Column="0" Classes="accent"
+        <Button Grid.Column="0" 
+                Classes="accent"
                 Content="Add Sentence"
-                Command="{Binding Dialog.OpenCommand}" />
+                Command="{Binding ViewModelDialog.OpenCommand}" />
         
-        <TextBox Grid.Column="1" Text="{Binding FilterText, Delay=300, Mode=TwoWay}"
+        <TextBox Grid.Column="1" 
+                 Text="{Binding FilterText, Delay=300, Mode=TwoWay}"
+                 SelectionStart="{Binding FilterTextSelectionStart, Mode=TwoWay}"
+                 SelectionEnd="{Binding FilterTextSelectionEnd, Mode=TwoWay}"
                  PlaceholderText="Search Sentences"
                  VerticalContentAlignment="Center"
-                 Padding="10 0">
+                 Padding="10 0"
+                 KeyDown="FilterText_OnKeyDown"
+                 KeyUp="FilterText_OnKeyUp">
             <TextBox.InnerRightContent>
                 <Button Classes.cancel="True"
                         Command="{Binding ClearFilterTextCommand, FallbackValue=''}"
@@ -31,7 +37,8 @@
             </TextBox.InnerRightContent>
         </TextBox>
 
-        <TextBox Grid.Column="2" Text="{Binding FilterContextText, Delay=300, Mode=TwoWay}"
+        <TextBox Grid.Column="2" 
+                 Text="{Binding FilterContextText, Delay=300, Mode=TwoWay}"
                  PlaceholderText="Filter by Context"
                  VerticalContentAlignment="Center"
                  Padding="10 0">
@@ -42,7 +49,8 @@
             </TextBox.InnerRightContent>
         </TextBox>
 
-        <ComboBox Grid.Column="3" SelectedIndex="0"
+        <ComboBox Grid.Column="3" 
+                  SelectedIndex="0"
                   ItemsSource="{Binding Source={x:Static models:SentenceSortModeEx.SortModes}}"
                   SelectedItem="{Binding SortMode, FallbackValue=''}"
                   Width="180">

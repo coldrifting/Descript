@@ -24,7 +24,7 @@
                     <StackPanel Orientation="Horizontal">
                         <!-- Confirmed Phrases -->
                         <Button
-                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelPhrases.Dialog.OpenCommand, FallbackValue=''}"
+                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelPhrases.ViewModelDialog.OpenCommand, FallbackValue=''}"
                             CommandParameter="{Binding Glyphs}"
                             IsVisible="{Binding HasTranslation}"
                             Classes.phrase="True">
@@ -41,7 +41,7 @@
                                               Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.FilterCommand, FallbackValue=''}"
                                               CommandParameter="{Binding Glyphs}" />
                                     <MenuItem Header="Edit"
-                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.Dialog.OpenCommand, FallbackValue=''}"
+                                              Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.ViewModelDialog.OpenCommand, FallbackValue=''}"
                                               CommandParameter="{Binding #SentenceItem.((models:Sentence)DataContext).SentenceOriginal, FallbackValue=''}" />
                                     <MenuItem Header="Delete"
                                               Foreground="OrangeRed"
@@ -59,7 +59,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="models:Element">
                                     <Button
-                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelElement.Dialog.OpenCommand, FallbackValue=''}"
+                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelElement.ViewModelDialog.OpenCommand, FallbackValue=''}"
                                         CommandParameter="{Binding Glyph}"
                                         Classes.low="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Low}}"
                                         Classes.medium="{Binding Confidence, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ConfidenceLevel.Medium}}"
@@ -80,7 +80,7 @@
                                                           Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.FilterCharCommand, FallbackValue=''}"
                                                           CommandParameter="{Binding Glyph}" />
                                                 <MenuItem Header="Edit"
-                                                          Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.Dialog.OpenCommand, FallbackValue=''}"
+                                                          Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.ViewModelDialog.OpenCommand, FallbackValue=''}"
                                                           CommandParameter="{Binding #SentenceItem.((models:Sentence)DataContext).SentenceOriginal, FallbackValue=''}" />
                                                 <MenuItem Header="Delete"
                                                           Foreground="OrangeRed"
@@ -100,7 +100,7 @@
 
                         <!-- Convert to Confirmed Phrase -->
                         <Button
-                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelPhrases.Dialog.OpenCommand, FallbackValue=''}"
+                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelPhrases.ViewModelDialog.OpenCommand, FallbackValue=''}"
                             CommandParameter="{Binding Glyphs}"
                             IsVisible="{Binding ShowAddPhraseButton}"
                             Content="+"
@@ -120,7 +120,7 @@
                                           Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.FilterCommand, FallbackValue=''}"
                                           CommandParameter="{Binding Glyphs}" />
                                 <MenuItem Header="Edit"
-                                          Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.Dialog.OpenCommand, FallbackValue=''}"
+                                          Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.ViewModelDialog.OpenCommand, FallbackValue=''}"
                                           CommandParameter="{Binding #SentenceItem.((models:Sentence)DataContext).SentenceOriginal, FallbackValue=''}" />
                                 <MenuItem Header="Delete"
                                           Foreground="OrangeRed"
@@ -147,7 +147,7 @@
     <UserControl.ContextMenu>
         <ContextMenu>
             <MenuItem Header="Edit"
-                      Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.Dialog.OpenCommand, FallbackValue=''}"
+                      Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelSentences.ViewModelDialog.OpenCommand, FallbackValue=''}"
                       CommandParameter="{Binding SentenceOriginal}" />
             <MenuItem Header="Delete"
                       Foreground="OrangeRed"

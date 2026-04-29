@@ -15,7 +15,7 @@ namespace Descript.ViewModels;
 public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) : ViewModelBase
 {
     private MainWindowViewModel Vm { get; } = mainWindowViewModel;
-    public DialogElement Dialog { get; } = new(mainWindowViewModel);
+    public ViewModelDialogElement ViewModelDialog { get; } = new(mainWindowViewModel);
 
     private readonly Dictionary<char, Element> _elements = new();
 
@@ -48,9 +48,9 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
     [RelayCommand]
     private void Primary(char glyph)
     {
-        if (Vm.ViewModelSentences.Dialog.IsOpen)
+        if (Vm.ViewModelSentences.ViewModelDialog.IsOpen)
         {
-            Vm.ViewModelSentences.Dialog.InsertAtCursor(glyph.ToString());
+            Vm.ViewModelSentences.ViewModelDialog.InsertAtCursor(glyph.ToString());
             if (_elements.TryGetValue(glyph, out Element? _))
             {
                 return;
@@ -61,14 +61,14 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
         }
         else
         {
-            Dialog.Open(glyph);
+            ViewModelDialog.Open(glyph);
         }
     }
     
     [RelayCommand]
     private void Edit(char glyph)
     {
-        Dialog.Open(glyph);
+        ViewModelDialog.Open(glyph);
     }
     
     [RelayCommand]

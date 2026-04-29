@@ -5,7 +5,7 @@ using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels.Dialog;
 
-public partial class DialogElement(MainWindowViewModel mainWindowViewModel) : ViewModelBase
+public partial class ViewModelDialogElement(MainWindowViewModel mainWindowViewModel) : ViewModelBase
 {
     private MainWindowViewModel Vm { get; } = mainWindowViewModel;
     

@@ -4,7 +4,7 @@ using Descript.ViewModels.Base;
 
 namespace Descript.ViewModels.Dialog;
 
-public partial class DialogPhrase(MainWindowViewModel mainWindowViewModel) : ViewModelBase
+public partial class ViewModelDialogPhrase(MainWindowViewModel mainWindowViewModel) : ViewModelBase
 {
     private MainWindowViewModel Vm { get; } = mainWindowViewModel;
     

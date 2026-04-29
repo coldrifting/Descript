@@ -17,7 +17,7 @@ namespace Descript.ViewModels;
 public partial class ViewModelPhrases(MainWindowViewModel mainWindowViewModel) : ViewModelBase
 {
     private MainWindowViewModel Vm { get; } = mainWindowViewModel;
-    public DialogPhrase Dialog { get; } = new(mainWindowViewModel);
+    public ViewModelDialogPhrase ViewModelDialog { get; } = new(mainWindowViewModel);
     
     private readonly Dictionary<string, Phrase> _allPhrases = new();
     
@@ -38,20 +38,20 @@ public partial class ViewModelPhrases(MainWindowViewModel mainWindowViewModel) :
     [RelayCommand]
     private void Primary(string glyphs)
     {
-        if (Vm.ViewModelSentences.Dialog.IsOpen)
+        if (Vm.ViewModelSentences.ViewModelDialog.IsOpen)
         {
-            Vm.ViewModelSentences.Dialog.InsertAtCursor(glyphs);
+            Vm.ViewModelSentences.ViewModelDialog.InsertAtCursor(glyphs);
         }
         else
         {
-            Dialog.Open(glyphs);
+            ViewModelDialog.Open(glyphs);
         }
     }
 
     [RelayCommand]
     private void Edit(string glyphs)
     {
-        Dialog.Open(glyphs);
+        ViewModelDialog.Open(glyphs);
     }
     
     [RelayCommand]

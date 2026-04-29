@@ -8,18 +8,32 @@ using Descript.Models.Flat;
 using Descript.Utils;
 using Descript.ViewModels.Base;
 using Descript.ViewModels.Dialog;
+using Descript.ViewModels.Input;
 
 namespace Descript.ViewModels;
 
-public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel) : ViewModelBase
+public partial class ViewModelSentences : ViewModelBase
 {
-    private MainWindowViewModel Vm { get; } = mainWindowViewModel;
-    public DialogSentence Dialog { get; } = new(mainWindowViewModel);
+    public ViewModelSentences(MainWindowViewModel mainWindowViewModel)
+    {
+        Vm = mainWindowViewModel;
+        ViewModelDialog = new ViewModelDialogSentence(mainWindowViewModel);
+        ViewModelElementInput = new ViewModelElementInput(mainWindowViewModel, InsertAtCursor);
+    }
+    
+    private MainWindowViewModel Vm { get; }
+    public ViewModelDialogSentence ViewModelDialog { get; }
 
+    public ViewModelElementInput ViewModelElementInput { get; }
+    
     private readonly Dictionary<string, Sentence> _sentences = new();
 
     public string FilterText { get; set => SetField(ref field, value); } = string.Empty;
+    public int FilterTextSelectionStart { get; set => SetField(ref field, value); }
+    public int FilterTextSelectionEnd { get; set => SetField(ref field, value); }
+    
     public string FilterContextText { get; set => SetField(ref field, value); } = string.Empty;
+    
     public bool ShowFilterCancel => FilterText.Length > 0;
     public bool ShowFilterContextCancel => FilterContextText.Length > 0;
     
@@ -31,10 +45,6 @@ public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel)
     public IEnumerable<Sentence> SentencesFiltered => _sentences.Values
         .Where(sentence => Sentence.Matches(sentence, FilterText, FilterContextText))
         .OrderBy(SortMode);
-
-    // Add Sentence Dialog
-    public int SelectionStart { get; set => SetField(ref field, value); }
-    public int SelectionEnd { get; set => SetField(ref field, value); }
     
     [RelayCommand]
     private void Filter(string filter)
@@ -108,6 +118,17 @@ public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel)
         return _sentences.TryGetValue(sentenceRaw, out Sentence? sentence) 
             ? SentenceFlat.FromSentence(sentence) 
             : null;
+    }
+    
+    public void InsertAtCursor(string input)
+    {
+        CursorHelper.InsertAtCursor(input, 
+            FilterTextSelectionStart, 
+            FilterTextSelectionEnd, 
+            FilterText, 
+            i => FilterTextSelectionStart = i, 
+            i => FilterTextSelectionEnd = i, 
+            s => FilterText = s);
     }
 
     private void Add(SentenceFlat sentenceFlat, bool update = true)
