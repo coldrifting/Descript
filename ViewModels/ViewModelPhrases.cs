@@ -26,8 +26,11 @@ public partial class ViewModelPhrases(MainWindowViewModel mainWindowViewModel) :
     public IEnumerable<Phrase> Phrases => _allPhrases.Values.OrderBy(phrase => phrase.Glyphs);
     public IList<Phrase> PhrasesFiltered => Phrases
         .Where(phrase => phrase.Translation.ContainsTrimmed(FilterText) || phrase.Glyphs.ContainsTrimmed(FilterText))
-        .OrderBy(phrase => phrase.Translation == "" ? "Ω" : phrase.Translation)
+        .OrderByDescending(phrase => FilterText.Length > 0 && string.Equals(phrase.Translation, FilterText, StringComparison.OrdinalIgnoreCase))
+        .ThenBy(phrase => phrase.Translation == "" ? "Ω" : phrase.Translation)
         .ToList();
+
+    public string BestMatch => PhrasesFiltered.Select(phrase => phrase.Glyphs).FirstOrDefault("");
 
     public string FilterText { get; set => SetField(ref field, value); } = string.Empty;
     public bool CanClearFilters => FilterText.Length > 0;
@@ -197,6 +200,10 @@ public partial class ViewModelPhrases(MainWindowViewModel mainWindowViewModel) :
             case nameof(Phrases):
                 OnPropertyChanged(nameof(PhrasesFiltered));
                 Vm.ViewModelSentences.Refresh();
+                break;
+            
+            case nameof(PhrasesFiltered):
+                OnPropertyChanged(nameof(BestMatch));
                 break;
         }
     }

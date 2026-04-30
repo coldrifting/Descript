@@ -8,23 +8,13 @@ using Descript.Models.Flat;
 using Descript.Utils;
 using Descript.ViewModels.Base;
 using Descript.ViewModels.Dialog;
-using Descript.ViewModels.Input;
 
 namespace Descript.ViewModels;
 
-public partial class ViewModelSentences : ViewModelBase
+public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel) : ViewModelBase
 {
-    public ViewModelSentences(MainWindowViewModel mainWindowViewModel)
-    {
-        Vm = mainWindowViewModel;
-        ViewModelDialog = new ViewModelDialogSentence(mainWindowViewModel);
-        ViewModelElementInput = new ViewModelElementInput(mainWindowViewModel, InsertAtCursor);
-    }
-    
-    private MainWindowViewModel Vm { get; }
-    public ViewModelDialogSentence ViewModelDialog { get; }
-
-    public ViewModelElementInput ViewModelElementInput { get; }
+    private MainWindowViewModel Vm { get; } = mainWindowViewModel;
+    public ViewModelDialogSentence ViewModelDialog { get; } = new(mainWindowViewModel);
     
     private readonly Dictionary<string, Sentence> _sentences = new();
 
@@ -45,6 +35,16 @@ public partial class ViewModelSentences : ViewModelBase
     public IEnumerable<Sentence> SentencesFiltered => _sentences.Values
         .Where(sentence => Sentence.Matches(sentence, FilterText, FilterContextText))
         .OrderBy(SortMode);
+    
+    public ElementInputMode ElementInputMode { get; set => SetField(ref field, value); }
+    public Action<string> InsertAtCursor => 
+        input => CursorHelper.InsertAtCursor(input, 
+            FilterTextSelectionStart, 
+            FilterTextSelectionEnd, 
+            FilterText, 
+            i => FilterTextSelectionStart = i, 
+            i => FilterTextSelectionEnd = i, 
+            s => FilterText = s);
     
     [RelayCommand]
     private void Filter(string filter)
@@ -80,6 +80,45 @@ public partial class ViewModelSentences : ViewModelBase
         _sentences.Remove(sentenceRaw);
         
         OnPropertyChanged(nameof(Sentences));
+    }
+    
+    [RelayCommand]
+    private void ToggleElementInputModeByRune()
+    {
+        ElementInputMode = ElementInputMode != ElementInputMode.Rune 
+            ? ElementInputMode.Rune 
+            : ElementInputMode.None;
+
+        if (ElementInputMode is ElementInputMode.Rune or ElementInputMode.Translation)
+        {
+            Vm.ShowRunesListCommand.Execute(true);
+        }
+    }
+    
+    [RelayCommand]
+    private void ToggleElementInputModeByTranslation()
+    {
+        ElementInputMode = ElementInputMode != ElementInputMode.Translation
+            ? ElementInputMode.Translation
+            : ElementInputMode.None;
+               
+        if (ElementInputMode is ElementInputMode.Rune or ElementInputMode.Translation)
+        {
+            Vm.ShowRunesListCommand.Execute(true);
+        }
+    }
+    
+    [RelayCommand]
+    private void ToggleElementInputModeByWord()
+    {
+        ElementInputMode = ElementInputMode != ElementInputMode.Word 
+            ? ElementInputMode.Word 
+            : ElementInputMode.None;
+        
+        if (ElementInputMode is ElementInputMode.Word)
+        {
+            Vm.ShowRunesListCommand.Execute(false);
+        }
     }
 
     public void Add(IEnumerable<SentenceFlat> sentences)
@@ -118,17 +157,6 @@ public partial class ViewModelSentences : ViewModelBase
         return _sentences.TryGetValue(sentenceRaw, out Sentence? sentence) 
             ? SentenceFlat.FromSentence(sentence) 
             : null;
-    }
-    
-    public void InsertAtCursor(string input)
-    {
-        CursorHelper.InsertAtCursor(input, 
-            FilterTextSelectionStart, 
-            FilterTextSelectionEnd, 
-            FilterText, 
-            i => FilterTextSelectionStart = i, 
-            i => FilterTextSelectionEnd = i, 
-            s => FilterText = s);
     }
 
     private void Add(SentenceFlat sentenceFlat, bool update = true)

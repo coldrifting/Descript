@@ -72,10 +72,11 @@ public static class Extensions {
                 : elementsList.Prepend(Element.FromIdSelected(selection));
         }
         
-        public IOrderedEnumerable<Element> Ordered()
+        public IOrderedEnumerable<Element> Ordered(string filterText)
         {
             return elements
                 .OrderByDescending(element => element.IsCurrentSelection)
+                .ThenByDescending(element => filterText.Trim() != "" && element.Translation.ToLower().Trim() == filterText.ToLower().Trim())
                 .ThenBy(element => element.Confidence)
                 .ThenBy(element => element.Translation == "" ? "Ω" : element.Translation)
                 .ThenBy(element => element.Glyph);

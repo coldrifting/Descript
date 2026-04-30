@@ -3,24 +3,16 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
+using Descript.Models;
 using Descript.Models.Flat;
 using Descript.Utils;
 using Descript.ViewModels.Base;
-using Descript.ViewModels.Input;
 
 namespace Descript.ViewModels.Dialog;
 
-public partial class ViewModelDialogSentence : ViewModelBase
+public partial class ViewModelDialogSentence(MainWindowViewModel mainWindowViewModel) : ViewModelBase
 {
-    public ViewModelDialogSentence(MainWindowViewModel mainWindowViewModel)
-    {
-        Vm = mainWindowViewModel;
-        ViewModelElementInput = new ViewModelElementInput(mainWindowViewModel, InsertAtCursor);
-    }
-    
-    private MainWindowViewModel Vm { get; }
-
-    public ViewModelElementInput ViewModelElementInput { get; }
+    private MainWindowViewModel Vm { get; } = mainWindowViewModel;
     
     public bool IsOpen { get; set => SetField(ref field, value); }
     public string Title { get; set => SetField(ref field, value); } = string.Empty;
@@ -42,8 +34,18 @@ public partial class ViewModelDialogSentence : ViewModelBase
     
     public int SelectionStart { get; set => SetField(ref field, value); }
     public int SelectionEnd { get; set => SetField(ref field, value); }
-
+    
     public string SubmitButtonText => _originalSentence is null ? "Add" : "Update";
+    
+    public ElementInputMode ElementInputMode { get; set => SetField(ref field, value); }
+    public Action<string> InsertAtCursor => 
+        input => CursorHelper.InsertAtCursor(input, 
+            SelectionStart, 
+            SelectionEnd, 
+            Sentence, 
+            i => SelectionStart = i, 
+            i => SelectionEnd = i, 
+            s => Sentence = s);
     
     [RelayCommand]
     private void Open(string? sentenceRaw)
@@ -103,15 +105,43 @@ public partial class ViewModelDialogSentence : ViewModelBase
         IsOpen = false;
     }
     
-    public void InsertAtCursor(string input)
+    [RelayCommand]
+    private void ToggleElementInputModeByRune()
     {
-        CursorHelper.InsertAtCursor(input, 
-            SelectionStart, 
-            SelectionEnd, 
-            Sentence, 
-            i => SelectionStart = i, 
-            i => SelectionEnd = i, 
-            s => Sentence = s);
+        ElementInputMode = ElementInputMode != ElementInputMode.Rune 
+            ? ElementInputMode.Rune 
+            : ElementInputMode.None;
+
+        if (ElementInputMode is ElementInputMode.Rune or ElementInputMode.Translation)
+        {
+            Vm.ShowRunesListCommand.Execute(true);
+        }
+    }
+    
+    [RelayCommand]
+    private void ToggleElementInputModeByTranslation()
+    {
+        ElementInputMode = ElementInputMode != ElementInputMode.Translation
+            ? ElementInputMode.Translation
+            : ElementInputMode.None;
+               
+        if (ElementInputMode is ElementInputMode.Rune or ElementInputMode.Translation)
+        {
+            Vm.ShowRunesListCommand.Execute(true);
+        }
+    }
+    
+    [RelayCommand]
+    private void ToggleElementInputModeByWord()
+    {
+        ElementInputMode = ElementInputMode != ElementInputMode.Word 
+            ? ElementInputMode.Word 
+            : ElementInputMode.None;
+        
+        if (ElementInputMode is ElementInputMode.Word)
+        {
+            Vm.ShowRunesListCommand.Execute(false);
+        }
     }
 
     private bool ValidateSentence()

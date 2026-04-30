@@ -3,10 +3,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:dialog="clr-namespace:Descript.ViewModels.Dialog"
+             xmlns:controls="clr-namespace:Descript.Views.Controls"
+             xmlns:vm="clr-namespace:Descript.ViewModels"
+             xmlns:converters="clr-namespace:Avalonia.Controls.Converters;assembly=Avalonia.Controls"
+             xmlns:models="clr-namespace:Descript.Models"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Descript.Views.Dialogs.DialogSentence"
              x:DataType="dialog:ViewModelDialogSentence">
 
+    <UserControl.Resources>
+        <converters:EnumToBoolConverter x:Key="EnumToBoolConverter" />
+    </UserControl.Resources>
+    
     <StackPanel Classes.dialog="True" Classes.wide="True">
         <TextBlock
             Text="Input Original Sentence"
@@ -44,7 +52,7 @@
             VerticalAlignment="Center"
             Margin="0 10 0 0" 
             Classes.displaysRunes="True" />
-        <TextBox
+        <controls:TextBoxRuneEdit
             x:Name="SentenceInput"
             PlaceholderText="Sentence"
             FontSize="24"
@@ -55,23 +63,55 @@
             SelectionEnd="{Binding SelectionEnd, Mode=TwoWay}"
             VerticalAlignment="Center"
             Margin="0 10"
-            KeyDown="SentenceInput_OnKeyDown"
-            KeyUp="SentenceInput_OnKeyUp"
-            Classes.displaysRunes="True"/>
-        <Grid ColumnDefinitions="*,450,120">
+            Classes.displaysRunes="True"
+            InsertRuneAction="{Binding InsertAtCursor}"
+            ElementInputMode="{Binding ElementInputMode}"
+            CurrentElementId="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelElement.CurrentSelection, Mode=TwoWay, FallbackValue=0}"
+            CurrentMeaning="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelElement.FilterText, Mode=TwoWay, FallbackValue=''}"
+            CurrentMeaningMatch="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelElement.CurrentMatch, FallbackValue=0}"
+            CurrentWordTranslation="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelPhrases.FilterText, Mode=TwoWay, FallbackValue=''}"
+            CurrentWordMatch="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelPhrases.BestMatch, FallbackValue=''}">
+            <TextBox.KeyBindings>
+                <KeyBinding Gesture="Cmd+R" Command="{Binding ToggleElementInputModeByRuneCommand}"/>
+                <KeyBinding Gesture="Cmd+T" Command="{Binding ToggleElementInputModeByTranslationCommand}"/>
+                <KeyBinding Gesture="Cmd+W" Command="{Binding ToggleElementInputModeByWordCommand}"/>
+            </TextBox.KeyBindings>
+        </controls:TextBoxRuneEdit>
+        <Grid ColumnDefinitions="*,Auto,300,120">
             <!-- Disable Escape key when adding sentences since it takes so long to input elements! -->
             <Button Grid.Column="0"
                     Content="Cancel"
                     IsCancel="False"
                     Command="{Binding CancelCommand}" />
-            <TextBlock Grid.Column="1" 
+            <Label Grid.Column="1" 
+                   Content="Rune Input Enabled" 
+                   Foreground="DarkOrange"
+                   VerticalAlignment="Center"
+                   Margin="0"
+                   Padding="0"
+                   IsVisible="{Binding ElementInputMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ElementInputMode.Rune}}" />
+            <Label Grid.Column="1" 
+                   Content="Translation Input Enabled" 
+                   Foreground="DarkCyan"
+                   VerticalAlignment="Center"
+                   Margin="0"
+                   Padding="0"
+                   IsVisible="{Binding ElementInputMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ElementInputMode.Translation}}" />
+            <Label Grid.Column="1" 
+                   Content="Word Input Enabled" 
+                   Foreground="DodgerBlue"
+                   VerticalAlignment="Center"
+                   Margin="0"
+                   Padding="0"
+                   IsVisible="{Binding ElementInputMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ElementInputMode.Word}}" />
+            <TextBlock Grid.Column="2" 
                        Text="{Binding ErrorMessage}" 
                        TextAlignment="End"
                        VerticalAlignment="Center"
                        Margin="0"
                        Padding="0"
-                       Foreground="DarkRed"/>
-            <Button Grid.Column="2"
+                       Foreground="IndianRed"/>
+            <Button Grid.Column="3"
                     Classes="accent"
                     Content="{Binding SubmitButtonText, FallbackValue='Submit'}"
                     Command="{Binding SubmitCommand}"

@@ -5,6 +5,7 @@
              xmlns:viewModels="clr-namespace:Descript.ViewModels"
              xmlns:models="clr-namespace:Descript.Models"
              xmlns:utils="clr-namespace:Descript.Utils"
+             xmlns:controls="clr-namespace:Descript.Views.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Descript.Views.ViewSentencesHeader"
              x:DataType="viewModels:ViewModelSentences">
@@ -21,33 +22,55 @@
                 Content="Add Sentence"
                 Command="{Binding ViewModelDialog.OpenCommand}" />
         
-        <TextBox Grid.Column="1" 
+        <controls:TextBoxRuneEdit Grid.Column="1" 
                  Classes.displaysRunes="True"
                  Text="{Binding FilterText, Delay=300, Mode=TwoWay}"
                  SelectionStart="{Binding FilterTextSelectionStart, Mode=TwoWay}"
                  SelectionEnd="{Binding FilterTextSelectionEnd, Mode=TwoWay}"
                  PlaceholderText="Search Sentences"
                  VerticalContentAlignment="Center"
-                 Padding="10 0"
-                 KeyDown="FilterText_OnKeyDown"
-                 KeyUp="FilterText_OnKeyUp">
+                 Padding="8 0"
+                 InsertRuneAction="{Binding InsertAtCursor}"
+                 ElementInputMode="{Binding ElementInputMode}"
+                 CurrentElementId="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelElement.CurrentSelection, Mode=TwoWay, FallbackValue=0}"
+                 CurrentMeaning="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelElement.FilterText, Mode=TwoWay, FallbackValue=''}"
+                 CurrentMeaningMatch="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelElement.CurrentMatch, FallbackValue=0}"
+                 CurrentWordTranslation="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelPhrases.FilterText, Mode=TwoWay, FallbackValue=''}"
+                 CurrentWordMatch="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelPhrases.BestMatch, FallbackValue=''}">
+            <TextBox.KeyBindings>
+                <KeyBinding Gesture="Cmd+R" Command="{Binding ToggleElementInputModeByRuneCommand}"/>
+                <KeyBinding Gesture="Cmd+T" Command="{Binding ToggleElementInputModeByTranslationCommand}"/>
+                <KeyBinding Gesture="Cmd+W" Command="{Binding ToggleElementInputModeByWordCommand}"/>
+            </TextBox.KeyBindings>
+            <TextBox.InnerLeftContent>
+                <Border Margin="8 0 0 0"
+                        Padding="2"
+                        CornerRadius="2"
+                        Background="DimGray"
+                        IsVisible="{Binding ElementInputMode}" >
+                    <Label Content="{Binding ElementInputMode}"
+                           Margin="0"
+                           Padding="0"
+                           Foreground="Black"/>
+                </Border>
+            </TextBox.InnerLeftContent>
             <TextBox.InnerRightContent>
                 <Button Classes.cancel="True"
-                        Command="{Binding ClearFilterTextCommand, FallbackValue=''}"
-                        IsVisible="{Binding ShowFilterCancel, FallbackValue='False'}" />
+                        Command="{Binding ClearFilterTextCommand}"
+                        IsVisible="{Binding ShowFilterCancel}" />
             </TextBox.InnerRightContent>
-        </TextBox>
+        </controls:TextBoxRuneEdit>
 
         <TextBox Grid.Column="2" 
                  Classes.displaysRunes="True"
                  Text="{Binding FilterContextText, Delay=300, Mode=TwoWay}"
                  PlaceholderText="Filter by Context"
                  VerticalContentAlignment="Center"
-                 Padding="10 0">
+                 Padding="8">
             <TextBox.InnerRightContent>
                 <Button Classes.cancel="True"
-                        Command="{Binding ClearFilterContextTextCommand, FallbackValue=''}"
-                        IsVisible="{Binding ShowFilterContextCancel, FallbackValue='False'}" />
+                        Command="{Binding ClearFilterContextTextCommand}"
+                        IsVisible="{Binding ShowFilterContextCancel}" />
             </TextBox.InnerRightContent>
         </TextBox>
 

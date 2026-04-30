@@ -18,10 +18,10 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
     public ViewModelDialogElement ViewModelDialog { get; } = new(mainWindowViewModel);
 
     private readonly Dictionary<char, Element> _elements = new();
-
-    public int CurrentSelection { get; set => SetField(ref field, value); } = 0;
-    public string FilterText    { get; set => SetField(ref field, value.ToLower()); } = string.Empty;
     
+    public int CurrentSelection { get; set => SetField(ref field, value); }
+    public string FilterText { get; set => SetField(ref field, value.ToLower()); } = string.Empty;
+
     public bool CanClearFilters => CurrentSelection > 0 || FilterText.Length > 0;
     public bool CanAddRune      => CurrentSelection != 0 && !_elements.ContainsKey(Element.GlyphFromId(CurrentSelection));
 
@@ -33,7 +33,7 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
     public IEnumerable<Element> Elements => _elements.Values.OrderBy(r => r.Glyph);
     public List<ElementGroup> ElementsFilteredAndGrouped => _elements.Values
         .WithSelection(CurrentSelection)
-        .Ordered()
+        .Ordered(FilterText)
         .Matching(FilterText, CurrentSelection)
         .Chunk(4)
         .Select(batch => new ElementGroup
@@ -44,6 +44,8 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
             Element4 = batch.Length > 3 ? batch[3] : null, 
         })
         .ToList();
+
+    public int CurrentMatch => ElementsFilteredAndGrouped.FirstOrDefault(new ElementGroup { Element1 = Element.FromId(0) }).Element1.Id;
     
     [RelayCommand]
     private void Primary(char glyph)
@@ -144,19 +146,29 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
         return _elements[glyph];
     }
 
+    // Workaround for resetting one filter type when the other changes
+    private bool _switch;
+    
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
+
+        if (e.PropertyName is nameof(FilterText) && FilterText != "" && !_switch)
+        {
+            _switch = true;
+            CurrentSelection = 0;
+        }
+
+        if (e.PropertyName is nameof(CurrentSelection) && CurrentSelection != 0 && !_switch)
+        {
+            _switch = true;
+            FilterText = "";
+        }
         
         if (e.PropertyName is nameof(FilterText) or nameof(CurrentSelection))
         {
             OnPropertyChanged(nameof(ElementsFilteredAndGrouped));
             OnPropertyChanged(nameof(CanClearFilters));
-        }
-
-        if (e.PropertyName is nameof(ElementsFilteredAndGrouped))
-        {
-            OnPropertyChanged(nameof(CanAddRune));
         }
 
         if (e.PropertyName is nameof(Elements))
@@ -165,9 +177,12 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
             Vm.ViewModelSentences.Refresh();
         }
 
-        if (e.PropertyName is nameof(CurrentSelection))
+        if (e.PropertyName is nameof(ElementsFilteredAndGrouped))
         {
-            OnPropertyChanged(nameof(ElementsFilteredAndGrouped));
+            OnPropertyChanged(nameof(CanAddRune));
+            OnPropertyChanged(nameof(CurrentMatch));
+            
+            _switch = false;
         }
     }
 }
