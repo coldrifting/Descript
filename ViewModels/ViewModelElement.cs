@@ -43,9 +43,14 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
             Element3 = batch.Length > 2 ? batch[2] : null, 
             Element4 = batch.Length > 3 ? batch[3] : null, 
         })
+        .WithMatch(FilterText.Trim() == "" ? -1 : CurrentMatchIndex)
         .ToList();
+    
+    public int NumFilteredElements => ElementsFilteredAndGrouped.Count * 4 - 4 + (ElementsFilteredAndGrouped.LastOrDefault()?.Length ?? 0);
 
-    public int CurrentMatch => ElementsFilteredAndGrouped.FirstOrDefault(new ElementGroup { Element1 = Element.FromId(0) }).Element1.Id;
+    public int CurrentMatchIndex { get; set => SetField(ref field, value); }
+
+    public int CurrentMatch => ElementsFilteredAndGrouped.GetIndex(CurrentMatchIndex).Id;
     
     [RelayCommand]
     private void Primary(char glyph)
@@ -167,8 +172,17 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
         
         if (e.PropertyName is nameof(FilterText) or nameof(CurrentSelection))
         {
+            CurrentMatchIndex = 0;
             OnPropertyChanged(nameof(ElementsFilteredAndGrouped));
             OnPropertyChanged(nameof(CanClearFilters));
+            OnPropertyChanged(nameof(CurrentMatch));
+        }
+
+        if (e.PropertyName is nameof(CurrentMatchIndex))
+        {
+            CurrentMatchIndex = Math.Clamp(CurrentMatchIndex, 0, NumFilteredElements - 1);
+            
+            OnPropertyChanged(nameof(ElementsFilteredAndGrouped));
         }
 
         if (e.PropertyName is nameof(Elements))
@@ -180,6 +194,7 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
         if (e.PropertyName is nameof(ElementsFilteredAndGrouped))
         {
             OnPropertyChanged(nameof(CanAddRune));
+            OnPropertyChanged(nameof(NumFilteredElements));
             OnPropertyChanged(nameof(CurrentMatch));
             
             _switch = false;

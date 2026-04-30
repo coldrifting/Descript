@@ -92,7 +92,27 @@ public static class Extensions {
             }
         }
     }
-    
+    extension(IEnumerable<ElementGroup> elementGroups)
+    {
+        public Element GetIndex(int matchIndex)
+        {
+            int matchHigh = matchIndex / 4;
+            int matchLow = matchIndex % 4;
+
+            return elementGroups.ElementAt(matchHigh)[matchLow];
+        }
+        
+        public IEnumerable<ElementGroup> WithMatch(int matchIndex)
+        {
+            int matchHigh = matchIndex / 4;
+            int matchLow = matchIndex % 4;
+            
+            ElementGroup[] group = elementGroups.ToArray();
+            group[matchHigh] = group[matchHigh].WithMatch(matchLow);
+            return group;
+        }
+    }
+
     extension(IEnumerable<Sentence> sentences)
     {
         public IOrderedEnumerable<Sentence> OrderBy(SentenceSortMode sortMode)

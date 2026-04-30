@@ -11,6 +11,7 @@ public class Element : ViewModelBase
     public ConfidenceLevel Confidence { get; set => SetField(ref field, value); } = ConfidenceLevel.Low;
 
     public bool IsCurrentSelection { get; init; }
+    public bool IsCurrentMatch { get; init; }
 
     private const int CodePointStart = 0xE000;
     public int Id => Glyph - CodePointStart;
@@ -43,7 +44,18 @@ public class Element : ViewModelBase
             Glyph = Glyph,
             Translation = Translation,
             Confidence = Confidence,
-            IsCurrentSelection = true
+            IsCurrentSelection = true,
+            IsCurrentMatch = IsCurrentMatch
+        };
+
+    public Element WithMatch =>
+        new()
+        {
+            Glyph = Glyph,
+            Translation = Translation,
+            Confidence = Confidence,
+            IsCurrentSelection = IsCurrentSelection,
+            IsCurrentMatch = true
         };
 
     public static Func<Element, bool> ShouldSave => element => element.Translation != "";

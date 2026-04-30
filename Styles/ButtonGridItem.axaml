@@ -7,7 +7,7 @@
             <Setter Property="BorderBrush" Value="Transparent" />
         </Style>
         <Setter Property="Margin" Value="2" />
-        <Setter Property="Padding" Value="3" />
+        <Setter Property="Padding" Value="2" />
         <Setter Property="BorderThickness" Value="3" />
         <Setter Property="CornerRadius" Value="3" />
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -50,6 +50,7 @@
                 <Setter Property="Foreground" Value="White" />
                 <Setter Property="HorizontalAlignment" Value="Center" />
                 <Setter Property="FontSize" Value="36" />
+                <Setter Property="Padding" Value="2 1" />
             </Style>
 
             <Style Selector="^ > StackPanel > Border">
@@ -111,6 +112,21 @@
                 <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                     <Setter Property="Foreground" Value="Black" />
                     <Setter Property="Background" Value="IndianRed" />
+                </Style>
+            </Style>
+            
+            <Style Selector="^.matched:not(:pointerover)">
+                <Style Selector="^.high /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="Black" />
+                    <Setter Property="Background" Value="{DynamicResource AccentButtonBackground}" />
+                </Style>
+                <Style Selector="^.medium /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="Black" />
+                    <Setter Property="Background" Value="{DynamicResource AccentButtonBackground}" />
+                </Style>
+                <Style Selector="^.low /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="Black" />
+                    <Setter Property="Background" Value="{DynamicResource AccentButtonBackground}" />
                 </Style>
             </Style>
 

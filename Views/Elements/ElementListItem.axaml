@@ -18,7 +18,8 @@
         Classes.high="{Binding Confidence, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static models:ConfidenceLevel.High}}"
         Classes.medium="{Binding Confidence, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static models:ConfidenceLevel.Medium}}"
         Classes.low="{Binding Confidence, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static models:ConfidenceLevel.Low}}"
-        Classes.selected="{Binding IsCurrentSelection}">
+        Classes.selected="{Binding IsCurrentSelection}"
+        Classes.matched="{Binding IsCurrentMatch}">
         <StackPanel Orientation="Vertical">
             <TextBlock Classes.displaysRunes="True"
                        Text="{Binding Glyph}"/>

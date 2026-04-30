@@ -70,7 +70,6 @@ public partial class Sentence : ViewModelBase
     public void Refresh()
     {
         OnPropertyChanged(nameof(Phrases));
-        Console.WriteLine("Phrase_Changing...");
         foreach (PhraseBase phraseBase in Phrases)
         {
             if (phraseBase is Phrase phrase)

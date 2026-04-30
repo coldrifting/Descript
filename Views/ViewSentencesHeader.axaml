@@ -36,7 +36,8 @@
                  CurrentMeaning="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelElement.FilterText, Mode=TwoWay, FallbackValue=''}"
                  CurrentMeaningMatch="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelElement.CurrentMatch, FallbackValue=0}"
                  CurrentWordTranslation="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelPhrases.FilterText, Mode=TwoWay, FallbackValue=''}"
-                 CurrentWordMatch="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelPhrases.BestMatch, FallbackValue=''}">
+                 CurrentWordMatch="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelPhrases.BestMatch, FallbackValue=''}"
+                 CurrentMatchIndex="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelElement.CurrentMatchIndex, Mode=TwoWay, FallbackValue=0}">
             <TextBox.KeyBindings>
                 <KeyBinding Gesture="Cmd+R" Command="{Binding ToggleElementInputModeByRuneCommand}"/>
                 <KeyBinding Gesture="Cmd+T" Command="{Binding ToggleElementInputModeByTranslationCommand}"/>

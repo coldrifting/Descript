@@ -74,6 +74,14 @@ public class TextBoxRuneEdit : TextBox
         set => SetValue(CurrentMeaningMatchProperty, value);
     }
     
+    public static readonly StyledProperty<int> CurrentMatchIndexProperty =
+        AvaloniaProperty.Register<TextBoxRuneEdit, int>(nameof(CurrentMatchIndex), defaultValue: 0);
+    public int CurrentMatchIndex
+    {
+        get => GetValue(CurrentMatchIndexProperty);
+        set => SetValue(CurrentMatchIndexProperty, value);
+    }
+    
     // Word
     public static readonly StyledProperty<string> CurrentWordTranslationProperty =
         AvaloniaProperty.Register<TextBoxRuneEdit, string>(nameof(CurrentWordTranslation), defaultValue: "");
@@ -111,6 +119,21 @@ public class TextBoxRuneEdit : TextBox
         {
             CurrentWordTranslation = CurrentWordTranslation[..^1];
             return;
+        }
+
+        if (ElementInputMode == ElementInputMode.Translation)
+        {
+            if (e.Key == Key.Up)
+            {
+                CurrentMatchIndex -= 1;
+                return;
+            }
+
+            if (e.Key == Key.Down)
+            {
+                CurrentMatchIndex += 1;
+                return;
+            }
         }
         
         if (e.Key is Key.Enter)
