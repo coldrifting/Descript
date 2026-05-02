@@ -12,7 +12,7 @@ namespace Descript.ViewModels.Dialog;
 
 public partial class ViewModelDialogSentence(MainWindowViewModel mainWindowViewModel) : ViewModelBase
 {
-    private MainWindowViewModel Vm { get; } = mainWindowViewModel;
+    public MainWindowViewModel Vm { get; } = mainWindowViewModel;
     
     public bool IsOpen { get; set => SetField(ref field, value); }
     public string Title { get; set => SetField(ref field, value); } = string.Empty;

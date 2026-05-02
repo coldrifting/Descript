@@ -37,7 +37,9 @@
                  CurrentMeaningMatch="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelElement.CurrentMatch, FallbackValue=0}"
                  CurrentWordTranslation="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelPhrases.FilterText, Mode=TwoWay, FallbackValue=''}"
                  CurrentWordMatch="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelPhrases.BestMatch, FallbackValue=''}"
-                 CurrentMatchIndex="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelElement.CurrentMatchIndex, Mode=TwoWay, FallbackValue=0}">
+                 CurrentMatchIndex="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelElement.CurrentMatchIndex, Mode=TwoWay, FallbackValue=0}"
+                 GotFocus="InputElement_OnGotFocus"
+                 LostFocus="InputElement_OnLostFocus">
             <TextBox.KeyBindings>
                 <KeyBinding Gesture="Cmd+S" Command="{Binding ToggleElementInputModeByShapeCommand}"/>
                 <KeyBinding Gesture="Cmd+E" Command="{Binding ToggleElementInputModeByElementCommand}"/>

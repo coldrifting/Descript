@@ -13,7 +13,7 @@ namespace Descript.ViewModels;
 
 public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel) : ViewModelBase
 {
-    private MainWindowViewModel Vm { get; } = mainWindowViewModel;
+    public MainWindowViewModel Vm { get; } = mainWindowViewModel;
     public ViewModelDialogSentence ViewModelDialog { get; } = new(mainWindowViewModel);
     
     private readonly Dictionary<string, Sentence> _sentences = new();

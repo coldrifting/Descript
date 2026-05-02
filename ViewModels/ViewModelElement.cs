@@ -28,6 +28,8 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
     public bool IsShown => Vm.IsElementsListShown;
     public void UpdateIsShown() => OnPropertyChanged(nameof(IsShown));
     
+    public bool IsMatchSelectionShown { get; private set => SetField(ref field, value); }
+    
     public Element? this[char glyph] => _elements.GetValueOrDefault(glyph);
     
     public IEnumerable<Element> Elements => _elements.Values.OrderBy(r => r.Glyph);
@@ -43,7 +45,7 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
             Element3 = batch.Length > 2 ? batch[2] : null, 
             Element4 = batch.Length > 3 ? batch[3] : null, 
         })
-        .WithMatch(FilterText.Trim() == "" ? -1 : CurrentMatchIndex)
+        .WithMatch(FilterText.Trim() == "" || !IsMatchSelectionShown ? -1 : CurrentMatchIndex)
         .ToList();
     
     public int NumFilteredElements => ElementsFilteredAndGrouped.Count * 4 - 4 + (ElementsFilteredAndGrouped.LastOrDefault()?.Length ?? 0);
@@ -93,6 +95,12 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
         
         OnPropertyChanged(nameof(FilterText));
         OnPropertyChanged(nameof(CurrentSelection));
+    }
+    
+    [RelayCommand]
+    private void SetMatchShown(bool shouldShowMatch)
+    {
+        IsMatchSelectionShown = shouldShowMatch;
     }
     
     public bool Add(int id, bool update = true)
@@ -176,6 +184,11 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
             OnPropertyChanged(nameof(ElementsFilteredAndGrouped));
             OnPropertyChanged(nameof(CanClearFilters));
             OnPropertyChanged(nameof(CurrentMatch));
+        }
+
+        if (e.PropertyName is nameof(IsMatchSelectionShown))
+        {
+            OnPropertyChanged(nameof(ElementsFilteredAndGrouped));
         }
 
         if (e.PropertyName is nameof(CurrentMatchIndex))
