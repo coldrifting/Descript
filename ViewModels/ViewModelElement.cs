@@ -25,7 +25,7 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
     public bool CanClearFilters => CurrentSelection > 0 || FilterText.Length > 0;
     public bool CanAddRune      => CurrentSelection != 0 && !_elements.ContainsKey(Element.GlyphFromId(CurrentSelection));
 
-    public bool IsShown => Vm.IsRuneListShown;
+    public bool IsShown => Vm.IsElementsListShown;
     public void UpdateIsShown() => OnPropertyChanged(nameof(IsShown));
     
     public Element? this[char glyph] => _elements.GetValueOrDefault(glyph);

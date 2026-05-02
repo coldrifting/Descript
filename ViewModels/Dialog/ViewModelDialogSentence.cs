@@ -106,41 +106,41 @@ public partial class ViewModelDialogSentence(MainWindowViewModel mainWindowViewM
     }
     
     [RelayCommand]
-    private void ToggleElementInputModeByRune()
+    private void ToggleElementInputModeByShape()
     {
-        ElementInputMode = ElementInputMode != ElementInputMode.Rune 
-            ? ElementInputMode.Rune 
+        ElementInputMode = ElementInputMode != ElementInputMode.Shape 
+            ? ElementInputMode.Shape 
             : ElementInputMode.None;
 
-        if (ElementInputMode is ElementInputMode.Rune or ElementInputMode.Translation)
+        if (ElementInputMode is ElementInputMode.Shape)
         {
-            Vm.ShowRunesListCommand.Execute(true);
+            Vm.ShowElementsListCommand.Execute(true);
         }
     }
     
     [RelayCommand]
-    private void ToggleElementInputModeByTranslation()
+    private void ToggleElementInputModeByElement()
     {
-        ElementInputMode = ElementInputMode != ElementInputMode.Translation
-            ? ElementInputMode.Translation
+        ElementInputMode = ElementInputMode != ElementInputMode.Element
+            ? ElementInputMode.Element
             : ElementInputMode.None;
                
-        if (ElementInputMode is ElementInputMode.Rune or ElementInputMode.Translation)
+        if (ElementInputMode is ElementInputMode.Element)
         {
-            Vm.ShowRunesListCommand.Execute(true);
+            Vm.ShowElementsListCommand.Execute(true);
         }
     }
     
     [RelayCommand]
-    private void ToggleElementInputModeByWord()
+    private void ToggleElementInputModeByPhrase()
     {
-        ElementInputMode = ElementInputMode != ElementInputMode.Word 
-            ? ElementInputMode.Word 
+        ElementInputMode = ElementInputMode != ElementInputMode.Phrase 
+            ? ElementInputMode.Phrase 
             : ElementInputMode.None;
         
-        if (ElementInputMode is ElementInputMode.Word)
+        if (ElementInputMode is ElementInputMode.Phrase)
         {
-            Vm.ShowRunesListCommand.Execute(false);
+            Vm.ShowElementsListCommand.Execute(false);
         }
     }
 

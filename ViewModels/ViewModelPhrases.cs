@@ -35,7 +35,7 @@ public partial class ViewModelPhrases(MainWindowViewModel mainWindowViewModel) :
     public string FilterText { get; set => SetField(ref field, value); } = string.Empty;
     public bool CanClearFilters => FilterText.Length > 0;
 
-    public bool IsShown => !Vm.IsRuneListShown;
+    public bool IsShown => !Vm.IsElementsListShown;
     public void UpdateIsShown() => OnPropertyChanged(nameof(IsShown));
     
     [RelayCommand]

@@ -39,9 +39,9 @@
                  CurrentWordMatch="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelPhrases.BestMatch, FallbackValue=''}"
                  CurrentMatchIndex="{Binding $parent[Window].((viewModels:MainWindowViewModel)DataContext).ViewModelElement.CurrentMatchIndex, Mode=TwoWay, FallbackValue=0}">
             <TextBox.KeyBindings>
-                <KeyBinding Gesture="Cmd+R" Command="{Binding ToggleElementInputModeByRuneCommand}"/>
-                <KeyBinding Gesture="Cmd+T" Command="{Binding ToggleElementInputModeByTranslationCommand}"/>
-                <KeyBinding Gesture="Cmd+W" Command="{Binding ToggleElementInputModeByWordCommand}"/>
+                <KeyBinding Gesture="Cmd+S" Command="{Binding ToggleElementInputModeByShapeCommand}"/>
+                <KeyBinding Gesture="Cmd+E" Command="{Binding ToggleElementInputModeByElementCommand}"/>
+                <KeyBinding Gesture="Cmd+P" Command="{Binding ToggleElementInputModeByPhraseCommand}"/>
             </TextBox.KeyBindings>
             <TextBox.InnerLeftContent>
                 <Border Margin="8 0 0 0"

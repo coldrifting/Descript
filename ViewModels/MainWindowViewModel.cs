@@ -54,12 +54,12 @@ public partial class MainWindowViewModel : ViewModelBase
         DataManagement.Save(translations);
     }
     
-    public bool IsRuneListShown { get; set => SetField(ref field, value); } = true;
+    public bool IsElementsListShown { get; set => SetField(ref field, value); } = true;
     
     [RelayCommand]
-    private void ShowRunesList(bool shouldShowRunesList)
+    private void ShowElementsList(bool shouldShowElementsList)
     {
-        IsRuneListShown = shouldShowRunesList;
+        IsElementsListShown = shouldShowElementsList;
         
         ViewModelElement.UpdateIsShown();
         ViewModelPhrases.UpdateIsShown();

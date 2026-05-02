@@ -121,7 +121,7 @@ public class TextBoxRuneEdit : TextBox
             return;
         }
 
-        if (ElementInputMode == ElementInputMode.Translation)
+        if (ElementInputMode == ElementInputMode.Element)
         {
             if (e.Key == Key.Up)
             {
@@ -151,7 +151,7 @@ public class TextBoxRuneEdit : TextBox
 
         switch (ElementInputMode)
         {
-            case ElementInputMode.Rune:
+            case ElementInputMode.Shape:
                 if (e.Text is not { } text || !alphabet.Contains(text, StringComparison.OrdinalIgnoreCase))
                 {
                     base.OnTextInput(e);
@@ -162,7 +162,7 @@ public class TextBoxRuneEdit : TextBox
                     CurrentElementId ^= 1 << id;
                 }
                 return;
-            case ElementInputMode.Translation:
+            case ElementInputMode.Element:
                 if (e.Text is not { } text2 || !alphabet.Contains(text2, StringComparison.OrdinalIgnoreCase))
                 {
                     base.OnTextInput(e);
@@ -170,7 +170,7 @@ public class TextBoxRuneEdit : TextBox
                 }
                 CurrentMeaning += e.Text?.ToLower();
                 return;
-            case ElementInputMode.Word:
+            case ElementInputMode.Phrase:
                 if (e.Text is not { } text3 || !alphabet.Contains(text3, StringComparison.OrdinalIgnoreCase))
                 {
                     base.OnTextInput(e);
@@ -187,7 +187,7 @@ public class TextBoxRuneEdit : TextBox
 
     private void InsertCurrentElement()
     {
-        if (ElementInputMode == ElementInputMode.Rune)
+        if (ElementInputMode == ElementInputMode.Shape)
         {
             if (CurrentElementId == 0)
             {
@@ -201,7 +201,7 @@ public class TextBoxRuneEdit : TextBox
             InsertRuneAction?.Invoke(current.ToString());
         }
 
-        else if (ElementInputMode == ElementInputMode.Translation)
+        else if (ElementInputMode == ElementInputMode.Element)
         {
             if (CurrentMeaning == "" || CurrentMeaningMatch == 0)
             {
@@ -215,7 +215,7 @@ public class TextBoxRuneEdit : TextBox
             InsertRuneAction?.Invoke(current.ToString());
         }
         
-        else if (ElementInputMode == ElementInputMode.Word)
+        else if (ElementInputMode == ElementInputMode.Phrase)
         {
             if (CurrentWordTranslation == "" || CurrentWordMatch == "")
             {

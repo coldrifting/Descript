@@ -73,9 +73,9 @@
             CurrentWordMatch="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelPhrases.BestMatch, FallbackValue=''}"
             CurrentMatchIndex="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ViewModelElement.CurrentMatchIndex, Mode=TwoWay, FallbackValue=0}">
             <TextBox.KeyBindings>
-                <KeyBinding Gesture="Cmd+R" Command="{Binding ToggleElementInputModeByRuneCommand}"/>
-                <KeyBinding Gesture="Cmd+T" Command="{Binding ToggleElementInputModeByTranslationCommand}"/>
-                <KeyBinding Gesture="Cmd+W" Command="{Binding ToggleElementInputModeByWordCommand}"/>
+                <KeyBinding Gesture="Cmd+S" Command="{Binding ToggleElementInputModeByShapeCommand}"/>
+                <KeyBinding Gesture="Cmd+E" Command="{Binding ToggleElementInputModeByElementCommand}"/>
+                <KeyBinding Gesture="Cmd+P" Command="{Binding ToggleElementInputModeByPhraseCommand}"/>
             </TextBox.KeyBindings>
         </controls:TextBoxRuneEdit>
         <Grid ColumnDefinitions="*,Auto,300,120">
@@ -85,26 +85,26 @@
                     IsCancel="False"
                     Command="{Binding CancelCommand}" />
             <Label Grid.Column="1" 
-                   Content="Rune Input Enabled" 
+                   Content="Shape Input Enabled" 
                    Foreground="DarkOrange"
                    VerticalAlignment="Center"
                    Margin="0"
                    Padding="0"
-                   IsVisible="{Binding ElementInputMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ElementInputMode.Rune}}" />
+                   IsVisible="{Binding ElementInputMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ElementInputMode.Shape}}" />
             <Label Grid.Column="1" 
-                   Content="Translation Input Enabled" 
+                   Content="Rune Input Enabled" 
                    Foreground="DarkCyan"
                    VerticalAlignment="Center"
                    Margin="0"
                    Padding="0"
-                   IsVisible="{Binding ElementInputMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ElementInputMode.Translation}}" />
+                   IsVisible="{Binding ElementInputMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ElementInputMode.Element}}" />
             <Label Grid.Column="1" 
                    Content="Word Input Enabled" 
                    Foreground="DodgerBlue"
                    VerticalAlignment="Center"
                    Margin="0"
                    Padding="0"
-                   IsVisible="{Binding ElementInputMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ElementInputMode.Word}}" />
+                   IsVisible="{Binding ElementInputMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static models:ElementInputMode.Phrase}}" />
             <TextBlock Grid.Column="2" 
                        Text="{Binding ErrorMessage}" 
                        TextAlignment="End"

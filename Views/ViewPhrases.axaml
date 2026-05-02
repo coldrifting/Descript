@@ -13,7 +13,7 @@
     <DockPanel Width="256">
         <TextBox DockPanel.Dock="Top"
                  Classes.displaysRunes="True"
-                 PlaceholderText="Filter Words by Translation" 
+                 PlaceholderText="Filter Phrases by Translation" 
                  Text="{Binding FilterText}"
                  Margin="0 8">
             <TextBox.InnerRightContent>
