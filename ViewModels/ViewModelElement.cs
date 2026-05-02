@@ -33,19 +33,12 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
     public Element? this[char glyph] => _elements.GetValueOrDefault(glyph);
     
     public IEnumerable<Element> Elements => _elements.Values.OrderBy(r => r.Glyph);
-    public List<ElementGroup> ElementsFilteredAndGrouped => _elements.Values
+    public List<Element[]> ElementsFilteredAndGrouped => _elements.Values
         .WithSelection(CurrentSelection)
         .Ordered(FilterText)
         .Matching(FilterText, CurrentSelection)
+        .WithMatch(FilterText.Trim() != "" && IsMatchSelectionShown ? CurrentMatchIndex : -1)
         .Chunk(4)
-        .Select(batch => new ElementGroup
-        {
-            Element1 = batch[0], 
-            Element2 = batch.Length > 1 ? batch[1] : null, 
-            Element3 = batch.Length > 2 ? batch[2] : null, 
-            Element4 = batch.Length > 3 ? batch[3] : null, 
-        })
-        .WithMatch(FilterText.Trim() == "" || !IsMatchSelectionShown ? -1 : CurrentMatchIndex)
         .ToList();
     
     public int NumFilteredElements => ElementsFilteredAndGrouped.Count * 4 - 4 + (ElementsFilteredAndGrouped.LastOrDefault()?.Length ?? 0);

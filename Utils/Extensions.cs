@@ -91,8 +91,25 @@ public static class Extensions {
                 return filterText.Contains(element.Glyph) || element.Translation.Trim().Contains(filterText.Trim(), StringComparison.CurrentCultureIgnoreCase);
             }
         }
+        
+        public IEnumerable<Element> WithMatch(int matchIndex)
+        {
+            if (matchIndex < 0)
+            {
+                return elements;
+            }
+            
+            Element[] group = elements.ToArray();
+            if (matchIndex >= group.Length)
+            {
+                return group;
+            }
+            
+            group[matchIndex] = group[matchIndex].WithMatch;
+            return group;
+        }
     }
-    extension(IEnumerable<ElementGroup> elementGroups)
+    extension(IEnumerable<Element[]> elementGroups)
     {
         public Element GetIndex(int matchIndex)
         {
@@ -100,16 +117,6 @@ public static class Extensions {
             int matchLow = matchIndex % 4;
 
             return elementGroups.ElementAt(matchHigh)[matchLow];
-        }
-        
-        public IEnumerable<ElementGroup> WithMatch(int matchIndex)
-        {
-            int matchHigh = matchIndex / 4;
-            int matchLow = matchIndex % 4;
-            
-            ElementGroup[] group = elementGroups.ToArray();
-            group[matchHigh] = group[matchHigh].WithMatch(matchLow);
-            return group;
         }
     }
 
