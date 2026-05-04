@@ -14,7 +14,8 @@
         
         <controls:SegmentSelectControl Grid.Row="0" 
                                        AccentColor="{DynamicResource SystemAccentColor}"
-                                       Selection="{Binding CurrentSelection, Mode=TwoWay}" />
+                                       Selection="{Binding CurrentSelection, Mode=TwoWay}" 
+                                       AntiSelection="{Binding CurrentAntiSelection, Mode=TwoWay}"/>
                     
         <TextBox Grid.Row="1" 
                  Classes.displaysRunes="True"

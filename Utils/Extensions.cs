@@ -82,9 +82,9 @@ public static class Extensions {
                 .ThenBy(element => element.Glyph);
         }
 
-        public IEnumerable<Element> Matching(string filterText, int selection)
+        public IEnumerable<Element> Matching(string filterText, int selection, int antiSelection)
         {
-            return elements.Where(element => (element.Glyph & selection) == selection && Contains(element));
+            return elements.Where(element => (element.Glyph & (selection | antiSelection)) == selection && Contains(element));
 
             bool Contains(Element element)
             {

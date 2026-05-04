@@ -18,18 +18,20 @@ public class TextBoxRuneEdit : TextBox
         { 'M', 11 }, // Dot
 
         // Upper
-        { 'E', 3 }, // Top Left
+        { 'W', 3 }, // Top Left
         { 'R', 4 }, // Top Right
-        { 'D', 5 }, // Bottom Left
+        { 'S', 5 }, // Bottom Left
         { 'F', 6 }, // Bottom Right
-        { 'S', 1 }, // Middle Bar
+        { 'E', 1 }, // Middle Bar
+        { 'D', 1 }, // Middle Bar
        
         // Lower
         { 'U', 7 }, // Top Left
-        { 'I', 8 }, // Top Right
+        { 'O', 8 }, // Top Right
         { 'J', 9 }, // Bottom Left
-        { 'K', 10 }, // Bottom Right
-        { 'L', 2 }, // Middle Bar
+        { 'L', 10 }, // Bottom Right
+        { 'I', 2 }, // Middle Bar
+        { 'K', 2 }, // Middle Bar
     };
     
     public static readonly StyledProperty<ElementInputMode> ElementInputModeProperty =

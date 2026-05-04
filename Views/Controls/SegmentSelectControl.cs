@@ -13,6 +13,7 @@ public class SegmentSelectControl : Control
     {
         AffectsRender<SegmentSelectControl>(
             SelectionProperty,
+            AntiSelectionProperty,
             OutlineColorProperty, 
             AccentColorProperty);
     }
@@ -23,6 +24,14 @@ public class SegmentSelectControl : Control
     {
         get => GetValue(SelectionProperty);
         set => SetValue(SelectionProperty, value);
+    }
+    
+    public static readonly StyledProperty<int> AntiSelectionProperty =
+        AvaloniaProperty.Register<SegmentSelectControl, int>(nameof(AntiSelection), defaultValue: 0);
+    public int AntiSelection
+    {
+        get => GetValue(AntiSelectionProperty);
+        set => SetValue(AntiSelectionProperty, value);
     }
     
     public static readonly StyledProperty<ISolidColorBrush> OutlineColorProperty =
@@ -188,6 +197,21 @@ public class SegmentSelectControl : Control
         Pen outlinePenArc = new(OutlineColor.WithOpacity(0.5), ArcThickness, lineCap: PenLineCap.Round);
         context.DrawGeometry(null, outlinePenArc, _segments[^1]);
 
+        // Anti Selection
+        for (int i = 0; i < _segments.Length; i++)
+        {
+            double thickness = i != (_segments.Length - 1) ? 12.0 : 8.0;
+            if ((AntiSelection & (1 << i)) == (1 << i))
+            {
+                context.DrawGeometry(null, new Pen(Brushes.IndianRed, thickness, lineCap: PenLineCap.Round), _segments[i]);
+            }
+
+            if ((AntiSelection & (1 << 1)) == (1 << 1) || (AntiSelection & (1 << 2)) == (1 << 2))
+            {
+                context.DrawGeometry(null, new Pen(Brushes.IndianRed, thickness, lineCap: PenLineCap.Round), _segment1Or2);
+            }
+        }
+        
         // Current Selection
         for (int i = 0; i < _segments.Length; i++)
         {
@@ -212,8 +236,13 @@ public class SegmentSelectControl : Control
             {
                 continue;
             }
-            
+
             SolidColorBrush brush = GetHighlightBrush(AccentColor);
+            if ((AntiSelection & (1 << HoverIndex)) != 0)
+            {
+                brush = GetHighlightBrush(Brushes.Red);
+            }
+            
             double thickness = i != (_segments.Length - 1) ? 12.0 : 8.0;
             
             Pen pen = new(brush, thickness, lineCap: PenLineCap.Round);
@@ -242,13 +271,32 @@ public class SegmentSelectControl : Control
         base.OnPointerPressed(e);
         
         PointerPoint point = e.GetCurrentPoint(this);
+        
         for (int i = 0; i < _clickZones.Length; i++)
         {
-            if (_clickZones[i].FillContains(point.Position))
+            if (!_clickZones[i].FillContains(point.Position))
             {
-                Selection ^= 1 << i;
-                break;
+                continue;
             }
+
+            if (point.Properties.IsRightButtonPressed)
+            {
+                if ((Selection & (1 << i)) == (1 << i))
+                {
+                    Selection ^= 1 << i;
+                }
+                AntiSelection ^= 1 << i;
+            }
+            else
+            {
+                if ((AntiSelection & (1 << i)) == (1 << i))
+                {
+                    AntiSelection ^= 1 << i;
+                }
+                Selection ^= 1 << i;
+            }
+
+            break;
         }
     }
 

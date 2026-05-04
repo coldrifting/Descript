@@ -20,9 +20,11 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
     private readonly Dictionary<char, Element> _elements = new();
     
     public int CurrentSelection { get; set => SetField(ref field, value); }
+    public int CurrentAntiSelection { get; set => SetField(ref field, value); }
+    
     public string FilterText { get; set => SetField(ref field, value.ToLower()); } = string.Empty;
 
-    public bool CanClearFilters => CurrentSelection > 0 || FilterText.Length > 0;
+    public bool CanClearFilters => CurrentSelection > 0 || CurrentAntiSelection > 0 || FilterText.Length > 0;
     public bool CanAddRune      => CurrentSelection != 0 && !_elements.ContainsKey(Element.GlyphFromId(CurrentSelection));
 
     public bool IsShown => Vm.IsElementsListShown;
@@ -36,7 +38,7 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
     public List<Element[]> ElementsFilteredAndGrouped => _elements.Values
         .WithSelection(CurrentSelection)
         .Ordered(FilterText)
-        .Matching(FilterText, CurrentSelection)
+        .Matching(FilterText, CurrentSelection, CurrentAntiSelection)
         .WithMatch(FilterText.Trim() != "" && IsMatchSelectionShown ? CurrentMatchIndex : -1)
         .Chunk(4)
         .ToList();
@@ -84,10 +86,8 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
     private void ClearFilters()
     {
         CurrentSelection = 0;
+        CurrentAntiSelection = 0;
         FilterText = string.Empty;
-        
-        OnPropertyChanged(nameof(FilterText));
-        OnPropertyChanged(nameof(CurrentSelection));
     }
     
     [RelayCommand]
@@ -163,6 +163,7 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
         {
             _switch = true;
             CurrentSelection = 0;
+            CurrentAntiSelection = 0;
         }
 
         if (e.PropertyName is nameof(CurrentSelection) && CurrentSelection != 0 && !_switch)
@@ -171,7 +172,7 @@ public partial class ViewModelElement(MainWindowViewModel mainWindowViewModel) :
             FilterText = "";
         }
         
-        if (e.PropertyName is nameof(FilterText) or nameof(CurrentSelection))
+        if (e.PropertyName is nameof(FilterText) or nameof(CurrentSelection) or nameof(CurrentAntiSelection))
         {
             CurrentMatchIndex = 0;
             OnPropertyChanged(nameof(ElementsFilteredAndGrouped));
