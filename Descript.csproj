@@ -8,6 +8,15 @@
         <LangVersion>preview</LangVersion>
         <UseAppHost>true</UseAppHost>
         <ApplicationIcon>Assets/Descript.ico</ApplicationIcon>
+        
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>false</SelfContained>
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+      <DebugType>None</DebugType>
+      <DebugSymbols>False</DebugSymbols>
     </PropertyGroup>
 
     <ItemGroup>

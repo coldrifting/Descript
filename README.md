@@ -54,3 +54,6 @@ You can also always edit individual runes in the left pane.
 Translations will auto apply to ever sentence, making it easy to filter sentences for words with the least amount of unknowns.
 When searching sentences you can also use the input modes and shortcuts listed above, and you can right-click on runes, words, or sentences for more filtering options
 
+## Requirements
+
+[.NET 10.0](https://dotnet.microsoft.com/en-us/download)
