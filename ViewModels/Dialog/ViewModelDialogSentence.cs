@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using Descript.Models;
 using Descript.Models.Flat;
@@ -38,6 +39,23 @@ public partial class ViewModelDialogSentence(MainWindowViewModel mainWindowViewM
     public string SubmitButtonText => _originalSentence is null ? "Add" : "Update";
     
     public ElementInputMode ElementInputMode { get; set => SetField(ref field, value); }
+    public string ElementInputModeText =>
+        ElementInputMode switch
+        {
+            ElementInputMode.Shape => "Shape",
+            ElementInputMode.Element => "Rune",
+            ElementInputMode.Phrase => "Phrase",
+            _ => "None"
+        };
+    public IImmutableSolidColorBrush ElementInputModeColor =>
+        ElementInputMode switch
+        {
+            ElementInputMode.Shape => Brushes.DarkOrange,
+            ElementInputMode.Element => Brushes.DarkCyan,
+            ElementInputMode.Phrase => Brushes.DodgerBlue,
+            _ => Brushes.Gray
+        };
+    
     public Action<string> InsertAtCursor => 
         input => CursorHelper.InsertAtCursor(input, 
             SelectionStart, 
@@ -175,9 +193,16 @@ public partial class ViewModelDialogSentence(MainWindowViewModel mainWindowViewM
     {
         base.OnPropertyChanged(e);
 
-        if (e.PropertyName is nameof(Sentence) or nameof(Category) or nameof(SubCategory) or nameof(Context))
+        switch (e.PropertyName)
         {
-            OnPropertyChanged(nameof(IsValid));
+            case nameof(ElementInputMode):
+                OnPropertyChanged(nameof(ElementInputModeText));
+                OnPropertyChanged(nameof(ElementInputModeColor));
+                break;
+            
+            case nameof(Sentence) or nameof(Category) or nameof(SubCategory) or nameof(Context):
+                OnPropertyChanged(nameof(IsValid));
+                break;
         }
     }
 }

@@ -19,7 +19,7 @@
                     
         <TextBox Grid.Row="1" 
                  Classes.displaysRunes="True"
-                 PlaceholderText="Filter Elements by Translation" 
+                 PlaceholderText="Filter Runes by Translation" 
                  Text="{Binding FilterText}">
             <TextBox.InnerRightContent>
                 <Button Grid.Column="0"

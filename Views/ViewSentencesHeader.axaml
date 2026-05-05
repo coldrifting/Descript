@@ -42,16 +42,16 @@
                  LostFocus="InputElement_OnLostFocus">
             <TextBox.KeyBindings>
                 <KeyBinding Gesture="Cmd+S" Command="{Binding ToggleElementInputModeByShapeCommand}"/>
-                <KeyBinding Gesture="Cmd+E" Command="{Binding ToggleElementInputModeByElementCommand}"/>
-                <KeyBinding Gesture="Cmd+P" Command="{Binding ToggleElementInputModeByPhraseCommand}"/>
+                <KeyBinding Gesture="Cmd+R" Command="{Binding ToggleElementInputModeByElementCommand}"/>
+                <KeyBinding Gesture="Cmd+Shift+R" Command="{Binding ToggleElementInputModeByPhraseCommand}"/>
             </TextBox.KeyBindings>
             <TextBox.InnerLeftContent>
                 <Border Margin="8 0 0 0"
                         Padding="2"
                         CornerRadius="2"
-                        Background="DimGray"
+                        Background="{Binding ElementInputModeColor}"
                         IsVisible="{Binding ElementInputMode}" >
-                    <Label Content="{Binding ElementInputMode}"
+                    <Label Content="{Binding ElementInputModeText}"
                            Margin="0"
                            Padding="0"
                            Foreground="Black"/>

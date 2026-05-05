@@ -10,7 +10,7 @@
 
     <StackPanel Classes.dialog="True">
         <StackPanel Orientation="Vertical">
-            <TextBlock Text="Guess Element" Classes.title="True" />
+            <TextBlock Text="Guess Rune" Classes.title="True" />
             <Border Classes.titleGlyph="True">
                 <TextBlock Text="{Binding Glyph}" Classes.displaysRunes="True" />
             </Border>
@@ -48,7 +48,7 @@
             <Button Grid.Column="0" Content="Cancel" IsCancel="True" Command="{Binding CancelCommand}" />
             <Button Grid.Column="1"
                     Classes="accent"
-                    Content="Submit"
+                    Content="Update"
                     Command="{Binding SubmitCommand}"
                     IsEnabled="{Binding IsValid}"
                     HorizontalAlignment="Right"

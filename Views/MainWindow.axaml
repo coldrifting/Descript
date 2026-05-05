@@ -36,8 +36,8 @@
                 <Grid Grid.Column="0" RowDefinitions="Auto,*">
                     <StackPanel Grid.Row="0" Classes.menubar="True">
                         <StackPanel Classes.menubarItem="True">
-                            <c:ToggleButton Item1Label="Elements"
-                                            Item2Label="Phrases"
+                            <c:ToggleButton Item1Label="Runes"
+                                            Item2Label="Words"
                                             Value="{Binding IsElementsListShown}"
                                             ToggleCommand="{Binding ShowElementsListCommand}" />
                         </StackPanel>

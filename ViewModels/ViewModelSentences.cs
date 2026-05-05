@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.Input;
 using Descript.Models;
 using Descript.Models.Flat;
@@ -37,6 +38,24 @@ public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel)
         .OrderBy(SortMode);
     
     public ElementInputMode ElementInputMode { get; set => SetField(ref field, value); }
+    public string ElementInputModeText =>
+        ElementInputMode switch
+        {
+            ElementInputMode.Shape => "Shape",
+            ElementInputMode.Element => "Rune",
+            ElementInputMode.Phrase => "Phrase",
+            _ => ""
+        };
+    public IImmutableSolidColorBrush ElementInputModeColor =>
+        ElementInputMode switch
+        {
+            ElementInputMode.Shape => Brushes.Orange,
+            ElementInputMode.Element => Brushes.DarkCyan,
+            ElementInputMode.Phrase => Brushes.DodgerBlue,
+            _ => Brushes.Gray
+        };
+
+    
     public Action<string> InsertAtCursor => 
         input => CursorHelper.InsertAtCursor(input, 
             FilterTextSelectionStart, 
@@ -195,6 +214,11 @@ public partial class ViewModelSentences(MainWindowViewModel mainWindowViewModel)
 
         switch (e.PropertyName)
         {
+            case nameof(ElementInputMode):
+                OnPropertyChanged(nameof(ElementInputModeText));
+                OnPropertyChanged(nameof(ElementInputModeColor));
+                break;
+            
             case nameof(Sentences):
             case nameof(SortMode):
                 OnPropertyChanged(nameof(SentencesFiltered));
