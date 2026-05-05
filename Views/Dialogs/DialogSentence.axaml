@@ -75,9 +75,9 @@
             GotFocus="SentenceInput_OnGotFocus"
             LostFocus="SentenceInput_OnLostFocus">
             <TextBox.KeyBindings>
-                <KeyBinding Gesture="Cmd+S" Command="{Binding ToggleElementInputModeByShapeCommand}"/>
-                <KeyBinding Gesture="Cmd+R" Command="{Binding ToggleElementInputModeByElementCommand}"/>
-                <KeyBinding Gesture="Cmd+Shift+R" Command="{Binding ToggleElementInputModeByPhraseCommand}"/>
+                <KeyBinding Gesture="{OnPlatform Ctrl+S, macOS=⌘+S}" Command="{Binding ToggleElementInputModeByShapeCommand}"/>
+                <KeyBinding Gesture="{OnPlatform Ctrl+R, macOS=⌘+R}" Command="{Binding ToggleElementInputModeByElementCommand}"/>
+                <KeyBinding Gesture="{OnPlatform Ctrl+Shift+R, macOS=⌘+Shift+R}" Command="{Binding ToggleElementInputModeByPhraseCommand}"/>
             </TextBox.KeyBindings>
         </controls:TextBoxRuneEdit>
         <Grid ColumnDefinitions="Auto,*,300,120">
@@ -92,7 +92,7 @@
                        Content="Input Mode: " 
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left"
-                       Margin="0"
+                       Margin="10 0 0 0"
                        Padding="0"/>
                 <Label
                        Content="{Binding ElementInputModeText}" 

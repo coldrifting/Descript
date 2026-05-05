@@ -41,9 +41,9 @@
                  GotFocus="InputElement_OnGotFocus"
                  LostFocus="InputElement_OnLostFocus">
             <TextBox.KeyBindings>
-                <KeyBinding Gesture="Cmd+S" Command="{Binding ToggleElementInputModeByShapeCommand}"/>
-                <KeyBinding Gesture="Cmd+R" Command="{Binding ToggleElementInputModeByElementCommand}"/>
-                <KeyBinding Gesture="Cmd+Shift+R" Command="{Binding ToggleElementInputModeByPhraseCommand}"/>
+                <KeyBinding Gesture="{OnPlatform Ctrl+S, macOS=⌘+S}" Command="{Binding ToggleElementInputModeByShapeCommand}"/>
+                <KeyBinding Gesture="{OnPlatform Ctrl+R, macOS=⌘+R}" Command="{Binding ToggleElementInputModeByElementCommand}"/>
+                <KeyBinding Gesture="{OnPlatform Ctrl+Shift+R, macOS=⌘+Shift+R}" Command="{Binding ToggleElementInputModeByPhraseCommand}"/>
             </TextBox.KeyBindings>
             <TextBox.InnerLeftContent>
                 <Border Margin="8 0 0 0"
