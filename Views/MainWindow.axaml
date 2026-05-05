@@ -11,7 +11,7 @@
         x:Class="Descript.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         x:Name="Window"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/Descript.ico"
         Title="Descript">
 
     <Design.DataContext>
